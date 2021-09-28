@@ -22,14 +22,14 @@ xloc_right = (0.25*scrsize(1)+rf(1));   % Right eye x-coordinate
 color_code = [1];                       % Code to determine grating colors
 phase_angle = [0];                      % Phase angle in degrees (0-360)
 
-global dgrecord;
-struct(dgrecord);
+global GRATINGRECORD;
+struct(GRATINGRECORD);
 
 switch paradigm
     
     case 'cinteroc'
-        contr_left = [0.11, 0.22 0.45 0.90]; % Left eye contrasts 0 to 1
-        contr_right = [0.11, 0.22 0.45 0.90]; % Right eye contrasts 0 to 1
+        contr_left = [0.05, 0.11, 0.22 0.45 0.90]; % Left eye contrasts 0 to 1
+        contr_right = [0.05, 0.11, 0.22 0.45 0.90]; % Right eye contrasts 0 to 1
         
         vec_comb = combvec(ori,sf,tf,diameter,contr_left,contr_right,xloc_left,xloc_right,color_code,phase_angle); % All possible combos
         [~, col] = size(vec_comb); % Size of the combo vector
@@ -37,16 +37,16 @@ switch paradigm
         shuffle = randi([1 col],ntrials,1); % Randomly order them
         
         for tr = 1:ntrials
-            dgrecord(tr).ori = vec_comb(1,shuffle(tr));
-            dgrecord(tr).sf = vec_comb(2,shuffle(tr));
-            dgrecord(tr).tf = vec_comb(3,shuffle(tr));
-            dgrecord(tr).diam = vec_comb(4,shuffle(tr));
-            dgrecord(tr).cont_left = vec_comb(5,shuffle(tr));
-            dgrecord(tr).cont_right = vec_comb(6,shuffle(tr));
-            dgrecord(tr).xloc_left = vec_comb(7,shuffle(tr));
-            dgrecord(tr).xloc_right = vec_comb(8,shuffle(tr));
-            dgrecord(tr).color = vec_comb(9,shuffle(tr));
-            dgrecord(tr).phase = vec_comb(10,shuffle(tr));
+            GRATINGRECORD(tr).ori = vec_comb(1,shuffle(tr));
+            GRATINGRECORD(tr).sf = vec_comb(2,shuffle(tr));
+            GRATINGRECORD(tr).tf = vec_comb(3,shuffle(tr));
+            GRATINGRECORD(tr).diam = vec_comb(4,shuffle(tr));
+            GRATINGRECORD(tr).cont_left = vec_comb(5,shuffle(tr));
+            GRATINGRECORD(tr).cont_right = vec_comb(6,shuffle(tr));
+            GRATINGRECORD(tr).xloc_left = vec_comb(7,shuffle(tr));
+            GRATINGRECORD(tr).xloc_right = vec_comb(8,shuffle(tr));
+            GRATINGRECORD(tr).color = vec_comb(9,shuffle(tr));
+            GRATINGRECORD(tr).phase = vec_comb(10,shuffle(tr));
         end
     
     case 'rfori'
@@ -58,16 +58,16 @@ switch paradigm
         shuffle = randi([1 col],ntrials,1); % Randomly order them
         
         for tr = 1:ntrials
-            dgrecord(tr).ori = vec_comb(1,shuffle(tr));
-            dgrecord(tr).sf = vec_comb(2,shuffle(tr));
-            dgrecord(tr).tf = vec_comb(3,shuffle(tr));
-            dgrecord(tr).diam = vec_comb(4,shuffle(tr));
-            dgrecord(tr).cont_left = vec_comb(5,shuffle(tr));
-            dgrecord(tr).cont_right = vec_comb(6,shuffle(tr));
-            dgrecord(tr).xloc_left = vec_comb(7,shuffle(tr));
-            dgrecord(tr).xloc_right = vec_comb(8,shuffle(tr));
-            dgrecord(tr).color = vec_comb(9,shuffle(tr));
-            dgrecord(tr).phase = vec_comb(10,shuffle(tr));
+            GRATINGRECORD(tr).ori = vec_comb(1,shuffle(tr));
+            GRATINGRECORD(tr).sf = vec_comb(2,shuffle(tr));
+            GRATINGRECORD(tr).tf = vec_comb(3,shuffle(tr));
+            GRATINGRECORD(tr).diam = vec_comb(4,shuffle(tr));
+            GRATINGRECORD(tr).cont_left = vec_comb(5,shuffle(tr));
+            GRATINGRECORD(tr).cont_right = vec_comb(6,shuffle(tr));
+            GRATINGRECORD(tr).xloc_left = vec_comb(7,shuffle(tr));
+            GRATINGRECORD(tr).xloc_right = vec_comb(8,shuffle(tr));
+            GRATINGRECORD(tr).color = vec_comb(9,shuffle(tr));
+            GRATINGRECORD(tr).phase = vec_comb(10,shuffle(tr));
         end
         
     case 'rfsize'
@@ -79,16 +79,16 @@ switch paradigm
         shuffle = randi([1 col],ntrials,1); % Randomly order them
         
         for tr = 1:ntrials
-            dgrecord(tr).ori = vec_comb(1,shuffle(tr));
-            dgrecord(tr).sf = vec_comb(2,shuffle(tr));
-            dgrecord(tr).tf = vec_comb(3,shuffle(tr));
-            dgrecord(tr).diam = vec_comb(4,shuffle(tr));
-            dgrecord(tr).cont_left = vec_comb(5,shuffle(tr));
-            dgrecord(tr).cont_right = vec_comb(6,shuffle(tr));
-            dgrecord(tr).xloc_left = vec_comb(7,shuffle(tr));
-            dgrecord(tr).xloc_right = vec_comb(8,shuffle(tr));
-            dgrecord(tr).color = vec_comb(9,shuffle(tr));
-            dgrecord(tr).phase = vec_comb(10,shuffle(tr));
+            GRATINGRECORD(tr).ori = vec_comb(1,shuffle(tr));
+            GRATINGRECORD(tr).sf = vec_comb(2,shuffle(tr));
+            GRATINGRECORD(tr).tf = vec_comb(3,shuffle(tr));
+            GRATINGRECORD(tr).diam = vec_comb(4,shuffle(tr));
+            GRATINGRECORD(tr).cont_left = vec_comb(5,shuffle(tr));
+            GRATINGRECORD(tr).cont_right = vec_comb(6,shuffle(tr));
+            GRATINGRECORD(tr).xloc_left = vec_comb(7,shuffle(tr));
+            GRATINGRECORD(tr).xloc_right = vec_comb(8,shuffle(tr));
+            GRATINGRECORD(tr).color = vec_comb(9,shuffle(tr));
+            GRATINGRECORD(tr).phase = vec_comb(10,shuffle(tr));
         end
         
     case 'rfsf'
@@ -100,16 +100,16 @@ switch paradigm
         shuffle = randi([1 col],ntrials,1); % Randomly order them
         
         for tr = 1:ntrials
-            dgrecord(tr).ori = vec_comb(1,shuffle(tr));
-            dgrecord(tr).sf = vec_comb(2,shuffle(tr));
-            dgrecord(tr).tf = vec_comb(3,shuffle(tr));
-            dgrecord(tr).diam = vec_comb(4,shuffle(tr));
-            dgrecord(tr).cont_left = vec_comb(5,shuffle(tr));
-            dgrecord(tr).cont_right = vec_comb(6,shuffle(tr));
-            dgrecord(tr).xloc_left = vec_comb(7,shuffle(tr));
-            dgrecord(tr).xloc_right = vec_comb(8,shuffle(tr));
-            dgrecord(tr).color = vec_comb(9,shuffle(tr));
-            dgrecord(tr).phase = vec_comb(10,shuffle(tr));
+            GRATINGRECORD(tr).ori = vec_comb(1,shuffle(tr));
+            GRATINGRECORD(tr).sf = vec_comb(2,shuffle(tr));
+            GRATINGRECORD(tr).tf = vec_comb(3,shuffle(tr));
+            GRATINGRECORD(tr).diam = vec_comb(4,shuffle(tr));
+            GRATINGRECORD(tr).cont_left = vec_comb(5,shuffle(tr));
+            GRATINGRECORD(tr).cont_right = vec_comb(6,shuffle(tr));
+            GRATINGRECORD(tr).xloc_left = vec_comb(7,shuffle(tr));
+            GRATINGRECORD(tr).xloc_right = vec_comb(8,shuffle(tr));
+            GRATINGRECORD(tr).color = vec_comb(9,shuffle(tr));
+            GRATINGRECORD(tr).phase = vec_comb(10,shuffle(tr));
         end
         
     case 'posdisparity'
@@ -126,16 +126,16 @@ switch paradigm
         shuffle = randi([1 col],ntrials,1); % Randomly order them
         
         for tr = 1:ntrials
-            dgrecord(tr).ori = vec_comb(1,shuffle(tr));
-            dgrecord(tr).sf = vec_comb(2,shuffle(tr));
-            dgrecord(tr).tf = vec_comb(3,shuffle(tr));
-            dgrecord(tr).diam = vec_comb(4,shuffle(tr));
-            dgrecord(tr).cont_left = vec_comb(5,shuffle(tr));
-            dgrecord(tr).cont_right = vec_comb(6,shuffle(tr));
-            dgrecord(tr).xloc_left = vec_comb(7,shuffle(tr));
-            dgrecord(tr).xloc_right = vec_comb(8,shuffle(tr));
-            dgrecord(tr).color = vec_comb(9,shuffle(tr));
-            dgrecord(tr).phase = vec_comb(10,shuffle(tr));
+            GRATINGRECORD(tr).ori = vec_comb(1,shuffle(tr));
+            GRATINGRECORD(tr).sf = vec_comb(2,shuffle(tr));
+            GRATINGRECORD(tr).tf = vec_comb(3,shuffle(tr));
+            GRATINGRECORD(tr).diam = vec_comb(4,shuffle(tr));
+            GRATINGRECORD(tr).cont_left = vec_comb(5,shuffle(tr));
+            GRATINGRECORD(tr).cont_right = vec_comb(6,shuffle(tr));
+            GRATINGRECORD(tr).xloc_left = vec_comb(7,shuffle(tr));
+            GRATINGRECORD(tr).xloc_right = vec_comb(8,shuffle(tr));
+            GRATINGRECORD(tr).color = vec_comb(9,shuffle(tr));
+            GRATINGRECORD(tr).phase = vec_comb(10,shuffle(tr));
         end
         
     case 'phzdisparity'
@@ -147,16 +147,16 @@ switch paradigm
         shuffle = randi([1 col],ntrials,1); % Randomly order them
         
         for tr = 1:ntrials
-            dgrecord(tr).ori = vec_comb(1,shuffle(tr));
-            dgrecord(tr).sf = vec_comb(2,shuffle(tr));
-            dgrecord(tr).tf = vec_comb(3,shuffle(tr));
-            dgrecord(tr).diam = vec_comb(4,shuffle(tr));
-            dgrecord(tr).cont_left = vec_comb(5,shuffle(tr));
-            dgrecord(tr).cont_right = vec_comb(6,shuffle(tr));
-            dgrecord(tr).xloc_left = vec_comb(7,shuffle(tr));
-            dgrecord(tr).xloc_right = vec_comb(8,shuffle(tr));
-            dgrecord(tr).color = vec_comb(9,shuffle(tr));
-            dgrecord(tr).phase = vec_comb(10,shuffle(tr));
+            GRATINGRECORD(tr).ori = vec_comb(1,shuffle(tr));
+            GRATINGRECORD(tr).sf = vec_comb(2,shuffle(tr));
+            GRATINGRECORD(tr).tf = vec_comb(3,shuffle(tr));
+            GRATINGRECORD(tr).diam = vec_comb(4,shuffle(tr));
+            GRATINGRECORD(tr).cont_left = vec_comb(5,shuffle(tr));
+            GRATINGRECORD(tr).cont_right = vec_comb(6,shuffle(tr));
+            GRATINGRECORD(tr).xloc_left = vec_comb(7,shuffle(tr));
+            GRATINGRECORD(tr).xloc_right = vec_comb(8,shuffle(tr));
+            GRATINGRECORD(tr).color = vec_comb(9,shuffle(tr));
+            GRATINGRECORD(tr).phase = vec_comb(10,shuffle(tr));
         end
         
     case 'cone'
@@ -168,23 +168,23 @@ switch paradigm
         shuffle = randi([1 col],ntrials,1); % Randomly order them
         
         for tr = 1:ntrials
-            dgrecord(tr).ori = vec_comb(1,shuffle(tr));
-            dgrecord(tr).sf = vec_comb(2,shuffle(tr));
-            dgrecord(tr).tf = vec_comb(3,shuffle(tr));
-            dgrecord(tr).diam = vec_comb(4,shuffle(tr));
-            dgrecord(tr).cont_left = vec_comb(5,shuffle(tr));
-            dgrecord(tr).cont_right = vec_comb(6,shuffle(tr));
-            dgrecord(tr).xloc_left = vec_comb(7,shuffle(tr));
-            dgrecord(tr).xloc_right = vec_comb(8,shuffle(tr));
-            dgrecord(tr).color = vec_comb(9,shuffle(tr));
-            dgrecord(tr).phase = vec_comb(10,shuffle(tr));
+            GRATINGRECORD(tr).ori = vec_comb(1,shuffle(tr));
+            GRATINGRECORD(tr).sf = vec_comb(2,shuffle(tr));
+            GRATINGRECORD(tr).tf = vec_comb(3,shuffle(tr));
+            GRATINGRECORD(tr).diam = vec_comb(4,shuffle(tr));
+            GRATINGRECORD(tr).cont_left = vec_comb(5,shuffle(tr));
+            GRATINGRECORD(tr).cont_right = vec_comb(6,shuffle(tr));
+            GRATINGRECORD(tr).xloc_left = vec_comb(7,shuffle(tr));
+            GRATINGRECORD(tr).xloc_right = vec_comb(8,shuffle(tr));
+            GRATINGRECORD(tr).color = vec_comb(9,shuffle(tr));
+            GRATINGRECORD(tr).phase = vec_comb(10,shuffle(tr));
         end
         
    
         
 end
 
-r = dgrecord;
+r = GRATINGRECORD;
 
 end
 

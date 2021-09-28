@@ -1,6 +1,9 @@
 %% Jun 2019, Jacob Rogatinsky
 % Sept. 2021, Revised by Blake Mitchell
 
+% Initialize the escape key
+hotkey('esc', 'escape_screen(); assignin(''caller'',''continue_'',false);');
+
 %% Initial code
 % Paradigm selection  
 % 'cinteroc'        Grating contrast varies trial to trial, eye to eye
@@ -10,19 +13,11 @@
 % 'posdisparity'    Grating x-position (DE) varies from trial to trial
 % 'phzdisparity'    Grating phase angle (DE) varies from trial to trial
 % 'cone'            Grating colors vary trial to trial, eye to eye
-pdgm = 'rfori';
+
+paradigm = 'rfori';
 
 timestamp = datestr(now); % Get the current time on the computer
 
-% Event Codes
-% bhv_code(8,'Fixation occurs',11,'Start wait fixation',12,'End wait fixation',...
-%     23,'TaskObject-1 ON',24,'TaskObject-1 OFF',25,'TaskObject-2 ON',26,'TaskObject-2 OFF',...
-%     27,'TaskObject-3 ON',28,'TaskObject-3 OFF',29,'TaskObject-4 ON',30,'TaskObject-4 OFF',...
-%     31,'TaskObject-5 ON',32,'TaskObject-5 OFF',33,'TaskObject-6 ON',34,'TaskObject-6 OFF',...
-%     35,'Fixation spot ON',36,'Fixation spot OFF',96,'Reward delivered',97,'Broke fixation');  
-% 
-% Initialize the escape key
-hotkey('esc', 'escape_screen(); assignin(''caller'',''continue_'',false);');
 
 % Set dominant eye
 de = 3; % 1 = binocular, 2 = right eye, 3 = left eye
@@ -57,16 +52,16 @@ lower_right = [(scrsize(1)*0.5-0.5) (scrsize(2)*(-0.5)+0.5)];
 % Trial number increases by 1 for every iteration of the code
 trialnum = tnum(TrialRecord);
 
+
+
 % Set the seed number on the first trial by storing it as a global variable
 % in an external function. Additionally, initialize the text file that will
 % store information on every trial
 if trialnum == 1
-    setSeed(randi([1 1000])); % Send value to a global variable
-        
-    genFixCross((fixpt(1)*Screen.PixelsPerDegree), (fixpt(2)*Screen.PixelsPerDegree));
-    
+    genGratingRecordML2(paradigm,TrialRecord);
+    genFixCross((fixpt(1)*Screen.PixelsPerDegree), (fixpt(2)*Screen.PixelsPerDegree));   
     taskdir = fileparts(which('T_RFtuning.m'));
-    fid = fopen(strcat(taskdir,'/',upper(pdgm),'.g',upper(pdgm),'Grating_di'), 'w');    formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n';
+    fid = fopen(strcat(taskdir,'/',upper(paradigm),'.g',upper(paradigm),'Grating_di'), 'w');    formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n';
     fprintf(fid,formatSpec,...
         'Trial Number',...
         'RF X-Coord',...
@@ -100,12 +95,12 @@ sdnum = getSeed;
 % If it's the first trial
 if trialnum < 2
     rng(sdnum) % Set the randomizer seed
-    r = genTuningParams(pdgm); % Call the pseudorandomizer function
+    r = genTuningParams(paradigm); % Call the pseudorandomizer function
     
 % If it's not the first trial
 else
     rng(sdnum) % Set the randomizer seed
-    r = genTuningParams(pdgm); % Call the pseudorandomizer function
+    r = genTuningParams(paradigm); % Call the pseudorandomizer function
     
     % When 'trialnum' exceeds the length of the struct 'r', use
     % 'placeholder' to go back to the beginning of the struct
@@ -328,7 +323,7 @@ trialerror(error_type);
 
 %% Write info to file
 taskdir = fileparts(which('T_RFtuning.m'));
-fid = fopen(strcat(taskdir,'/',upper(pdgm),'.g',upper(pdgm),'Grating_di'), 'a');
+fid = fopen(strcat(taskdir,'/',upper(paradigm),'.g',upper(paradigm),'Grating_di'), 'a');
 formatSpec =  '%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%s\t%s\t%f\t%s\t%f\t%s\t%f\t%f\t%f\t%s\t\n';
 fprintf(fid,formatSpec,...
     trialnum,...
@@ -343,7 +338,7 @@ fprintf(fid,formatSpec,...
     de_string,...
     nde_string,...
     0,...
-    pdgm,...
+    paradigm,...
     phase,...
     timestamp,...
     domloc+ndomloc,...
