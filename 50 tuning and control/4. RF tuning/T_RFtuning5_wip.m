@@ -4,9 +4,12 @@
 % Initialize the escape key
 hotkey('esc', 'escape_screen(); assignin(''caller'',''continue_'',false);');
 
-global SAVEPATH 
+global SAVEPATH GRATINGRECORD prespertr datafile
+
+datafile = MLConfig.FormattedName;
 
 SAVEPATH = fileparts(which('T_RFtuning.m'));
+
 
 %% Initial code
 % Paradigm selection  
@@ -38,71 +41,59 @@ lower_right = [(scrsize(1)*0.5-0.5) (scrsize(2)*(-0.5)+0.5)];
 % Trial number increases by 1 for every iteration of the code
 tr = tnum(TrialRecord);
 
-% On the first trial, generate grating record
-if tr == 1
+
+
+if tr == 1 % on the first trial
+    
+    % generate grating record
     genGratingRecordML2(paradigm,TrialRecord);
-    genFixCross((fixpt(1)*Screen.PixelsPerDegree), (fixpt(2)*Screen.PixelsPerDegree));   
+    
+    % generate fixation cross location
+    genFixCross((fixpt(1)*Screen.PixelsPerDegree), (fixpt(2)*Screen.PixelsPerDegree));
+    
+    % Create a file to write grating information for each trial
     taskdir = fileparts(which('T_RFtuning.m'));
-    fid = fopen(strcat(taskdir,'/',upper(paradigm),'.g',upper(paradigm),'Grating_di'), 'w');    
-    formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n';
+    filename = strcat(taskdir,'/',datafile,'.g',upper(paradigm),'Grating_di');
+    
+    fid = fopen(filename, 'w');
+    formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\r\n';
     fprintf(fid,formatSpec,...
-        'Trial Number',...
-        'RF X-Coord',...
-        'RF Y-Coord',...
-        'tilt',...
-        'sf',...
-        'tf',...
-        'Dominant Contrast',...
-        'NonDom Contrast',...
-        'Diameter',...
-        'Dominant Eye',...
-        'NonDom Eye',...
-        'Phase Disparity',...
-        'Paradigm',...
-        'Phase Angle',...
-        'Time Stamp',...
-        'Pos Disparity',...
-        'Fixation X-Coord',...
-        'Fixation Y-Coord',...
-        'Cone Path');
+        'trial',...
+        'horzdva',...
+        'vertdva',...
+        'grating_xpos',...
+        'grating_ypos',...
+        'other_xpos',...
+        'other_ypos',...
+        'grating_tilt',...
+        'grating_sf',...
+        'grating_contrast',...
+        'grating_fixedc',...
+        'grating_diameter',...
+        'grating_eye',...
+        'grating_varyeye',...
+        'grating_oridist',...
+        'gaborfilter_on',...
+        'gabor_std',...
+        'header',...
+        'grating_phase',...
+        'path',...
+        'timestamp');
+    
     fclose(fid);
     
+elseif size(GRATINGRECORD,2) < tr
+    %GENERATE NEW GRATING RECORD IF THIS TRIAL IS LONGER THAN CURRENT GRATINGRECORD
+    genGratingRecordML2(paradigm,TrialRecord);
 end
+    
+    
 
-% Call the seed number created during the first trial using a separate
-% external function -- this way, the seed number only changes when
-% Test_Drifting_Grating1 is restarted each iteration within MonkeyLogic
-% sdnum = getSeed;
-
-%% Struct of pseudo-randomized trial conditions
-% If it's the first trial
-% if trialnum == size(GRATINGRECORD)
-%     rng(sdnum) % Set the randomizer seed
-%     r = genTuningParams(paradigm); % Call the pseudorandomizer function
-%     
-% % If it's not the first trial
-% else
-%     rng(sdnum) % Set the randomizer seed
-%     r = genTuningParams(paradigm); % Call the pseudorandomizer function
-%     
-%     % When 'trialnum' exceeds the length of the struct 'r', use
-%     % 'placeholder' to go back to the beginning of the struct
-%     placeholder = mod(trialnum,length(r));
-%     if placeholder == 0
-%         placeholder = length(r);
-%     end
-%     
-%     % Cycle through each row within the struct's fields
-%     r(end+1:end+placeholder-1) = r(1:placeholder-1);
-%     r(1:placeholder-1)=[];
-%     
-% end
 
 %% Assign values to each sine grating condition
 % Set the conditions
 
-global GRATINGRECORD
-
+path = nan;
 grating_tilt = GRATINGRECORD(tr).grating_tilt;
 grating_eye = GRATINGRECORD(tr).grating_eye;
 grating_phase = GRATINGRECORD(tr).grating_phase;
@@ -110,9 +101,12 @@ grating_sf = GRATINGRECORD(tr).grating_sf;
 grating_tf = GRATINGRECORD(tr).grating_tf;
 grating_contrast = GRATINGRECORD(tr).grating_contrast;
 grating_diameter = GRATINGRECORD(tr).grating_diameter;
-grating_xpos = GRATINGRECORD(tr).grating_xpos;
-grating_ypos = GRATINGRECORD(tr).grating_ypos;
-stereo_xpos = GRATINGRECORD(tr).stereo_xpos;
+grating_xpos = GRATINGRECORD(tr).grating_xpos(1,:);
+grating_ypos = GRATINGRECORD(tr).grating_ypos(1,:);
+other_xpos  = GRATINGRECORD(tr).grating_xpos(2,:);
+other_ypos  = GRATINGRECORD(tr).grating_ypos(2,:);
+stereo_xpos = GRATINGRECORD(tr).stereo_xpos(1,:);
+other_stereo_xpos = GRATINGRECORD(tr).stereo_xpos(2,:);
 grating_header = GRATINGRECORD(tr).header;
 grating_varyeye = GRATINGRECORD(tr).grating_varyeye;
 grating_fixedc = GRATINGRECORD(tr).grating_fixedc;
@@ -121,88 +115,15 @@ grating_outerdiameter = GRATINGRECORD(tr).grating_outerdiameter;
 grating_space = GRATINGRECORD(tr).grating_space;
 grating_isi = GRATINGRECORD(tr).grating_isi;
 grating_stimdur = GRATINGRECORD(tr).grating_stimdur;
-prespertr = GRATINGRECORD(tr).prespertr;
 
-xloc_left = (-0.25*scrsize(1)+grating_xpos(2,1));   % Left eye x-coordinate
-xloc_right = (0.25*scrsize(1)+grating_xpos(1,1));   % Right eye x-coordinate
+X = (Screen.Xsize / Screen.PixelsPerDegree) / 4;
+Y = grating_ypos;
+% xloc_left = (-0.25*scrsize(1)+grating_xpos(2,1));   % Left eye x-coordinate
+% xloc_right = (0.25*scrsize(1)+grating_xpos(1,1));   % Right eye x-coordinate
 
 gray = [0.5 0.5 0.5];
 color1 = gray + (grating_contrast(1) / 2);
 color2 = gray - (grating_contrast(1) / 2);
-
-% ndom_color1 = gray + (ndomcont / 2);
-% ndom_color2 = gray - (ndomcont / 2);
-
-
-
-
-% 
-% for i = 1:5
-% ori(i) = r(i).ori; % Orientation of grating
-% end
-% sf = r(1).sf;  % Spatial frequency: cycles per degree
-% tf = r(1).tf;  % Temporal frequency: cycles per second
-% diameter = r(1).diam; % Diameter of the grating
-% cont_left = r(1).cont_left; % Left eye contrast (0 to 1)
-% cont_right = r(1).cont_right; % Right eye contrast (0 to 1)
-% xloc_left = r(1).xloc_left; % Left eye x-coordinate
-% xloc_right = r(1).xloc_right; % Right eye x-coordinate
-% phase = r(1).phase; % Phase angles
-% % Phase NEEDS DEV
-
-% 
-% if de == 3
-%     de_phase = phase;
-%     nde_phase = 0;
-%     de_string = 'Left';
-%     nde_string = 'Right';
-%     domloc = xloc_left;
-%     ndomloc = xloc_right;
-%     domcont = cont_left;
-%     ndomcont = cont_right;
-% elseif de == 2
-%     de_phase = 0;
-%     nde_phase = phase;
-%     de_string = 'Right';
-%     nde_string = 'Left';
-%     domloc = xloc_right;
-%     ndomloc = xloc_left;
-%     domcont = cont_right;
-%     ndomcont = cont_left;
-% else
-%     phase_angle_left = 0;
-%     phase_angle_right = 0;
-%     de_string = 'Binocular';
-%     nde_string = 'Binocular';
-%     domloc = xloc_right;
-%     ndomloc = xloc_left;
-%     domcont = cont_right;
-%     ndomcont = cont_left;
-% end
-
-% switch r(1).color
-%     case 1
-%         gray = [0.5 0.5 0.5]; 
-%         dom_color1 = gray + (domcont / 2); 
-%         dom_color2 = gray - (domcont / 2);
-%         
-%         ndom_color1 = gray + (ndomcont / 2);
-%         ndom_color2 = gray - (ndomcont / 2);
-%         
-%         pathw = 'grayscale';
-%     case 2
-%         color1 = silsbtw_mod(1,:);
-%         color2 = silsbtw_mod(2,:);
-%         pathw = 'LM';
-%     case 3
-%         color1 = sbtw_mod(1,:);
-%         color2 = sbtw_mod(2,:);
-%         pathw = 'S';
-%     case 4
-%         color1 = plusMminusL(1,:);
-%         color2 = plusMminusL(2,:);
-%         pathw = 'LMo';
-% end
 
 %% Scene 0. Blank screen
 
@@ -270,7 +191,7 @@ if wth1.Success % If fixation was acquired and held
             
             % Create the right eye grating
             left_grat = SineGrating(pd);
-            left_grat.Position = [stereo_xpos(1,presNum) grating_ypos(1,presNum)]; % 1st element is right eye
+            left_grat.Position = [stereo_xpos(presNum) grating_ypos(presNum)]; % 1st element is right eye
             left_grat.Radius = grating_diameter(presNum)/2;
             left_grat.Direction = grating_tilt(presNum);
             left_grat.SpatialFrequency = grating_sf(presNum);
@@ -282,7 +203,7 @@ if wth1.Success % If fixation was acquired and held
             
             % Create the left eye grating
             right_grat = SineGrating(left_grat);
-            right_grat.Position = [stereo_xpos(2,presNum) grating_ypos(2,presNum)]; % 1st element is right eye
+            right_grat.Position = [other_stereo_xpos(presNum) other_ypos(presNum)]; % 1st element is right eye
             right_grat.Radius = grating_diameter(presNum)/2;
             right_grat.Direction = grating_tilt(presNum);
             right_grat.SpatialFrequency = grating_sf(presNum);
@@ -339,37 +260,45 @@ if error_type == 0
     goodmonkey(100, 'NonBlocking',1,'juiceline',1, 'numreward',2, 'pausetime',500, 'eventmarker',96); % 100 ms of juice x 2
 end
 
-trialerror(error_type); 
-
 
 %% Write info to file
-% taskdir = fileparts(which('T_RFtuning.m'));
-% fid = fopen(strcat(taskdir,'/',upper(paradigm),'.g',upper(paradigm),'Grating_di'), 'a');
-% formatSpec =  '%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%s\t%s\t%f\t%s\t%f\t%s\t%f\t%f\t%f\t%s\t\n';
-% fprintf(fid,formatSpec,...
-%     tr,...
-%     domloc,...
-%     rf(2),...
-%     ori,...
-%     sf,...
-%     tf,...
-%     domcont,...
-%     ndomcont,...
-%     diameter,...
-%     de_string,...
-%     nde_string,...
-%     0,...
-%     paradigm,...
-%     phase,...
-%     timestamp,...
-%     domloc+ndomloc,...
-%     ((-0.25*scrsize(1))+fixpt(1)),...
-%     fixpt(2),...
-%     pathw);
-%     
-% fclose(fid);
+taskdir = fileparts(which('T_RFtuning.m'));
+filename = strcat(taskdir,'\',datafile,'.g',upper(paradigm),'Grating_di');
+    
+for pres = 1:prespertr
+    
+    fid = fopen(filename, 'a'); % append
+    formatSpec =  '%04u\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%u\t%f\t%s\t%f\t%f\t%f\r\n';
+    fprintf(fid,formatSpec,...
+        TrialRecord.CurrentTrialNumber,...
+        X,... % needs DEV
+        Y(pres),... % needs DEV
+        grating_xpos(pres),...
+        grating_ypos(pres),...
+        other_xpos(pres),...
+        other_ypos(pres),...
+        grating_tilt(pres),...
+        grating_sf(pres),...
+        grating_contrast(pres),...
+        grating_fixedc(pres),...
+        grating_diameter(pres),...
+        grating_eye(pres),...
+        grating_varyeye(pres),...
+        grating_oridist(pres),...
+        0,...
+        0,...
+        grating_header,...
+        grating_phase(pres),...
+        0,...
+        now);
+    
+    fclose(fid);
+end
+
     
 %% Give the monkey a break
 set_iti(800); % Inter-trial interval in [ms]
 
 %%
+
+trialerror(error_type); 

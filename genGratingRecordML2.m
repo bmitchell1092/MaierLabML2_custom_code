@@ -3,8 +3,8 @@ function genGratingRecordML2(paradigm,TrialRecord)
 % choose paradigm: fori,rfsize,rfsf,contrastresp,cinteroc,cosinteroc,ss
 % generate global variable that pre-sets grating parameters for n number of trials
 
-global GRATINGRECORD presN SAVEPATH DOMEYE GABOR JIT CENTER
-% oldGRATINGRECORD = GRATINGRECORD; 
+global GRATINGRECORD presN SAVEPATH DOMEYE GABOR JIT CENTER prespertr datafile
+oldGRATINGRECORD = GRATINGRECORD; 
 GRATINGRECORD = [];
 JIT = 0; % add jitter to interstimulus interval: 0 or 1
 
@@ -30,11 +30,7 @@ params.orientations        = [0];     % preferred orientation--remember 0 deg is
 params.phase               = [0];       % phase of grating, 0 to pi,
 params.disparity           = [0];    % interocular phase difference (in degrees)
 params.stereo_xpos         = [-0.25*scrsize(1)+rf(1) 0.25*scrsize(1)+rf(1)]; % enter x position (1st element--RIGHT eye, 2nd--LEFT eye)
-%[~, ConfigFileName, ~] = fileparts(TrialRecord.ConfigFileName);
-%prespertr = str2double(ConfigFileName(end-4)); 
-% if ~isnumeric(prespertr)
-%     error('prespertr')
-% end
+params.gabor               = [0];
 
 switch paradigm
     case 'color'
@@ -115,7 +111,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_eye           = all_con(2,shuflocs((theseid)));
             GRATINGRECORD(tr).grating_phase         = all_con(3,shuflocs((theseid)));
             GRATINGRECORD(tr).grating_sf            = repmat(params.spatial_freq,prespertr,1)';
-            GRATINGRECORD(tr).grating_tf           = repmat(params.temporal_freq,prespertr,1)';
+            GRATINGRECORD(tr).grating_tf            = repmat(params.temporal_freq,prespertr,1)';
             GRATINGRECORD(tr).grating_contrast      = repmat(params.contrasts,prespertr,1)';
             GRATINGRECORD(tr).grating_diameter      = repmat(params.diameters,prespertr,1)';
             GRATINGRECORD(tr).grating_xpos          = repmat(params.xpos,prespertr,1)';
@@ -134,7 +130,7 @@ switch paradigm
         end
         
     case 'rfsize'
-        
+        prespertr = 5;
         params.diameters  = [logspace(log10(.5),log10(6),7)];
         params.eye        = params.eye; 
         all_con           = combvec(params.diameters,params.eye,params.phase); %all possible conditions of the parameters that vary
@@ -175,9 +171,8 @@ switch paradigm
         
         
     case 'rfsf'
-        
+        prespertr = 5;
         %vary:
-        
         params.spatial_freq =  1./logspace(log10(0.5),log10(4),4);%[0.05 0.1 0.2 0.4 0.8 1];
         all_con  = combvec(params.spatial_freq,params.eye,params.phase); %all possible conditions of the paramters that vary
         
@@ -217,15 +212,15 @@ switch paradigm
         
         
     case 'cinteroc'
-
+        prespertr = 3;
         %vary:
-        prespertr = 10;
+
         params.contrasts  = [0 logspace(log10(.05),log10(1),5)];
         params.fixedc     = [0 logspace(log10(.05),log10(1),5)]; % contrast for second eye
        
         all_con  = combvec(params.contrasts,params.eye,params.fixedc,params.phase); %all possible conditions of the paramters that vary
         
-        mintr = 30; 
+        mintr = 30;
         minpres = mintr* length(all_con); % total number of presentations at 10 per loc
         
         minntrs = minpres/prespertr;           % number of trials
@@ -242,7 +237,7 @@ switch paradigm
             theseid = [((tr-1)*prespertr + 1):((tr-1)*prespertr + prespertr)];
             % Randomly draw parameters for stimulus
             GRATINGRECORD(tr).grating_tilt         = repmat(params.orientations,prespertr,1)';
-            GRATINGRECORD(tr).grating_eye          = all_con(2,shuflocs((theseid))); 
+            GRATINGRECORD(tr).grating_eye          = all_con(2,shuflocs((theseid)));
             GRATINGRECORD(tr).grating_varyeye      = repmat(params.varyeye,prespertr,1)';
             GRATINGRECORD(tr).grating_sf           = repmat(params.spatial_freq,prespertr,1)';
             GRATINGRECORD(tr).grating_contrast     = all_con(1,shuflocs((theseid)));
@@ -257,14 +252,14 @@ switch paradigm
             GRATINGRECORD(tr).grating_outerdiameter = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_space         = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_isi           = 300; %interstimulus interval
-            GRATINGRECORD(tr).grating_stimdur       = 200; %stimulus duration 
+            GRATINGRECORD(tr).grating_stimdur       = 200; %stimulus duration
             
         end
         
     case 'cone'
         
-      % parameters to vary:
-      % ALWAYS RUN AT 100% contrast
+        % parameters to vary:
+        % ALWAYS RUN AT 100% contrast
         params.path = [1 2 3 4]; % LM,S,LplusMminus and LminusMplus,MAGNO
         mintr    = 15;
         all_con  = combvec(params.eye,params.orientations,params.path,params.phase); %all possible conditions of the parameters that vary
@@ -307,15 +302,15 @@ switch paradigm
         end
         
         
-       case 'cpatch'
-
+    case 'cpatch'
+        
         %vary:
         params.contrasts  = [0 logspace(log10(.05),log10(1),5)];
         params.fixedc     = [0 params.contrasts(3) 1]; % contrast for second eye
-       
+        
         all_con  = combvec(params.contrasts,params.eye,params.fixedc); %all possible conditions of the paramters that vary
         
-        mintr = 30; 
+        mintr = 30;
         minpres = mintr* length(all_con); % total number of presentations at 10 per loc
         
         minntrs = minpres/prespertr;           % number of trials
@@ -332,7 +327,7 @@ switch paradigm
             theseid = [((tr-1)*prespertr + 1):((tr-1)*prespertr + prespertr)];
             % Randomly draw parameters for stimulus
             GRATINGRECORD(tr).grating_tilt         = repmat(NaN,prespertr,1)';
-            GRATINGRECORD(tr).grating_eye          = all_con(2,shuflocs((theseid))); 
+            GRATINGRECORD(tr).grating_eye          = all_con(2,shuflocs((theseid)));
             GRATINGRECORD(tr).grating_varyeye      = repmat(params.varyeye,prespertr,1)';
             GRATINGRECORD(tr).grating_sf           = repmat(NaN,prespertr,1)';
             GRATINGRECORD(tr).grating_contrast     = all_con(1,shuflocs((theseid)));
@@ -350,9 +345,9 @@ switch paradigm
             GRATINGRECORD(tr).grating_stimdur       = 200; %interstimulus interval
             
         end
-             
         
-  case 'mcosinteroc'
+        
+    case 'mcosinteroc'
         % MAC, Dec 8th
         
         %vary:
@@ -370,19 +365,19 @@ switch paradigm
         remove = all_con(3,:)==0 & all_con(4,:) == 0;
         all_con(:,remove) = [];
         % remove non-monocular 0.225 contrasts
-%         remove = all_con(3,:) > 0 & all_con(4,:) == 0.225;
-%         all_con(:,remove) = [];
-%         remove = all_con(3,:)== 0.225 & all_con(4,:) > 0;
-%         all_con(:,remove) = [];
-
-        mintr = 20;      
+        %         remove = all_con(3,:) > 0 & all_con(4,:) == 0.225;
+        %         all_con(:,remove) = [];
+        %         remove = all_con(3,:)== 0.225 & all_con(4,:) > 0;
+        %         all_con(:,remove) = [];
+        
+        mintr = 20;
         minpres = mintr* length(all_con); % total number of presentations at 10 per loc
         minntrs = floor(minpres/prespertr);   % number of trials
-         
-%         mintr = 20;
-%         minpres = mintr* length(all_con); % total number of presentations
-%         
-%         minntrs = minpres/prespertr;           % number of trials
+        
+        %         mintr = 20;
+        %         minpres = mintr* length(all_con); % total number of presentations
+        %
+        %         minntrs = minpres/prespertr;           % number of trials
         
         fprintf('The number of trials will be %d with %d presentations per trial.\n',minntrs,prespertr);
         
@@ -418,17 +413,17 @@ switch paradigm
     case 'cosinteroc'
         
         %vary:
-               
-        params.contrasts  = [params.contrast([4 6])]; % 3 contrast levels, 1 at 0 
-        params.fixedc     = params.contrasts; 
+        
+        params.contrasts  = [params.contrast([4 6])]; % 3 contrast levels, 1 at 0
+        params.fixedc     = params.contrasts;
         params.eye        = [2 3];  %enter both eyes so that preferred grating swaps between ND and D eye
         params.oridist    = [90]; % distance (in deg) between one eye grating and other eye grating//for dichoptic just run 90 deg seperation
         
         all_con  = combvec(params.oridist,params.contrasts,params.fixedc,params.eye,params.phase); %all possible conditions of the paramters that vary
-%         dibinoc = intersect(find(all_con(4,:) == 1),find(all_con(1,:) == 90)); 
-%         all_con(:,dibinoc) = []; 
+        %         dibinoc = intersect(find(all_con(4,:) == 1),find(all_con(1,:) == 90));
+        %         all_con(:,dibinoc) = [];
         
-        mintr = 20; 
+        mintr = 20;
         minpres = mintr* length(all_con); % total number of presentations
         
         minntrs = minpres/prespertr;           % number of trials
@@ -446,7 +441,7 @@ switch paradigm
             % Randomly draw parameters for stimulus
             GRATINGRECORD(tr).grating_tilt          = repmat(params.orientations,prespertr,1)';
             GRATINGRECORD(tr).grating_oridist       = all_con(1,shuflocs((theseid)));
-            GRATINGRECORD(tr).grating_eye           = all_con(4,shuflocs((theseid))); % this is the eye that see the preferred grating 
+            GRATINGRECORD(tr).grating_eye           = all_con(4,shuflocs((theseid))); % this is the eye that see the preferred grating
             GRATINGRECORD(tr).grating_varyeye       = nan(prespertr,1)';
             GRATINGRECORD(tr).grating_sf            = repmat(params.spatial_freq,prespertr,1)';
             GRATINGRECORD(tr).grating_contrast      = all_con(2,shuflocs((theseid)));
@@ -460,7 +455,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_outerdiameter = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_space         = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_isi           = 200; %interstimulus interval
-            GRATINGRECORD(tr).grating_stimdur       = 200; 
+            GRATINGRECORD(tr).grating_stimdur       = 200;
             
         end
         
@@ -472,7 +467,7 @@ switch paradigm
         % 3) center grating / nothing
         % 4) center grating /center grating
         % 5) sum of both center and surround (sum of images) / nothing
-       
+        
         
         %vary:
         params.contrasts           = [0.35 0.5];
@@ -482,7 +477,7 @@ switch paradigm
         params.sscond          = [1:5];          % 5 conditions: C only (DE), surround only (DE), C+S (DE), C+S (both), S(ND) and C (DE)
         
         all_con  = combvec(params.oridist,params.contrasts,params.fixedc,params.outerdiameter,params.space,params.sscond); %all possible conditions of the paramters that vary
-        mintr = 20; 
+        mintr = 20;
         minpres = mintr* length(all_con); % total number of presentations at 10 per loc
         
         minntrs = minpres/prespertr;          % number of trials
@@ -519,7 +514,7 @@ switch paradigm
         end
         
         
-            case 'contrastresp'
+    case 'contrastresp'
         
         %vary:
         params.contrasts           = [0.05 0.15 0.25 0.5 0.75 0.9];
@@ -563,17 +558,17 @@ switch paradigm
     case 'interocori'
         
         %vary:
-        params.oridist = [0 90]; 
-        params.eye     = [1 2 3]; 
+        params.oridist = [0 90];
+        params.eye     = [1 2 3];
         params.orientations   = [10];
         
         all_con  = combvec(params.oridist,params.eye,params.orientations,params.phase); %all possible conditions of the paramters that vary
-        dibinoc = intersect(find(all_con(2,:) == 3),find(all_con(1,:) == 90)); 
-        all_con(:,dibinoc) = []; 
-        dibinoc = intersect(find(all_con(2,:) == 2),find(all_con(1,:) == 90)); 
-        all_con(:,dibinoc) = []; 
+        dibinoc = intersect(find(all_con(2,:) == 3),find(all_con(1,:) == 90));
+        all_con(:,dibinoc) = [];
+        dibinoc = intersect(find(all_con(2,:) == 2),find(all_con(1,:) == 90));
+        all_con(:,dibinoc) = [];
         
-        mintr = 10; 
+        mintr = 10;
         minpres = mintr* length(all_con); % total number of presentations at 10 per loc
         
         minntrs = minpres/prespertr;           % number of trials
@@ -589,13 +584,13 @@ switch paradigm
             
             theseid = [((tr-1)*prespertr + 1):((tr-1)*prespertr + prespertr)];
             % Randomly draw parameters for stimulus
-            GRATINGRECORD(tr).grating_tilt         = all_con(3,shuflocs((theseid))); 
-            GRATINGRECORD(tr).grating_eye          = all_con(2,shuflocs((theseid))); 
-            GRATINGRECORD(tr).grating_varyeye      = nan(prespertr,1)'; 
+            GRATINGRECORD(tr).grating_tilt         = all_con(3,shuflocs((theseid)));
+            GRATINGRECORD(tr).grating_eye          = all_con(2,shuflocs((theseid)));
+            GRATINGRECORD(tr).grating_varyeye      = nan(prespertr,1)';
             GRATINGRECORD(tr).grating_sf           = repmat(params.spatial_freq,prespertr,1)';
-            GRATINGRECORD(tr).grating_contrast     = repmat(params.contrasts,prespertr,1)'; 
+            GRATINGRECORD(tr).grating_contrast     = repmat(params.contrasts,prespertr,1)';
             GRATINGRECORD(tr).grating_phase        = all_con(4,shuflocs((theseid)));
-            GRATINGRECORD(tr).grating_fixedc       = repmat(params.contrasts,prespertr,1)'; 
+            GRATINGRECORD(tr).grating_fixedc       = repmat(params.contrasts,prespertr,1)';
             GRATINGRECORD(tr).grating_diameter     = repmat(params.diameters,prespertr,1)';
             GRATINGRECORD(tr).grating_xpos         = repmat(params.xpos,prespertr,1)';
             GRATINGRECORD(tr).grating_ypos         = repmat(params.ypos,prespertr,1)';
@@ -616,14 +611,15 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % combine with previous GLOBAL if needed
-% if ~isempty(oldGRATINGRECORD)
-%     GRATINGRECORD = [oldGRATINGRECORD GRATINGRECORD];
-%     clear oldGRATINGRECORD;
-% end
+if ~isempty(oldGRATINGRECORD)
+    GRATINGRECORD = [oldGRATINGRECORD GRATINGRECORD];
+    clear oldGRATINGRECORD;
+end
 
 % % save matlab variable
-% [~, fname] = fileparts(TrialRecord.BhvFileName);
-% grname   = sprintf('%s/%s_GRATINGRECORD%04u',SAVEPATH,fname,TrialRecord.CurrentTrialNumber);
-% save(grname,'GRATINGRECORD'); 
+%formatOut = 'yymmdd';
+fname = datafile;
+grname   = sprintf('%s/%s_GRATINGRECORD%04u',SAVEPATH,fname,TrialRecord.CurrentTrialNumber);
+save(grname,'GRATINGRECORD'); 
   
 end
