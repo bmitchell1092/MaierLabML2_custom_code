@@ -13,13 +13,12 @@ GABOR = 0;
 DOMEYE = getDE; % name dominant eye e
 
 rf = getRF;
+scrsize = getCoord;
 
 
 
-
-params.xpos                = [rf(1) rf(1)];     % enter x position (1st element--RIGHT eye, 2nd--LEFT eye)
+params.xpos                = [-0.25*scrsize(1)+rf(1) 0.25*scrsize(1)+rf(1)];     % enter x position (1st element--RIGHT eye, 2nd--LEFT eye)
 params.ypos                = [rf(2) rf(2)];      % enter y position (1st element--RIGHT eye, 2nd--LEFT eye)
-params.rf_xpos          
 params.varyeye             = [3];          % 2 for R, 3 for L (applicable for cinteroc, cosinteroc, and sss cinteroc/cosinteroc--varyeye will get "fixedc" contrasts. ss--vary eye will be the ND eye
 params.eye                 = [1]; %[MEASUREDEYE];      %cinteroc/cosinteroc--varyeye will get "fixedc" contrasts. ss--vary eye will be the ND eye
 params.diameters           = [3];          % enter diameter of gratingc
@@ -354,12 +353,13 @@ switch paradigm
         % MAC, Dec 8th
         
         %vary:
-        params.contrasts    = [0.9 0.45 0.225 0];  % choose  contrast
+        params.contrasts    = [0.9 0.45 0.225 0.1175 0.05 0];  % choose  contrast
         params.fixedc       = params.contrasts;
         params.eye          = [2 3];  %enter both eyes so that preferred grating swaps between ND and D eye
         params.oridist      = [0 90]; % distance (in deg) between one eye grating and other eye grating//for dichoptic just run 90 deg seperation
         new_tilt            = uCalcTilts0to179(params.orientations, 90);
         params.orientations = [new_tilt params.orientations];
+        prespertr = 4;
         
         
         all_con  = combvec(params.orientations,params.oridist,params.contrasts,params.fixedc,params.eye,params.phase); %all possible conditions of the paramters that vary
@@ -367,16 +367,19 @@ switch paradigm
         remove = all_con(3,:)==0 & all_con(4,:) == 0;
         all_con(:,remove) = [];
         % remove non-monocular 0.225 contrasts
-        remove = all_con(3,:) > 0 & all_con(4,:) == 0.225;
-        all_con(:,remove) = [];
-        remove = all_con(3,:)== 0.225 & all_con(4,:) > 0;
-        all_con(:,remove) = [];
-        
+%         remove = all_con(3,:) > 0 & all_con(4,:) == 0.225;
+%         all_con(:,remove) = [];
+%         remove = all_con(3,:)== 0.225 & all_con(4,:) > 0;
+%         all_con(:,remove) = [];
+
+        mintr = 20;      
+        minpres = mintr* length(all_con); % total number of presentations at 10 per loc
+        minntrs = floor(minpres/prespertr);   % number of trials
          
-        mintr = 20;
-        minpres = mintr* length(all_con); % total number of presentations
-        
-        minntrs = minpres/prespertr;           % number of trials
+%         mintr = 20;
+%         minpres = mintr* length(all_con); % total number of presentations
+%         
+%         minntrs = minpres/prespertr;           % number of trials
         
         fprintf('The number of trials will be %d with %d presentations per trial.\n',minntrs,prespertr);
         
@@ -405,7 +408,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_outerdiameter = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_space         = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_isi           = 500; %interstimulus interval
-            GRATINGRECORD(tr).grating_stimdur       = 500;
+            GRATINGRECORD(tr).grating_stimdur       = 250;
             
         end
         

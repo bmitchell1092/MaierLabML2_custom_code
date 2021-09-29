@@ -22,15 +22,6 @@ paradigm = 'rfori';
 
 timestamp = datestr(now); % Get the current time on the computer
 
-
-% Set dominant eye
-de = 3; % 1 = binocular, 2 = right eye, 3 = left eye
-setDE(de); % Send value to a global variable
-
-% Set receptive field
-rf = [3 -3]; % [x y] in visual degrees
-setRF(rf);
-
 % Set fixation point
 fixpt = [0 0]; % [x y] in viual degrees
 fixThreshold = 3; % degrees of visual angle
@@ -38,15 +29,6 @@ fixThreshold = 3; % degrees of visual angle
 % define intervals for WaitThenHold
 wait_for_fix = 3000;
 initial_fix = 200; % hold fixation for 200ms to initiate trial
-
-% define presentation duration
-time = 250;
-
-% Initialize options for grating colors
-% sbtw_mod = S (oscillate between S+ and S-)
-% silsbtw_mod = LM (oscillate between P+M+ and L_M-)
-% plusMminusL = LMo (oscillate between L+M- and L-M+)
-% [~,~,~,sbtw_mod,~,~,silsbtw_mod,plusMminusL] = getConeIsolatingVals('021MIT');
 
 % Find screen size
 scrsize = Screen.SubjectScreenFullSize / Screen.PixelsPerDegree;  % Screen size [x y] in degrees
@@ -56,11 +38,7 @@ lower_right = [(scrsize(1)*0.5-0.5) (scrsize(2)*(-0.5)+0.5)];
 % Trial number increases by 1 for every iteration of the code
 tr = tnum(TrialRecord);
 
-
-
-% Set the seed number on the first trial by storing it as a global variable
-% in an external function. Additionally, initialize the text file that will
-% store information on every trial
+% On the first trial, generate grating record
 if tr == 1
     genGratingRecordML2(paradigm,TrialRecord);
     genFixCross((fixpt(1)*Screen.PixelsPerDegree), (fixpt(2)*Screen.PixelsPerDegree));   
@@ -134,8 +112,7 @@ grating_contrast = GRATINGRECORD(tr).grating_contrast;
 grating_diameter = GRATINGRECORD(tr).grating_diameter;
 grating_xpos = GRATINGRECORD(tr).grating_xpos;
 grating_ypos = GRATINGRECORD(tr).grating_ypos;
-
-grating_rf_ypos = GRATINGRECORD(tr).grating_ypos;
+stereo_xpos = GRATINGRECORD(tr).stereo_xpos;
 grating_header = GRATINGRECORD(tr).header;
 grating_varyeye = GRATINGRECORD(tr).grating_varyeye;
 grating_fixedc = GRATINGRECORD(tr).grating_fixedc;
@@ -144,6 +121,7 @@ grating_outerdiameter = GRATINGRECORD(tr).grating_outerdiameter;
 grating_space = GRATINGRECORD(tr).grating_space;
 grating_isi = GRATINGRECORD(tr).grating_isi;
 grating_stimdur = GRATINGRECORD(tr).grating_stimdur;
+prespertr = GRATINGRECORD(tr).prespertr;
 
 xloc_left = (-0.25*scrsize(1)+grating_xpos(2,1));   % Left eye x-coordinate
 xloc_right = (0.25*scrsize(1)+grating_xpos(1,1));   % Right eye x-coordinate
@@ -270,15 +248,16 @@ end
 %% Scene 2. Dot patches
 % list of objects
 obj = [23,24,25,26,27,28,29,30,31];
-presN = 0;
+presNum = 0;
+
 if wth1.Success % If fixation was acquired and held
     
-    for ii = 1:9
+    for ii = 1:(prespertr*2) - 1
         
         real_ind = (ii+1)/2;
         
         if mod(ii,2) == 1 % this function is basically saying every odd number of ii
-            presN = presN + 1;
+            presNum = presNum + 1;
             fix2 = SingleTarget(eye_); % Initialize the eye tracking adapter
             fix2.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
             fix2.Threshold = fixThreshold; % Set the fixation threshold
@@ -291,26 +270,26 @@ if wth1.Success % If fixation was acquired and held
             
             % Create the right eye grating
             left_grat = SineGrating(pd);
-            left_grat.Position = [grating_xpos(1,presN) grating_ypos(1,presN)]; % 1st element is right eye
-            left_grat.Radius = grating_diameter(presN)/2;
-            left_grat.Direction = grating_tilt(presN);
-            left_grat.SpatialFrequency = grating_sf(presN);
-            left_grat.TemporalFrequency = grating_tf(presN);
+            left_grat.Position = [stereo_xpos(1,presNum) grating_ypos(1,presNum)]; % 1st element is right eye
+            left_grat.Radius = grating_diameter(presNum)/2;
+            left_grat.Direction = grating_tilt(presNum);
+            left_grat.SpatialFrequency = grating_sf(presNum);
+            left_grat.TemporalFrequency = grating_tf(presNum);
             left_grat.Color1 = color1;
             left_grat.Color2 = color2;
-            left_grat.Phase = grating_phase(presN);
+            left_grat.Phase = grating_phase(presNum);
             left_grat.WindowType = 'circular';
             
             % Create the left eye grating
             right_grat = SineGrating(left_grat);
-            right_grat.Position = [grating_xpos(2,presN) grating_ypos(2,presN)]; % 1st element is right eye
-            right_grat.Radius = grating_diameter(presN)/2;
-            right_grat.Direction = grating_tilt(presN);
-            right_grat.SpatialFrequency = grating_sf(presN);
-            right_grat.TemporalFrequency = grating_tf(presN);
+            right_grat.Position = [stereo_xpos(2,presNum) grating_ypos(2,presNum)]; % 1st element is right eye
+            right_grat.Radius = grating_diameter(presNum)/2;
+            right_grat.Direction = grating_tilt(presNum);
+            right_grat.SpatialFrequency = grating_sf(presNum);
+            right_grat.TemporalFrequency = grating_tf(presNum);
             right_grat.Color1 = color1;
             right_grat.Color2 = color2;
-            right_grat.Phase = grating_phase(presN);
+            right_grat.Phase = grating_phase(presNum);
             right_grat.WindowType = 'circular';
             
             % Set the timer
