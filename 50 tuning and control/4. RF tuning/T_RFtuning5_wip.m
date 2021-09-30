@@ -132,7 +132,7 @@ bck0.List = { {'graybackground.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSi
 
 % Set the timer
 cnt0 = TimeCounter(bck0);
-cnt0.Duration = 250;
+cnt0.Duration = 50;
 scene0 = create_scene(cnt0);
 
 %% Scene 1. Fixation
@@ -146,8 +146,8 @@ bck1 = ImageGraphic(fix1);
 bck1.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
 wth1 = WaitThenHold(bck1); % Initialize the wait and hold adapter
-wth1.WaitTime = 5000; % Set the wait time
-wth1.HoldTime = 200; % Set the hold time
+wth1.WaitTime = wait_for_fix; % Set the wait time
+wth1.HoldTime = initial_fix; % Set the hold time
 
 scene1 = create_scene(wth1); % Initialize the scene adapter
 run_scene(scene1,[35,11]); % Run scene
@@ -168,16 +168,16 @@ end
 
 %% Scene 2. Dot patches
 % list of objects
-obj = [23,24,25,26,27,28,29,30,31];
-presNum = 0;
+
 
 if wth1.Success % If fixation was acquired and held
-    
+    obj = [23,24,25,26,27,28,29,30,31];
+    presNum = 0;
     for ii = 1:(prespertr*2) - 1
         
         real_ind = (ii+1)/2;
         
-        if mod(ii,2) == 1 % this function is basically saying every odd number of ii
+        if rem(ii,2) == 1 % this function is basically saying every odd number of ii
             presNum = presNum + 1;
             fix2 = SingleTarget(eye_); % Initialize the eye tracking adapter
             fix2.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
@@ -213,15 +213,15 @@ if wth1.Success % If fixation was acquired and held
             right_grat.Phase = grating_phase(presNum);
             right_grat.WindowType = 'circular';
             
-            % Set the timer
-            cnt2 = TimeCounter(right_grat);
-            cnt2.Duration = grating_stimdur;
-            
-            bck2 = ImageGraphic(cnt2);
+            bck2 = ImageGraphic(right_grat);
             bck2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
             
+            % Set the timer
+            cnt2 = TimeCounter(bck2);
+            cnt2.Duration = 1000; %grating_stimdur;
+            
             % Run the scene
-            scene2 = create_scene(bck2);
+            scene2 = create_scene(cnt2);
             run_scene(scene2,obj(ii));
             if ~fix2.Success         % The failure of WthThenHold indicates that the subject didn't maintain fixation on the sample image.
                 error_type = 3;      % So it is a "break fixation (3)" error.
@@ -230,21 +230,21 @@ if wth1.Success % If fixation was acquired and held
             end
             
         else % blank scenes interwoven
-            fix2 = SingleTarget(eye_); % Initialize the eye tracking adapter
-            fix2.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
-            fix2.Threshold = fixThreshold; % Set the fixation threshold
+            fix3 = SingleTarget(eye_); % Initialize the eye tracking adapter
+            fix3.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
+            fix3.Threshold = fixThreshold; % Set the fixation threshold
            
-            bck2 = ImageGraphic(fix2);
-            bck2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+            bck3 = ImageGraphic(fix2);
+            bck3.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
             
             % Set the timer
-            cnt2 = TimeCounter(bck2);
-            cnt2.Duration = grating_isi;
+            cnt3 = TimeCounter(bck3);
+            cnt3.Duration = 1000; %grating_isi;
             
             % Run the scene
-            scene2 = create_scene(cnt2);
-            run_scene(scene2,obj(ii));
-            if ~fix2.Success         % The failure of WthThenHold indicates that the subject didn't maintain fixation on the sample image.
+            scene3 = create_scene(cnt3);
+            run_scene(scene3,obj(ii));
+            if ~fix3.Success         % The failure of WthThenHold indicates that the subject didn't maintain fixation on the sample image.
                 error_type = 3;      % So it is a "break fixation (3)" error.
                 run_scene(scene0,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
                 break
@@ -256,10 +256,11 @@ if wth1.Success % If fixation was acquired and held
 end
 
 if error_type == 0
-    run_scene(scene0,36); 
-    goodmonkey(100, 'NonBlocking',1,'juiceline',1, 'numreward',2, 'pausetime',500, 'eventmarker',96); % 100 ms of juice x 2
+    run_scene(scene0,[32,36]); 
+    goodmonkey(100, 'NonBlocking',1,'juiceline',1, 'numreward',1, 'pausetime',0, 'eventmarker',96); % 100 ms of juice x 2
 end
 
+trialerror(error_type); 
 
 %% Write info to file
 taskdir = fileparts(which('T_RFtuning.m'));
@@ -301,4 +302,3 @@ set_iti(800); % Inter-trial interval in [ms]
 
 %%
 
-trialerror(error_type); 
