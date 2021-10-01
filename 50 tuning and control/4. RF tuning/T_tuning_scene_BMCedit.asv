@@ -116,6 +116,7 @@ grating_space = GRATINGRECORD(tr).grating_space;
 grating_isi = GRATINGRECORD(tr).grating_isi;
 grating_stimdur = GRATINGRECORD(tr).grating_stimdur;
 
+
 X = (Screen.Xsize / Screen.PixelsPerDegree) / 4;
 Y = grating_ypos;
 % xloc_left = (-0.25*scrsize(1)+grating_xpos(2,1));   % Left eye x-coordinate
@@ -126,218 +127,185 @@ color1 = gray + (grating_contrast(1) / 2);
 color2 = gray - (grating_contrast(1) / 2);
 
 
+%% Preallocate grating struct
+    preAllocatedGratingList.right = ...
+        {[other_stereo_xpos(1) other_ypos(1)], grating_diameter(1)/2, grating_tilt(1), grating_sf(1), grating_tf(1), grating_phase(1), color1, color2, 'circular', []; ... 
+         [other_stereo_xpos(2) other_ypos(2)], grating_diameter(2)/2, grating_tilt(2), grating_sf(2), grating_tf(2), grating_phase(2), color1, color2, 'circular', [];...
+         [other_stereo_xpos(3) other_ypos(3)], grating_diameter(3)/2, grating_tilt(3), grating_sf(3), grating_tf(3), grating_phase(3), color1, color2, 'circular', []; ...
+         [other_stereo_xpos(4) other_ypos(4)], grating_diameter(4)/2, grating_tilt(4), grating_sf(4), grating_tf(4), grating_phase(4), color1, color2, 'circular', []; ...
+         [other_stereo_xpos(5) other_ypos(5)], grating_diameter(5)/2, grating_tilt(5), grating_sf(5), grating_tf(5), grating_phase(5), color1, color2, 'circular', []};    
+
+
+     
+    preAllocatedGratingList.right = ...
+        {[stereo_xpos(1) grating_ypos(1)], grating_diameter(1)/2, grating_tilt(1), grating_sf(1), grating_tf(1), grating_phase(1), color1, color2, 'circular', []; ... 
+         [stereo_xpos(2) grating_ypos(2)], grating_diameter(2)/2, grating_tilt(2), grating_sf(2), grating_tf(2), grating_phase(2), color1, color2, 'circular', [];...
+         [stereo_xpos(3) grating_ypos(3)], grating_diameter(3)/2, grating_tilt(3), grating_sf(3), grating_tf(3), grating_phase(3), color1, color2, 'circular', []; ...
+         [stereo_xpos(4) grating_ypos(4)], grating_diameter(4)/2, grating_tilt(4), grating_sf(4), grating_tf(4), grating_phase(4), color1, color2, 'circular', []; ...
+         [stereo_xpos(5) grating_ypos(5)], grating_diameter(5)/2, grating_tilt(5), grating_sf(5), grating_tf(5), grating_phase(5), color1, color2, 'circular', []};     
+
+
+
 %% Scene 1. Fixation
+    % Set fixation to the left eye for tracking
+    fix1 = SingleTarget(eye_); % Initialize the eye tracking adapter
+    fix1.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
+    fix1.Threshold = fixThreshold; % Set the fixation threshold
 
-%% Scene 2. 
+    bck1 = ImageGraphic(fix1);
+    bck1.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
-% Set fixation to the left eye for tracking
-fix1 = SingleTarget(eye_); % Initialize the eye tracking adapter
-fix1.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
-fix1.Threshold = fixThreshold; % Set the fixation threshold
+    wth1 = WaitThenHold(bck1); % Initialize the wait and hold adapter
+    wth1.WaitTime = wait_for_fix; % Set the wait time
+    wth1.HoldTime = initial_fix; % Set the hold time
 
-bck1 = ImageGraphic(fix1);
-bck1.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+    scene1 = create_scene(wth1); % Initialize the scene adapter
 
-wth1 = WaitThenHold(bck1); % Initialize the wait and hold adapter
-wth1.WaitTime = wait_for_fix; % Set the wait time
-wth1.HoldTime = initial_fix; % Set the hold time
 
-scene1 = create_scene(wth1); % Initialize the scene adapter
-
-%% Scene 2. Obj 1
-% list of objects
-fix2 = SingleTarget(eye_); % Initialize the eye tracking adapter
-fix2.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
-fix2.Threshold = fixThreshold; % Set the fixation threshold
-
-pd = BoxGraphic(fix2);
-pd.EdgeColor = [1 1 1];
-pd.FaceColor = [1 1 1];
-pd.Size = [3 3];
-pd.Position = lower_right;
-
-% Create the right eye grating
-left_grat = SineGrating(pd);
-left_grat.Position = [stereo_xpos(1) grating_ypos(1)]; % 1st element is right eye
-left_grat.Radius = grating_diameter(1)/2;
-left_grat.Direction = grating_tilt(1);
-left_grat.SpatialFrequency = grating_sf(1);
-left_grat.TemporalFrequency = grating_tf(1);
-left_grat.Color1 = color1;
-left_grat.Color2 = color2;
-left_grat.Phase = grating_phase(1);
-left_grat.WindowType = 'circular';
-
-% Create the left eye grating
-right_grat = SineGrating(left_grat);
-right_grat.Position = [other_stereo_xpos(1) other_ypos(1)]; % 1st element is right eye
-right_grat.Radius = grating_diameter(1)/2;
-right_grat.Direction = grating_tilt(1);
-right_grat.SpatialFrequency = grating_sf(1);
-right_grat.TemporalFrequency = grating_tf(1);
-right_grat.Color1 = color1;
-right_grat.Color2 = color2;
-right_grat.Phase = grating_phase(1);
-right_grat.WindowType = 'circular';
-
-bck2 = ImageGraphic(right_grat);
-bck2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
-
-% Set the timer
-cnt2 = TimeCounter(bck2);
-cnt2.Duration = 250; %grating_stimdur;
-
-% create the scene
-scene2 = create_scene(cnt2);
-            
-%% Obj. 2
-
-fix3 = SingleTarget(eye_); % Initialize the eye tracking adapter
-fix3.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
-fix3.Threshold = fixThreshold; % Set the fixation threshold
-
-bck3 = ImageGraphic(fix2);
-bck3.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
-
-% Set the timer
-cnt3 = TimeCounter(bck3);
-cnt3.Duration = 200; %grating_isi;
-
-% Create the scene
-scene3 = create_scene(cnt3);
-
-%% Scene 3. Obj 1
-% list of objects
-fix2 = SingleTarget(eye_); % Initialize the eye tracking adapter
-fix2.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
-fix2.Threshold = fixThreshold; % Set the fixation threshold
-
-pd = BoxGraphic(fix2);
-pd.EdgeColor = [1 1 1];
-pd.FaceColor = [1 1 1];
-pd.Size = [3 3];
-pd.Position = lower_right;
-
-% Create the right eye grating
-left_grat = SineGrating(pd);
-left_grat.Position = [stereo_xpos(2) grating_ypos(2)]; % 1st element is right eye
-left_grat.Radius = grating_diameter(2)/2;
-left_grat.Direction = grating_tilt(2);
-left_grat.SpatialFrequency = grating_sf(2);
-left_grat.TemporalFrequency = grating_tf(2);
-left_grat.Color1 = color1;
-left_grat.Color2 = color2;
-left_grat.Phase = grating_phase(2);
-left_grat.WindowType = 'circular';
-
-% Create the left eye grating
-right_grat = SineGrating(left_grat);
-right_grat.Position = [other_stereo_xpos(2) other_ypos(2)]; % 1st element is right eye
-right_grat.Radius = grating_diameter(2)/2;
-right_grat.Direction = grating_tilt(2);
-right_grat.SpatialFrequency = grating_sf(2);
-right_grat.TemporalFrequency = grating_tf(2);
-right_grat.Color1 = color1;
-right_grat.Color2 = color2;
-right_grat.Phase = grating_phase(2);
-right_grat.WindowType = 'circular';
-
-bck2 = ImageGraphic(right_grat);
-bck2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
-
-% Set the timer
-cnt2 = TimeCounter(bck2);
-cnt2.Duration = 250; %grating_stimdur;
-
-% Run the scene
-scene2 = create_scene(cnt2);
-
-if wth1.Success % If fixation was acquired and held
-  
-    presNum = 0;
-    for ii = 1:(prespertr*2) - 1
-        
-        real_ind = (ii+1)/2;
-        
-        if rem(ii,2) == 1 % this function is basically saying every odd number of ii
-            presNum = presNum + 1;
-            fix2 = SingleTarget(eye_); % Initialize the eye tracking adapter
-            fix2.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
-            fix2.Threshold = fixThreshold; % Set the fixation threshold
-            
-            pd = BoxGraphic(fix2);
-            pd.EdgeColor = [1 1 1];
-            pd.FaceColor = [1 1 1];
-            pd.Size = [3 3];
-            pd.Position = lower_right;
-            
-            % Create the right eye grating
-            left_grat = SineGrating(pd);
-            left_grat.Position = [stereo_xpos(presNum) grating_ypos(presNum)]; % 1st element is right eye
-            left_grat.Radius = grating_diameter(presNum)/2;
-            left_grat.Direction = grating_tilt(presNum);
-            left_grat.SpatialFrequency = grating_sf(presNum);
-            left_grat.TemporalFrequency = grating_tf(presNum);
-            left_grat.Color1 = color1;
-            left_grat.Color2 = color2;
-            left_grat.Phase = grating_phase(presNum);
-            left_grat.WindowType = 'circular';
-            
-            % Create the left eye grating
-            right_grat = SineGrating(left_grat);
-            right_grat.Position = [other_stereo_xpos(presNum) other_ypos(presNum)]; % 1st element is right eye
-            right_grat.Radius = grating_diameter(presNum)/2;
-            right_grat.Direction = grating_tilt(presNum);
-            right_grat.SpatialFrequency = grating_sf(presNum);
-            right_grat.TemporalFrequency = grating_tf(presNum);
-            right_grat.Color1 = color1;
-            right_grat.Color2 = color2;
-            right_grat.Phase = grating_phase(presNum);
-            right_grat.WindowType = 'circular';
-            
-            bck2 = ImageGraphic(right_grat);
-            bck2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
-            
-            % Set the timer
-            cnt2 = TimeCounter(bck2);
-            cnt2.Duration = 250; %grating_stimdur;
-            
-            % create the scene
-            scene2 = create_scene(cnt2);
-
-            
-        else % blank scenes interwoven
-            fix3 = SingleTarget(eye_); % Initialize the eye tracking adapter
-            fix3.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
-            fix3.Threshold = fixThreshold; % Set the fixation threshold
-           
-            bck3 = ImageGraphic(fix2);
-            bck3.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
-            
-            % Set the timer
-            cnt3 = TimeCounter(bck3);
-            cnt3.Duration = 200; %grating_isi;
-            
-            % create the scene
-            scene3 = create_scene(cnt3);
-
-        end
-        
-    end
+%% Scene 2. Task Object #1
+    % Set fixation to the left eye for tracking
+    fix2 = SingleTarget(eye_); % Initialize the eye tracking adapter
+    fix2.Target = [((-0.25*scrsize(1))+fixpt(1)) fixpt(2)]; % Set the fixation point
+    fix2.Threshold = fixTreshold; % Set the fixation threshold
     
-end
+    pd2 = BoxGraphic(fix2);
+    pd2.EdgeColor = [1 1 1];
+    pd2.FaceColor = [1 1 1];
+    pd2.Size = [3 3];
+    pd2.Position = lower_right;
+    
+    % Create both gratings
+    grat2 = SineGrating(pd2);
+    grat2.List = {preAllocatedGratingList.left(1,:),preAllocatedGratingList.right(1,:)};
+    img2 = ImageGraphic(grat2);
+    img2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };    
+    wth2 = WaitThenHold(img2);
+    wth2.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
+    wth2.HoldTime = 750;
+    scene2 = create_scene(wth2);
+
+%% Scene 3. Betreen presentation interval
+
+    fix3 = SingleTarget(eye_); % Initialize the eye tracking adapter
+    fix3.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
+    fix3.Threshold = fixThreshold; % Set the fixation threshold
+
+    pd3 = BoxGraphic(fix3);
+    pd3.EdgeColor = [0 0 0];
+    pd3.FaceColor = [0 0 0];
+    pd3.Size = [3 3];
+    pd3.Position = lower_right;
+    
+    bck3 = ImageGraphic(pd3);
+    bck3.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+
+    wth3 = WaitThenHold(bck3);
+    wth3.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
+    wth3.HoldTime = 50;
+    scene3 = create_scene(wth3);
+
+%% Scene 4. Task Object #2
+    % Set fixation to the left eye for tracking
+    fix4 = SingleTarget(eye_); % Initialize the eye tracking adapter
+    fix4.Target = [((-0.25*scrsize(1))+fixpt(1)) fixpt(2)]; % Set the fixation point
+    fix4.Threshold = fixTreshold; % Set the fixation threshold
+    
+    pd4 = BoxGraphic(fix4);
+    pd4.EdgeColor = [1 1 1];
+    pd4.FaceColor = [1 1 1];
+    pd4.Size = [3 3];
+    pd4.Position = lower_right;
+    
+    % Create both gratings
+    grat4 = SineGrating(pd4);
+    grat4.List = {preAllocatedGratingList.left(2,:),preAllocatedGratingList.right(2,:)};
+    img4 = ImageGraphic(grat4);
+    img4.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };    
+    wth4 = WaitThenHold(img4);
+    wth4.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
+    wth4.HoldTime = 750;
+    scene4 = create_scene(wth4);
 
 
+%% Scene 5. Task Object #3
+    % Set fixation to the left eye for tracking
+    fix5 = SingleTarget(eye_); % Initialize the eye tracking adapter
+    fix5.Target = [((-0.25*scrsize(1))+fixpt(1)) fixpt(2)]; % Set the fixation point
+    fix5.Threshold = fixTreshold; % Set the fixation threshold
+    
+    pd5 = BoxGraphic(fix5);
+    pd5.EdgeColor = [1 1 1];
+    pd5.FaceColor = [1 1 1];
+    pd5.Size = [3 3];
+    pd5.Position = lower_right;
+    
+    % Create both gratings
+    grat5 = SineGrating(pd5);
+    grat5.List = {preAllocatedGratingList.left(3,:),preAllocatedGratingList.right(3,:)};
+    img5 = ImageGraphic(grat5);
+    img5.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };    
+    wth5 = WaitThenHold(img5);
+    wth5.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
+    wth5.HoldTime = 750;
+    scene5 = create_scene(wth5);
 
-%% Scene 0. Blank screen
 
-bck0 = ImageGraphic(null_);
-bck0.List = { {'graybackground.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+%% Scene 6. Task Object #4
+    % Set fixation to the left eye for tracking
+    fix6 = SingleTarget(eye_); % Initialize the eye tracking adapter
+    fix6.Target = [((-0.25*scrsize(1))+fixpt(1)) fixpt(2)]; % Set the fixation point
+    fix6.Threshold = fixTreshold; % Set the fixation threshold
+    
+    pd6 = BoxGraphic(fix6);
+    pd6.EdgeColor = [1 1 1];
+    pd6.FaceColor = [1 1 1];
+    pd6.Size = [3 3];
+    pd6.Position = lower_right;
+    
+    % Create both gratings
+    grat6 = SineGrating(pd6);
+    grat6.List = {preAllocatedGratingList.left(4,:),preAllocatedGratingList.right(4,:)};
+    img6 = ImageGraphic(grat6);
+    img6.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };    
+    wth6 = WaitThenHold(img6);
+    wth6.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
+    wth6.HoldTime = 750;
+    scene6 = create_scene(wth6);
 
-% Set the timer
-cnt0 = TimeCounter(bck0);
-cnt0.Duration = 50;
-scene0 = create_scene(cnt0);
+
+%% Scene 7. Task Object #5
+    % Set fixation to the left eye for tracking
+    fix7 = SingleTarget(eye_); % Initialize the eye tracking adapter
+    fix7.Target = [((-0.25*scrsize(1))+fixpt(1)) fixpt(2)]; % Set the fixation point
+    fix7.Threshold = fixTreshold; % Set the fixation threshold
+    
+    pd7 = BoxGraphic(fix7);
+    pd7.EdgeColor = [1 1 1];
+    pd7.FaceColor = [1 1 1];
+    pd7.Size = [3 3];
+    pd7.Position = lower_right;
+    
+    % Create both gratings
+    grat7 = SineGrating(pd7);
+    grat7.List = {preAllocatedGratingList.left(5,:),preAllocatedGratingList.right(5,:)};
+    img7 = ImageGraphic(grat7);
+    img7.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };    
+    wth7 = WaitThenHold(img7);
+    wth7.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
+    wth7.HoldTime = 750;
+    scene7 = create_scene(wth7);
+
+
+%% Scene 8. Clear fixation cross
+
+    bck8 = ImageGraphic(null_);
+    bck8.List = { {'graybackground.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+
+    % Set the timer
+    cnt8 = TimeCounter(bck8);
+    cnt8.Duration = 50;
+    scene8 = create_scene(cnt8);
+
 
 
 %% TASK

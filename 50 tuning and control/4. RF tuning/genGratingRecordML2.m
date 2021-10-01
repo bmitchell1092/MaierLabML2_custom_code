@@ -20,17 +20,17 @@ scrsize = getCoord;
 
 
 params.xpos                = [rf(1) rf(1)];     % enter x position (1st element--RIGHT eye, 2nd--LEFT eye)
-params.ypos                = [rf(2) rf(2)];      % enter y position (1st element--RIGHT eye, 2nd--LEFT eye)
+params.ypos                = [rf(2) rf(2)];     % enter y position (1st element--RIGHT eye, 2nd--LEFT eye)
 params.varyeye             = [3];               % 2 for R, 3 for L (applicable for cinteroc, cosinteroc, and sss cinteroc/cosinteroc--varyeye will get "fixedc" contrasts. ss--vary eye will be the ND eye
 params.eye                 = [1];               %[MEASUREDEYE];      %cinteroc/cosinteroc--varyeye will get "fixedc" contrasts. ss--vary eye will be the ND eye
 params.diameters           = [3];               % enter diameter of gratingc
 params.contrasts           = [0.8];             % choose one contrast
 params.fixedc              = [];                % fixed contrast (really contrast(s) for ND eye)
-params.spatial_freq        = [1./(2)];             % units are (1/cyc/deg)***** choose holder spatial frequency, NAN makes RN patch
-params.temporal_freq       = [0];       % cycles/sec (slowest--.75)
-params.orientations        = [0];     % preferred orientation--remember 0 deg is vertical orientation, 90 deg is horizontal,  NAN makes RN patch
-params.phase               = [0];       % phase of grating, 0 to pi,
-params.disparity           = [0];    % interocular phase difference (in degrees)
+params.spatial_freq        = [1./(2)];          % units are (1/cyc/deg)***** choose holder spatial frequency, NAN makes RN patch
+params.temporal_freq       = [0];               % cycles/sec (slowest--.75)
+params.orientations        = [0];               % preferred orientation--remember 0 deg is vertical orientation, 90 deg is horizontal,  NAN makes RN patch
+params.phase               = [0];               % phase of grating, 0 to pi,
+params.disparity           = [0];               % interocular phase difference (in degrees)
 params.stereo_xpos         = [-0.25*scrsize(1)+rf(1) 0.25*scrsize(1)+rf(1)]; % enter x position (1st element--RIGHT eye, 2nd--LEFT eye)
 params.gabor               = [0];
 
