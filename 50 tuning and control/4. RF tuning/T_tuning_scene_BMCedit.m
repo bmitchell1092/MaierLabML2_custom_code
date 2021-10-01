@@ -333,12 +333,12 @@ if 0==error_type
         error_type = 3;      % So it is a "break fixation (3)" error.
         run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
     else
-        eventmarker(24) % 24 = task object 1 OFF 
+        %eventmarker(24) % 24 = task object 1 OFF 
     end
 end
 
 if 0==error_type
-    run_scene(scene3);    % Run the third scene - This is the blank offset between flashes
+    run_scene(scene3,24);    % Run the third scene - This is the blank offset between flashes
     if ~fix3.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
         error_type = 3;      % So it is a "break fixation (3)" error.
         run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
@@ -358,7 +358,7 @@ if 0==error_type
 end
 
 if 0==error_type
-    run_scene(scene3);    % Run the third scene - This is the blank offset between flashes
+    run_scene(scene3,26);    % Run the third scene - This is the blank offset between flashes
     if ~fix3.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
         error_type = 3;      % So it is a "break fixation (3)" error.
         run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
@@ -379,7 +379,7 @@ end
 
 
 if 0==error_type
-    run_scene(scene3);    % Run the third scene - This is the blank offset between flashes
+    run_scene(scene3,28);    % Run the third scene - This is the blank offset between flashes
     if ~fix3.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
         error_type = 3;      % So it is a "break fixation (3)" error.
         run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
@@ -389,7 +389,7 @@ if 0==error_type
 end
 
 if 0==error_type
-    run_scene(scene6,27);    % Run the sixth scene (eventmarker 29 - TaskObject - 4 ON) 
+    run_scene(scene6,29);    % Run the sixth scene (eventmarker 29 - TaskObject - 4 ON) 
     if ~fix6.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
         error_type = 3;      % So it is a "break fixation (3)" error.
         run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
@@ -399,7 +399,7 @@ if 0==error_type
 end
 
 if 0==error_type
-    run_scene(scene3);    % Run the third scene - This is the blank offset between flashes
+    run_scene(scene3,30);    % Run the third scene - This is the blank offset between flashes
     if ~fix3.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
         error_type = 3;      % So it is a "break fixation (3)" error.
         run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
@@ -409,7 +409,7 @@ if 0==error_type
 end
 
 if 0==error_type
-    run_scene(scene7,27);    % Run the 7th scene (eventmarker 31 - TaskObject - 5 ON) 
+    run_scene(scene7,31);    % Run the 7th scene (eventmarker 31 - TaskObject - 5 ON) 
     if ~fix7.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
         error_type = 3;      % So it is a "break fixation (3)" error.
         run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
@@ -421,8 +421,8 @@ end
 
 % reward
 if 0==error_type
-    run_scene(scene8,[36]); % event code for fix cross OFF 
-    goodmonkey(100, 'juiceline',1, 'numreward',1, 'pausetime',500, 'eventmarker',50); % 100 ms of juice x 2. Event marker for reward
+    run_scene(scene8,[32,36]); % event code for fix cross OFF 
+    goodmonkey(100, 'juiceline',1, 'numreward',1, 'pausetime',500, 'eventmarker',96); % 100 ms of juice x 2. Event marker for reward
 end
 
 trialerror(error_type);      % Add the result to the trial history
