@@ -6,9 +6,15 @@ hotkey('esc', 'escape_screen(); assignin(''caller'',''continue_'',false);');
 
 global SAVEPATH GRATINGRECORD prespertr datafile
 GRATINGRECORD = [];
-datafile = MLConfig.FormattedName;
 
-SAVEPATH = fileparts(which('T_RFtuning.m'));
+datafile = MLConfig.FormattedName;
+USER = getenv('username');
+
+if strcmp(USER,'maierlab')
+    SAVEPATH = 'C:\MLData\temp';
+else
+    SAVEPATH = fileparts(which('T_tuning.m'));
+end
 
 
 %% Initial code
@@ -52,8 +58,7 @@ if tr == 1 % on the first trial
     genFixCross((fixpt(1)*Screen.PixelsPerDegree), (fixpt(2)*Screen.PixelsPerDegree));
     
     % Create a file to write grating information for each trial
-    taskdir = fileparts(which('T_RFtuning.m'));
-    filename = strcat(taskdir,'/',datafile,'.g',upper(paradigm),'Grating_di');
+    filename = strcat(SAVEPATH,'/',datafile,'.g',upper(paradigm),'Grating_di');
     
     fid = fopen(filename, 'w');
     formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\r\n';
@@ -184,7 +189,7 @@ wth2.WaitTime = 0;             % We already knows the fixation is acquired, so w
 wth2.HoldTime = 250;
 scene2 = create_scene(wth2);
 
-%% Scene 3. Betreen presentation interval
+%% Scene 3. Inter-stimulus interval
 
 fix3 = SingleTarget(eye_); % Initialize the eye tracking adapter
 fix3.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
@@ -425,12 +430,9 @@ trialerror(error_type);      % Add the result to the trial history
 %% Give the monkey a break
 set_iti(800); % Inter-trial interval in [ms]
 
-%%
-
-
 %% Write info to file
-taskdir = fileparts(which('T_RFtuning.m'));
-filename = strcat(taskdir,'\',datafile,'.g',upper(paradigm),'Grating_di');
+
+filename = strcat(SAVEPATH,'\',datafile,'.g',upper(paradigm),'Grating_di');
     
 for pres = 1:prespertr
     

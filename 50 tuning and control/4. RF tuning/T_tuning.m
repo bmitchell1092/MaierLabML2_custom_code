@@ -12,7 +12,7 @@ USER = getenv('username');
 if strcmp(USER,'maierlab')
     SAVEPATH = 'C:\MLData\temp';
 else
-    SAVEPATH = fileparts(which('T_RFtuning.m'));
+    SAVEPATH = fileparts(which('T_tuning.m'));
 end
 
 
