@@ -5,7 +5,9 @@
 hotkey('esc', 'escape_screen(); assignin(''caller'',''continue_'',false);');
 
 global SAVEPATH GRATINGRECORD prespertr datafile
-GRATINGRECORD = [];
+if TrialRecord.CurrentTrialNumber == 1
+    GRATINGRECORD = [];
+end
 
 datafile = MLConfig.FormattedName;
 USER = getenv('username');
