@@ -621,8 +621,8 @@ if ~isempty(oldGRATINGRECORD)
     clear oldGRATINGRECORD;
 end
 
-% % save matlab variable
-%formatOut = 'yymmdd';
+%% save matlab variable
+
 fname = datafile;
 grname   = sprintf('%s/%s_GRATINGRECORD%04u',SAVEPATH,fname,TrialRecord.CurrentTrialNumber);
 save(grname,'GRATINGRECORD'); 

@@ -1,7 +1,7 @@
 function genDotRecordML2(TrialRecord)
 %generate variable that pre-sets grating parameters for n number of trials
 
-global DOTRECORD SAVEPATH GABOR FIX_X FIX_Y npres
+global DOTRECORD SAVEPATH GABOR FIX_X FIX_Y npres datafile
 params.eye            =  [1]; % can have several inputs here
 params.theta          =  -30:5:10; % around 320
 params.eccentricities =  8:.5:10;
