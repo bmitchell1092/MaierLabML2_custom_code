@@ -53,7 +53,8 @@ if tr == 1 % on the first trial
     
     % Create a file to write grating information for each trial
     taskdir = fileparts(which('T_RFtuning.m'));
-    filename = strcat(taskdir,'/',datafile,'.g',upper(paradigm),'Grating_di');
+    filename = strcat(taskdir,filesep,datafile,'.g',upper(paradigm),'Grating_di');
+
     
     fid = fopen(filename, 'w');
     formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\r\n';
@@ -430,7 +431,7 @@ set_iti(800); % Inter-trial interval in [ms]
 
 %% Write info to file
 taskdir = fileparts(which('T_RFtuning.m'));
-filename = strcat(taskdir,'\',datafile,'.g',upper(paradigm),'Grating_di');
+filename = strcat(taskdir,filesep,datafile,'.g',upper(paradigm),'Grating_di');
     
 for pres = 1:prespertr
     
