@@ -1,246 +1,422 @@
 %% Aug 2019, Jacob Rogatinsky
 % Sept 2021, Edited by Blake Mitchell
 
-%% Initial code
-% Get current computer time
-timestamp = datestr(now);
-
 % Initialize the escape key
 hotkey('esc', 'escape_screen(); assignin(''caller'',''continue_'',false);');
 
-% Set the noise patch properties
-diameter = [1];                        % Diameter of the grating
-de = 3;                                % 1 = binocular, 2 = left eye, 3 = right eye
-th = [-60:5:-5];                       % Theta in degrees
-e = [2:0.5:6];                         % Eccentricity in degrees
-time = [50];                           % Duration of stimulus in [ms]
-isi = [200];                           % Duration of inter-stimulus interval in [ms]
-
-% Set the fixation point
-fixpt = [0 0]; % [x y] in visual degrees
-fix_thresh = 3;
-
-if de == 1
-    de_string = 'Binocular';
-    nde_string = 'Binocular';
-elseif de == 2
-    de_string = 'Left';
-    nde_string = 'Right';
-else
-    de_string = 'Right';
-    nde_string = 'Left';
+global SAVEPATH DOTRECORD datafile npres
+if TrialRecord.CurrentTrialNumber == 1
+    DOTRECORD = [];
 end
-    
+
+datafile = MLConfig.FormattedName;
+USER = getenv('username');
+
+if strcmp(USER,'maierlab')
+    SAVEPATH = 'C:\MLData\temp';
+else
+    SAVEPATH = strcat(fileparts(which('T_dotmapping.m')),'\','output files');
+end
+
+%% Initial code
+
+timestamp = datestr(now); % Get the current time on the computer
+
+% Set fixation point
+fixpt = [0 0]; % [x y] in viual degrees
+fixThreshold = 1.5; % degrees of visual angle
+
+% define intervals for WaitThenHold
+wait_for_fix = 3000;
+initial_fix = 200; % hold fixation for 200ms to initiate trial
+
 % Find screen size
 scrsize = Screen.SubjectScreenFullSize / Screen.PixelsPerDegree;  % Screen size [x y] in degrees
-lower_right = [(scrsize(1)*0.5-0.5) (scrsize(2)*(-0.5)+0.5)];
+setCoord(scrsize); % Send value to a global variable
+pd_position = [(scrsize(1)*0.5-0.5) (scrsize(2)*(-0.5)+0.5)];
 
 % Trial number increases by 1 for every iteration of the code
-trialnum = tnum(TrialRecord);
+trialNum = tnum(TrialRecord);
 
-% Generate the dots
-DOTS = makeDots(diameter, Screen.PixelsPerDegree, [0.5 0.5 0.5]);
+stimdur = 50;
+isi = 200;
 
-if trialnum == 1
-    % Send seed value to a global variable
-    setSeed(randi([1 1000]));
+%% On the 1st trial
+
+if trialNum == 1
+    % Generate dOTRECORD
+    genDotRecordML2(TrialRecord);
     
     % Generate the background image
     genFixCross((fixpt(1)*Screen.PixelsPerDegree), (fixpt(2)*Screen.PixelsPerDegree));
     
-    taskdir = fileparts(which('T_dotmapping.m'));
-    fid = fopen(strcat(taskdir,'/','dotmapping.gDotsXY_di'), 'w');    formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n';
+    filename = fullfile(SAVEPATH,sprintf('%s.gDotsXY_di',datafile));
+    fid = fopen(filename, 'w');
+    formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\r\n';
     fprintf(fid,formatSpec,...
-        'Trial Number',...
-        'Dots X-Coord',...
-        'Dots Y-Coord',...
-        'Contrast',...
-        'Diameter',...
-        'Dominant Eye',...
-        'NonDom Eye',...
-        'Presentations Per Trial',...
-        'Time Stamp',...
-        'Inter-Stimulus Interval',...
-        'Stimulus Duration',...
-        'Fixation X-Coord',...
-        'Fixation Y-Coord');
+        'trial',...
+        'horzdva',...
+        'vertdva',...
+        'dot_x',...
+        'dot_y',...
+        'dot_eye',...
+        'diameter',...
+        'contrast',...
+        'fix_x',...
+        'fix_y',...
+        'timestamp');
     fclose(fid);
 end
 
-% Call the seed number created during the first trial using a separate
-% external function -- this way, the seed number only changes when
-% Test_Drifting_Grating1 is restarted each iteration within MonkeyLogic
-sdnum = getSeed;
+%% Create Dots for the current trial
 
-%% Struct of pseudo-randomized trial conditions
-rng(sdnum) % Set the randomizer seed
-r = genDotsParams(th, e); % Call the pseudorandomizer function
-
-% When 'trialnum' exceeds the length of the struct 'r', use
-% 'placeholder' to go back to the beginning of the struct
-placeholder = (trialnum - 1) * 5;
-
-%% Set the dot patch coordinates
-cur_x = []; % preallocate
-cur_y = [];
-
-for kk = 1:5
-    ph1 = placeholder + kk;
-    ph2 = mod(ph1,length(r));
-    
-    if ph2 == 0
-        ph2 = length(r);
-    end
-    
-    if de == 3
-        cur_x(end+1)=r(ph2).x + (0.25*scrsize(1)) + fixpt(1);
-        cur_y(end+1)=r(ph2).y + fixpt(2);
-    elseif de == 2
-        cur_x(end+1)=r(ph2).x - (0.25*scrsize(1)) + fixpt(1);
-        cur_y(end+1)=r(ph2).y + fixpt(2);
-    end
-    
+for presN = 1:npres
+    [DOTS{presN}, dot_diameter(presN)] = makeDots(TrialRecord,Screen,presN);
 end
 
-%% Scene 0. Blank screen
+%% Set the dot patch coordinates/parameters
 
-bck0 = ImageGraphic(null_);
-bck0.List = { {'graybackground.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+dot_contrast          = DOTRECORD(trialNum).dot_contrast;
+dot_x                 = DOTRECORD(trialNum).dot_xpos;
+dot_y                 = DOTRECORD(trialNum).dot_ypos;
+dot_eye               = DOTRECORD(trialNum).dot_eye;
 
-% Set the timer
-cnt0 = TimeCounter(bck0);
-cnt0.Duration = 250;
-scene0 = create_scene(cnt0);
+corrected_x = []; % preallocate
+corrected_y = [];
+
+if dot_eye == 3
+    corrected_x= dot_x + (0.25*scrsize(1)) + fixpt(1);
+    corrected_y= dot_y + fixpt(2);
+elseif dot_eye == 2
+    corrected_x= dot_x - (0.25*scrsize(1)) + fixpt(1);
+    corrected_y= dot_y + fixpt(2);
+end
+
 
 %% Scene 1. Fixation
-
 % Set fixation to the left eye for tracking
 fix1 = SingleTarget(eye_); % Initialize the eye tracking adapter
 fix1.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
-fix1.Threshold = fix_thresh; % Set the fixation threshold
+fix1.Threshold = fixThreshold; % Set the fixation threshold
 
 bck1 = ImageGraphic(fix1);
 bck1.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
 wth1 = WaitThenHold(bck1); % Initialize the wait and hold adapter
-wth1.WaitTime = 5000; % Set the wait time
-wth1.HoldTime = 250; % Set the hold time
+wth1.WaitTime = wait_for_fix; % Set the wait time
+wth1.HoldTime = initial_fix; % Set the hold time
 
 scene1 = create_scene(wth1); % Initialize the scene adapter
-run_scene(scene1,[35,11]); % Run scene
 
+%% Scene 2. Task Object #1
+% Set fixation to the left eye for tracking
+fix2 = SingleTarget(eye_); % Initialize the eye tracking adapter
+fix2.Target = [((-0.25*scrsize(1))+fixpt(1)) fixpt(2)]; % Set the fixation point
+fix2.Threshold = fixThreshold; % Set the fixation threshold
+
+pd2 = BoxGraphic(fix2);
+pd2.EdgeColor = [1 1 1];
+pd2.FaceColor = [1 1 1];
+pd2.Size = [3 3];
+pd2.Position = pd_position;
+
+% Display patch
+img2 = ImageGraphic(pd2);
+img2.List = { {DOTS{1}}, [corrected_x(1) corrected_y(1)] };
+
+bck2 = ImageGraphic(img2);
+bck2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+
+wth2 = WaitThenHold(bck2);
+wth2.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
+wth2.HoldTime = stimdur;
+
+scene2 = create_scene(wth2);
+
+%% Scene 3. Inter-stimulus interval
+fix3 = SingleTarget(eye_); % Initialize the eye tracking adapter
+fix3.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
+fix3.Threshold = fixThreshold; % Set the fixation threshold
+
+pd3 = BoxGraphic(fix3);
+pd3.EdgeColor = [0 0 0];
+pd3.FaceColor = [0 0 0];
+pd3.Size = [3 3];
+pd3.Position = pd_position;
+
+bck3 = ImageGraphic(pd3);
+bck3.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+
+wth3 = WaitThenHold(bck3);
+wth3.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
+wth3.HoldTime = isi;
+scene3 = create_scene(wth3);
+
+%% Scene 4. Task Object #2
+% Set fixation to the left eye for tracking
+fix4 = SingleTarget(eye_); % Initialize the eye tracking adapter
+fix4.Target = [((-0.25*scrsize(1))+fixpt(1)) fixpt(2)]; % Set the fixation point
+fix4.Threshold = fixThreshold; % Set the fixation threshold
+
+% Photodiode
+pd4 = BoxGraphic(fix4);
+pd4.EdgeColor = [1 1 1];
+pd4.FaceColor = [1 1 1];
+pd4.Size = [3 3];
+pd4.Position = pd_position;
+
+% Display patch
+img4 = ImageGraphic(pd4);
+img4.List = { {DOTS{2}}, [corrected_x(2) corrected_y(2)] };
+
+% stereo background
+bck4 = ImageGraphic(img4);
+bck4.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+
+% Hold timer
+wth4 = WaitThenHold(bck4);
+wth4.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
+wth4.HoldTime = stimdur;
+
+% Create Scene
+scene4 = create_scene(wth4);
+
+%% Scene 5. Task Object #3
+% Set fixation to the left eye for tracking
+fix5 = SingleTarget(eye_); % Initialize the eye tracking adapter
+fix5.Target = [((-0.25*scrsize(1))+fixpt(1)) fixpt(2)]; % Set the fixation point
+fix5.Threshold = fixThreshold; % Set the fixation threshold
+
+% Photodiode
+pd5 = BoxGraphic(fix5);
+pd5.EdgeColor = [1 1 1];
+pd5.FaceColor = [1 1 1];
+pd5.Size = [3 3];
+pd5.Position = pd_position;
+
+% Display patch
+img5 = ImageGraphic(pd5);
+img5.List = { {DOTS{3}}, [corrected_x(3) corrected_y(3)] };
+
+% stereo background
+bck5 = ImageGraphic(img5);
+bck5.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+
+% Hold timer
+wth5 = WaitThenHold(bck5);
+wth5.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
+wth5.HoldTime = stimdur;
+
+% Create Scene
+scene5 = create_scene(wth5);
+
+%% Scene 6. Task Object #4
+% Set fixation to the left eye for tracking
+fix6 = SingleTarget(eye_); % Initialize the eye tracking adapter
+fix6.Target = [((-0.25*scrsize(1))+fixpt(1)) fixpt(2)]; % Set the fixation point
+fix6.Threshold = fixThreshold; % Set the fixation threshold
+
+% Photodiode
+pd6 = BoxGraphic(fix6);
+pd6.EdgeColor = [1 1 1];
+pd6.FaceColor = [1 1 1];
+pd6.Size = [3 3];
+pd6.Position = pd_position;
+
+% Display patch
+img6 = ImageGraphic(pd6);
+img6.List = { {DOTS{4}}, [corrected_x(4) corrected_y(4)] };
+
+% stereo background
+bck6 = ImageGraphic(img6);
+bck6.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+
+% Hold timer
+wth6 = WaitThenHold(bck6);
+wth6.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
+wth6.HoldTime = stimdur;
+
+% Create Scene
+scene6 = create_scene(wth6);
+
+%% Scene 7. Task Object #5
+% Set fixation to the left eye for tracking
+fix7 = SingleTarget(eye_); % Initialize the eye tracking adapter
+fix7.Target = [((-0.25*scrsize(1))+fixpt(1)) fixpt(2)]; % Set the fixation point
+fix7.Threshold = fixThreshold; % Set the fixation threshold
+
+% Photodiode
+pd7 = BoxGraphic(fix7);
+pd7.EdgeColor = [1 1 1];
+pd7.FaceColor = [1 1 1];
+pd7.Size = [3 3];
+pd7.Position = pd_position;
+
+% Display patch
+img7 = ImageGraphic(pd7);
+img7.List = { {DOTS{5}}, [corrected_x(5) corrected_y(5)] };
+
+% stereo background
+bck7 = ImageGraphic(img7);
+bck7.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+
+% Hold timer
+wth7 = WaitThenHold(bck7);
+wth7.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
+wth7.HoldTime = stimdur;
+
+% Create Scene
+scene7 = create_scene(wth7);
+
+%% Scene 8. Clear fixation cross
+
+bck8 = ImageGraphic(null_);
+bck8.List = { {'graybackground.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+
+% Set the timer
+cnt8 = TimeCounter(bck8);
+cnt8.Duration = 50;
+scene8 = create_scene(cnt8);
+
+%% TASK
 error_type = 0;
+run_scene(scene1,[35,11]); % WaitThenHold | 35 = Fix spot on, 11 = Start wait fixation
 if ~wth1.Success             % If the WithThenHold failed (either fixation is not acquired or broken during hold),
     if wth1.Waiting          %    check whether we were waiting for fixation.
-        error_type = 1; 
-        run_scene(scene0,[97,36]); 
+        error_type = 4;      % If so, fixation was never made and therefore this is a "no fixation (4)" error.
+        run_scene(scene8,[12]);  % blank screen | 12 = end wait fixation
     else
-        error_type = 2;      % If we were not waiting, it means that fixation was acquired but not held,
-        run_scene(scene0,[97,36]);
-    end                      %    so this is a "break fixation (3)" error.
+        error_type = 3;      % If we were not waiting, it means that fixation was acquired but not held,
+        run_scene(scene8,[97,36]);   % blank screen | 97 = fixation broken, 36 = fix cross OFF
+    end   %    so this is a "break fixation (3)" error.
 else
-    eventmarker(8);         % 8 = fixation occurs
+    eventmarker(8); % 8 = fixation occurs
 end
 
-%% Scene 2. Dot patches
-% list of objects
-obj = [23,24,25,26,27,28,29,30,31];
-if wth1.Success % If fixation was acquired and held
-    
-    for ii = 1:9
-        
-        real_ind = (ii+1)/2;
-        
-        if mod(ii,2) == 1 % this function is basically saying every odd number of ii
-            
-            fix2 = SingleTarget(eye_); % Initialize the eye tracking adapter
-            fix2.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
-            fix2.Threshold = fix_thresh; % Set the fixation threshold
-            
-            pd = BoxGraphic(fix2);
-            pd.EdgeColor = [1 1 1];
-            pd.FaceColor = [1 1 1];
-            pd.Size = [3 3];
-            pd.Position = lower_right;
-            
-            % Display patch
-            img2 = ImageGraphic(pd);
-            img2.List = { {DOTS}, [cur_x(real_ind) cur_y(real_ind)] };
-            img2.EventMarker = obj(ii);
-            
-            % Set the timer
-            cnt2 = TimeCounter(img2);
-            cnt2.Duration = time;
-            
-            bck2 = ImageGraphic(cnt2);
-            bck2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
-            
-            % Run the scene
-            scene2 = create_scene(bck2);
-            run_scene(scene2,obj(ii));
-            if ~fix2.Success         % The failure of WthThenHold indicates that the subject didn't maintain fixation on the sample image.
-                error_type = 3;      % So it is a "break fixation (3)" error.
-                run_scene(scene0,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
-                break
-            end
-            
-        else % blank scenes interwoven
-            fix2 = SingleTarget(eye_); % Initialize the eye tracking adapter
-            fix2.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
-            fix2.Threshold = fix_thresh; % Set the fixation threshold
-           
-            bck2 = ImageGraphic(fix2);
-            bck2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
-            
-            % Set the timer
-            cnt2 = TimeCounter(bck2);
-            cnt2.Duration = isi;
-            
-            % Run the scene
-            scene2 = create_scene(cnt2);
-            run_scene(scene2,obj(ii));
-            if ~fix2.Success         % The failure of WthThenHold indicates that the subject didn't maintain fixation on the sample image.
-                error_type = 3;      % So it is a "break fixation (3)" error.
-                run_scene(scene0,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
-                break
-            end
-        end
-        
+if 0==error_type
+    run_scene(scene2,23);    % Run the second scene (eventmarker 23 'taskObject-1 ON')
+    if ~fix2.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
+        error_type = 3;      % So it is a "break fixation (3)" error.
+        run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
+    else
+        %eventmarker(24) % 24 = task object 1 OFF 
     end
-    
 end
 
-if error_type == 0
-    run_scene(scene0,36); 
-    goodmonkey(100, 'NonBlocking',1,'juiceline',1, 'numreward',2, 'pausetime',500, 'eventmarker',96); % 100 ms of juice x 2
+if 0==error_type
+    run_scene(scene3,24);    % Run the third scene - This is the blank offset between flashes
+    if ~fix3.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
+        error_type = 3;      % So it is a "break fixation (3)" error.
+        run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
+    else
+% %         eventmarker(24) % 24 = task object 1 OFF 
+    end
 end
 
-trialerror(error_type); 
+if 0==error_type
+    run_scene(scene4,25);    % Run the fourth scene (eventmarker 25 - TaskObject - 2 ON) 
+    if ~fix4.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
+        error_type = 3;      % So it is a "break fixation (3)" error.
+        run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
+    else
+% %         eventmarker(26) % 26 = task object 2 OFF 
+    end
+end
 
+if 0==error_type
+    run_scene(scene3,26);    % Run the third scene - This is the blank offset between flashes
+    if ~fix3.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
+        error_type = 3;      % So it is a "break fixation (3)" error.
+        run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
+    else
+% %         eventmarker(24) % 24 = task object 1 OFF 
+    end
+end
+
+if 0==error_type
+    run_scene(scene5,27);    % Run the fifth scene (eventmarker 27 - TaskObject - 3 ON) 
+    if ~fix5.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
+        error_type = 3;      % So it is a "break fixation (3)" error.
+        run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
+    else
+% %         eventmarker(26) % 26 = task object 2 OFF 
+    end
+end
+
+
+if 0==error_type
+    run_scene(scene3,28);    % Run the third scene - This is the blank offset between flashes
+    if ~fix3.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
+        error_type = 3;      % So it is a "break fixation (3)" error.
+        run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
+    else
+% %         eventmarker(24) % 24 = task object 1 OFF 
+    end
+end
+
+if 0==error_type
+    run_scene(scene6,29);    % Run the sixth scene (eventmarker 29 - TaskObject - 4 ON) 
+    if ~fix6.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
+        error_type = 3;      % So it is a "break fixation (3)" error.
+        run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
+    else
+% %         eventmarker(26) % 26 = task object 2 OFF 
+    end
+end
+
+if 0==error_type
+    run_scene(scene3,30);    % Run the third scene - This is the blank offset between flashes
+    if ~fix3.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
+        error_type = 3;      % So it is a "break fixation (3)" error.
+        run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
+    else
+% %         eventmarker(24) % 24 = task object 1 OFF 
+    end
+end
+
+if 0==error_type
+    run_scene(scene7,31);    % Run the 7th scene (eventmarker 31 - TaskObject - 5 ON) 
+    if ~fix7.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
+        error_type = 3;      % So it is a "break fixation (3)" error.
+        run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
+    else
+% %         eventmarker(26) % 26 = task object 2 OFF 
+    end
+end
+
+
+% reward
+if 0==error_type
+    run_scene(scene8,[32,36]); % event code for fix cross OFF 
+    goodmonkey(100, 'juiceline',1, 'numreward',1, 'pausetime',250, 'eventmarker',96); % 100 ms of juice x 2. Event marker for reward
+end
+
+trialerror(error_type);      % Add the result to the trial history
+
+
+%% Give the monkey a break
+set_iti(500); % Inter-trial interval in [ms]
 
 %% Write info to file
 
-taskdir = fileparts(which('T_dotmapping.m'));
-fid = fopen(strcat(taskdir,'/','dotmapping.gDotsXY_di'), 'a'); % Write to a text file
-formatSpec =  '%f\t%s\t%s\t%f\t%f\t%s\t%s\t%f\t%s\t%f\t%f\t%f\t%f\t\n';
-fprintf(fid,formatSpec,...
-    trialnum,...
-    num2str(cur_x),...
-    num2str(cur_y),...
-    1,...
-    diameter,...
-    de_string,...
-    nde_string,...
-    5,...
-    timestamp,...
-    isi,...
-    time,...
-    ((-0.25*scrsize(1))+fixpt(1)),...
-    fixpt(2));
+filename = fullfile(SAVEPATH,sprintf('%s.gDotsXY_di',datafile));
+
+for pres = 1:npres
+    fid = fopen(filename, 'a');  % append
     
-fclose(fid);
-
-%% Give the monkey a break
-set_iti(800); % Inter-trial interval in [ms]
-
-%%
+    formatSpec =  '%04u\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\r\n';
+    fprintf(fid,formatSpec,...
+        trialNum,...
+        0,...X(pres),... % needs DEV
+        0,...Y(pres),... % needs DEV
+        dot_x(pres),...
+        dot_y(pres),...
+        dot_eye(pres),...
+        dot_diameter(pres),...
+        dot_contrast(pres),...
+        fixpt(1),...
+        fixpt(2),...
+        now);
+    
+    fclose(fid);
+end
