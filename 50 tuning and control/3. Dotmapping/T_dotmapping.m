@@ -401,14 +401,15 @@ set_iti(500); % Inter-trial interval in [ms]
 
 filename = fullfile(SAVEPATH,sprintf('%s.gDotsXY_di',datafile));
 
+
 for pres = 1:npres
+    [X(pres),Y(pres)] = findScreenPosML2(dot_eye,Screen,dot_x(pres),dot_y(pres),'cart');
     fid = fopen(filename, 'a');  % append
-    
     formatSpec =  '%04u\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\r\n';
     fprintf(fid,formatSpec,...
-        trialNum,...
-        0,...X(pres),... % needs DEV
-        0,...Y(pres),... % needs DEV
+        TrialRecord.CurrentTrialNumber,...
+        X(pres),... % needs DEV (maybe fixed?) does the horizontal DVA match up with older files?
+        Y(pres),... % needs DEV
         dot_x(pres),...
         dot_y(pres),...
         dot_eye(pres),...
