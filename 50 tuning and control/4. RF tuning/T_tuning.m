@@ -13,21 +13,20 @@ datafile = MLConfig.FormattedName;
 USER = getenv('username');
 
 if strcmp(USER,'maierlab')
-    SAVEPATH = 'C:\MLData\temp';
+    SAVEPATH = 'C:\MLData\temp'; 
 else
     SAVEPATH = strcat(fileparts(which('T_tuning.m')),'\','output files');
 end
 
 
-%% Initial code
-% Paradigm selection  
-% 'cinteroc'        Grating contrast varies trial to trial, eye to eye
+%% Paradigm selection : 5 presentations per trial
+
 % 'rfori'           Grating orientation varies trial to trial
 % 'rfsize'          Grating size varies trial to trial
 % 'rfsf'            Grating spatial frequency varies trial to trial
-% 'posdisparity'    Grating x-position (DE) varies from trial to trial
-% 'phzdisparity'    Grating phase angle (DE) varies from trial to trial
-% 'cone'            Grating colors vary trial to trial, eye to eye
+% 'posdisparity'    Grating x-position varies from trial to trial (DEV)
+% 'phzdisparity'    Grating phase angle varies from trial to trial (DEV)
+% 'cone'            Grating colors vary trial to trial, eye to eye (DEV)
 
 paradigm = 'rfori';
 
@@ -48,8 +47,6 @@ lower_right = [(scrsize(1)*0.5-0.5) (scrsize(2)*(-0.5)+0.5)];
 
 % Trial number increases by 1 for every iteration of the code
 tr = tnum(TrialRecord);
-
-
 
 if tr == 1 % on the first trial
     
@@ -94,9 +91,6 @@ elseif size(GRATINGRECORD,2) < tr
     %GENERATE NEW GRATING RECORD IF THIS TRIAL IS LONGER THAN CURRENT GRATINGRECORD
     genGratingRecordML2(paradigm,TrialRecord);
 end
-    
-    
-
 
 %% Assign values to each sine grating condition
 % Set the conditions
@@ -136,7 +130,7 @@ color2 = gray - (grating_contrast(1) / 2);
 
 
 %% Preallocate grating struct
-preAllocatedGratingList.left = ...
+GratingList.left = ...
     {[other_stereo_xpos(1) other_ypos(1)], grating_diameter(1)/2, grating_tilt(1), grating_sf(1), grating_tf(1), grating_phase(1), color1, color2, 'circular', []; ...
     [other_stereo_xpos(2) other_ypos(2)], grating_diameter(2)/2, grating_tilt(2), grating_sf(2), grating_tf(2), grating_phase(2), color1, color2, 'circular', [];...
     [other_stereo_xpos(3) other_ypos(3)], grating_diameter(3)/2, grating_tilt(3), grating_sf(3), grating_tf(3), grating_phase(3), color1, color2, 'circular', []; ...
@@ -145,7 +139,7 @@ preAllocatedGratingList.left = ...
 
 
 
-preAllocatedGratingList.right = ...
+GratingList.right = ...
     {[stereo_xpos(1) grating_ypos(1)], grating_diameter(1)/2, grating_tilt(1), grating_sf(1), grating_tf(1), grating_phase(1), color1, color2, 'circular', []; ...
     [stereo_xpos(2) grating_ypos(2)], grating_diameter(2)/2, grating_tilt(2), grating_sf(2), grating_tf(2), grating_phase(2), color1, color2, 'circular', [];...
     [stereo_xpos(3) grating_ypos(3)], grating_diameter(3)/2, grating_tilt(3), grating_sf(3), grating_tf(3), grating_phase(3), color1, color2, 'circular', []; ...
@@ -184,7 +178,7 @@ pd2.Position = lower_right;
 
 % Create both gratings
 grat2 = SineGrating(pd2);
-grat2.List = {preAllocatedGratingList.left{1,:};preAllocatedGratingList.right{1,:}};
+grat2.List = {GratingList.left{1,:};GratingList.right{1,:}};
 img2 = ImageGraphic(grat2);
 img2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 wth2 = WaitThenHold(img2);
@@ -226,7 +220,7 @@ pd4.Position = lower_right;
 
 % Create both gratings
 grat4 = SineGrating(pd4);
-grat4.List =  {preAllocatedGratingList.left{2,:};preAllocatedGratingList.right{2,:}};
+grat4.List =  {GratingList.left{2,:};GratingList.right{2,:}};
 img4 = ImageGraphic(grat4);
 img4.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 wth4 = WaitThenHold(img4);
@@ -249,7 +243,7 @@ pd5.Position = lower_right;
 
 % Create both gratings
 grat5 = SineGrating(pd5);
-grat5.List =  {preAllocatedGratingList.left{3,:};preAllocatedGratingList.right{3,:}};
+grat5.List =  {GratingList.left{3,:};GratingList.right{3,:}};
 img5 = ImageGraphic(grat5);
 img5.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 wth5 = WaitThenHold(img5);
@@ -272,7 +266,7 @@ pd6.Position = lower_right;
 
 % Create both gratings
 grat6 = SineGrating(pd6);
-grat6.List =  {preAllocatedGratingList.left{4,:};preAllocatedGratingList.right{4,:}};
+grat6.List =  {GratingList.left{4,:};GratingList.right{4,:}};
 img6 = ImageGraphic(grat6);
 img6.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 wth6 = WaitThenHold(img6);
@@ -295,7 +289,7 @@ pd7.Position = lower_right;
 
 % Create both gratings
 grat7 = SineGrating(pd7);
-grat7.List =  {preAllocatedGratingList.left{5,:};preAllocatedGratingList.right{5,:}};
+grat7.List =  {GratingList.left{5,:};GratingList.right{5,:}};
 img7 = ImageGraphic(grat7);
 img7.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 wth7 = WaitThenHold(img7);
@@ -443,8 +437,8 @@ for pres = 1:prespertr
     formatSpec =  '%04u\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%u\t%f\t%s\t%f\t%f\t%f\r\n';
     fprintf(fid,formatSpec,...
         TrialRecord.CurrentTrialNumber,...
-        X,... % needs DEV
-        Y(pres),... % needs DEV
+        stereo_xpos(pres),... % needs verification
+        grating_ypos(pres),... % needs verification
         grating_xpos(pres),...
         grating_ypos(pres),...
         other_xpos(pres),...
