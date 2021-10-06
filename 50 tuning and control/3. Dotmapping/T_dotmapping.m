@@ -11,9 +11,11 @@ end
 
 datafile = MLConfig.FormattedName;
 USER = getenv('username');
+outputFolder = datafile(1:8);
+flag_save = 1;
 
-if strcmp(USER,'maierlab')
-    SAVEPATH = 'C:\MLData\temp';
+if strcmp(USER,'maierlab') && flag_save == 1
+    SAVEPATH = strcat('C:\MLData\',outputFolder);
 else
     SAVEPATH = strcat(fileparts(which('T_dotmapping.m')),'\','output files');
 end
@@ -24,7 +26,7 @@ timestamp = datestr(now); % Get the current time on the computer
 
 % Set fixation point
 fixpt = [0 0]; % [x y] in viual degrees
-fixThreshold = 1.5; % degrees of visual angle
+fixThreshold = 2; % degrees of visual angle
 
 % define intervals for WaitThenHold
 wait_for_fix = 3000;
@@ -66,6 +68,11 @@ if trialNum == 1
         'fix_y',...
         'timestamp');
     fclose(fid);
+    
+elseif size(DOTRECORD,2) < trialNum
+    %GENERATE NEW GRATING RECORD IF THIS TRIAL IS LONGER THAN CURRENT GRATINGRECORD
+    genGratingRecordML2(TrialRecord);
+    disp('Number of minimum trials met');
 end
 
 %% Create Dots for the current trial

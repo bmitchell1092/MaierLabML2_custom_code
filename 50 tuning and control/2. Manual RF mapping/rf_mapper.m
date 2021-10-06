@@ -36,22 +36,35 @@ fix = SingleTarget(eye_); % Initialize the eye tracking adapter
 fix.Target = [((-0.25*scrsize(1))+fixpt(1)) fixpt(2)]; % Set the fixation point
 fix.Threshold = fixThreshold; % Set the fixation threshold
 
-and = AndAdapter(grat);
-and.add(fix);
+% and = AndAdapter(grat);
+% and.add(fix);
 
-ood = OnOffDisplay(and);
+ood = OnOffDisplay(fix);
 ood.Dashboard = 3;
 ood.OnMessage = 'ON Target';
 ood.OffMessage = 'OFF Target';
 ood.OnColor = [0 1 0];
 ood.OffColor = [1 0 0];
-tc = TimeCounter(ood);
-tc.Duration = 300000;
+
+
+
+rwd = RewardScheduler(ood);
+rwd.Schedule = [250 2000 2000 100 96;  % Once fixation starts, deliver a 100-ms reward every seconds
+    3000 750 750 200 96];  % if fix is maintained longer than 3 s, give a 200-ms reward every 2s
+
+tc = TimeCounter(rwd);
+tc.Duration = 999999;
+
+% % con = Concurrent(fix);
+% % con.add(rwd);
 
 bck = ImageGraphic(tc);
 bck.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
-scene = create_scene(bck);
+and = AndAdapter(grat);
+and.add(bck);
+
+scene = create_scene(and);
 
 run_scene(scene);
 

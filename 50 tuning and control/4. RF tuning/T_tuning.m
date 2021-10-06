@@ -34,7 +34,7 @@ timestamp = datestr(now); % Get the current time on the computer
 
 % Set fixation point
 fixpt = [0 0]; % [x y] in viual degrees
-fixThreshold = 1.5; % degrees of visual angle
+fixThreshold = 2; % degrees of visual angle
 
 % define intervals for WaitThenHold
 wait_for_fix = 3000;
@@ -90,6 +90,7 @@ if tr == 1 % on the first trial
 elseif size(GRATINGRECORD,2) < tr
     %GENERATE NEW GRATING RECORD IF THIS TRIAL IS LONGER THAN CURRENT GRATINGRECORD
     genGratingRecordML2(paradigm,TrialRecord);
+    disp('Number of minimum trials met');
 end
 
 %% Assign values to each sine grating condition

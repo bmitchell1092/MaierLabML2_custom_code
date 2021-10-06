@@ -24,13 +24,13 @@ end
 % 'mcosinteroc', 'bcosinteroc'
 % 'contrastresp'
 
-paradigm = 'bminteroc';
+paradigm = 'mcosinteroc';
 
 timestamp = datestr(now); % Get the current time on the computer
 
 % Set fixation point
 fixpt = [0 0]; % [x y] in viual degrees
-fixThreshold = 1.5; % degrees of visual angle
+fixThreshold = 2.2; % degrees of visual angle
 
 % define intervals for WaitThenHold
 wait_for_fix = 3000;

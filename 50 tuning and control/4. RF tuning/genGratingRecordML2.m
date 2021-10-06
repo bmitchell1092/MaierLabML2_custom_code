@@ -15,7 +15,7 @@ JIT = 0; % add jitter to interstimulus interval: 0 or 1
 GABOR = 0; 
 DOMEYE = 2; % name dominant eye e
 
-rf = [3 -3];
+rf = [-4 -2];
 scrsize = getCoord;
 
 clear params
