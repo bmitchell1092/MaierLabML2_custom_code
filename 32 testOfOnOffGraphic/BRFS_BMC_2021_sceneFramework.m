@@ -32,6 +32,7 @@ phase_angle = [0];                      % Phase angle in degrees (0-360)
 wait_for_fix = 3000;
 initial_fix = 250;
 
+set_bgcolor([0.5 0.5 0.5]);
 
 %% Trial 1 initilization
                           

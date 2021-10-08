@@ -4,19 +4,23 @@
 % Initialize the escape key
 hotkey('esc', 'escape_screen(); assignin(''caller'',''continue_'',false);');
 
-global SAVEPATH GRATINGRECORD prespertr datafile
+global SAVEPATH GRATINGRECORD prespertr datafile 
 if TrialRecord.CurrentTrialNumber == 1
     GRATINGRECORD = [];
 end
 
 datafile = MLConfig.FormattedName;
-USER = getenv('username');
+USER = getenv('username'); 
+outputFolder = datafile(1:8);
+flag_save = 1;
 
-if strcmp(USER,'maierlab')
-    SAVEPATH = 'C:\MLData\temp'; 
+if strcmp(USER,'maierlab') && flag_save == 1
+    SAVEPATH = strcat('C:\MLData\',outputFolder);
 else
     SAVEPATH = strcat(fileparts(which('T_binocular_gratings.m')),'\','output files');
 end
+
+set_bgcolor([0.5 0.5 0.5]);
 
 %% Initial code
 % Paradigm selection
@@ -30,7 +34,7 @@ timestamp = datestr(now); % Get the current time on the computer
 
 % Set fixation point
 fixpt = [0 0]; % [x y] in viual degrees
-fixThreshold = 2.2; % degrees of visual angle
+fixThreshold = .8; % degrees of visual angle
 
 % define intervals for WaitThenHold
 wait_for_fix = 3000;
@@ -40,6 +44,10 @@ initial_fix = 200; % hold fixation for 200ms to initiate trial
 scrsize = Screen.SubjectScreenFullSize / Screen.PixelsPerDegree;  % Screen size [x y] in degrees
 setCoord(scrsize); % Send value to a global variable
 lower_right = [(scrsize(1)*0.5-0.5) (scrsize(2)*(-0.5)+0.5)];
+
+hotkey('c', 'forced_eye_drift_correction([((-0.25*scrsize(1))+fixpt(1)) fixpt(2)],1);');  % eye1
+
+
 
 % Trial number increases by 1 for every iteration of the code
 tr = tnum(TrialRecord);

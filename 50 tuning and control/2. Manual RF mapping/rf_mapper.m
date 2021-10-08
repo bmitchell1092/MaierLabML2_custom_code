@@ -1,5 +1,6 @@
 if ~exist('mouse_','var'), error('This demo requires the mouse input. Please enable it in the main menu or try the simulation mode.'); end
 hotkey('x', 'escape_screen(); assignin(''caller'',''continue_'',false);');
+
 TrialRecord.MarkSkippedFrames = false;  % skip skipped frame markers
 
 dashboard(4,'Move: Left click + Drag, Resize: Right click + Drag',[0 1 0]);
@@ -7,6 +8,8 @@ dashboard(5,'Spatial Frequency: [LEFT(-) RIGHT(+)], Temporal Frequency: [DOWN(-)
 dashboard(6,'Press ''x'' to quit.',[1 0 0]);
 
 mouse_.showcursor(false);  % hide the mouse cursor from the subject
+
+
 
 % editables
 SpatialFrequencyStep = 0.1;
@@ -20,7 +23,12 @@ scrsize = Screen.SubjectScreenFullSize / Screen.PixelsPerDegree;
 
 % Set the fixation point
 fixpt = [0 0]; % [x y] in visual degrees
-fixThreshold = 1.5; % degrees of visual angle
+fixThreshold = 1; % degrees of visual angle
+
+hotkey('c', 'forced_eye_drift_correction([((-0.25*scrsize(1))+fixpt(1)) fixpt(2)],1);');  % eye1
+
+
+set_bgcolor([0.5 0.5 0.5]);
 
 %% Scene: Manual grating
 
@@ -35,7 +43,6 @@ grat.InfoDisplay = true;
 fix = SingleTarget(eye_); % Initialize the eye tracking adapter
 fix.Target = [((-0.25*scrsize(1))+fixpt(1)) fixpt(2)]; % Set the fixation point
 fix.Threshold = fixThreshold; % Set the fixation threshold
-
 % and = AndAdapter(grat);
 % and.add(fix);
 

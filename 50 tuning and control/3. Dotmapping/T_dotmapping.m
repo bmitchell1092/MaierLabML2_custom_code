@@ -20,13 +20,15 @@ else
     SAVEPATH = strcat(fileparts(which('T_dotmapping.m')),'\','output files');
 end
 
+set_bgcolor([0.5 0.5 0.5]);
+
 %% Initial code
 
 timestamp = datestr(now); % Get the current time on the computer
 
 % Set fixation point
 fixpt = [0 0]; % [x y] in viual degrees
-fixThreshold = 2; % degrees of visual angle
+fixThreshold = .8; % degrees of visual angle
 
 % define intervals for WaitThenHold
 wait_for_fix = 3000;
@@ -36,6 +38,9 @@ initial_fix = 200; % hold fixation for 200ms to initiate trial
 scrsize = Screen.SubjectScreenFullSize / Screen.PixelsPerDegree;  % Screen size [x y] in degrees
 setCoord(scrsize); % Send value to a global variable
 pd_position = [(scrsize(1)*0.5-0.5) (scrsize(2)*(-0.5)+0.5)];
+
+hotkey('c', 'forced_eye_drift_correction([((-0.25*scrsize(1))+fixpt(1)) fixpt(2)],1);');  % eye1
+
 
 % Trial number increases by 1 for every iteration of the code
 trialNum = tnum(TrialRecord);
@@ -91,10 +96,10 @@ dot_eye               = DOTRECORD(trialNum).dot_eye;
 corrected_x = []; % preallocate
 corrected_y = [];
 
-if dot_eye == 3
+if dot_eye == 2
     corrected_x= dot_x + (0.25*scrsize(1)) + fixpt(1);
     corrected_y= dot_y + fixpt(2);
-elseif dot_eye == 2
+elseif dot_eye == 3
     corrected_x= dot_x - (0.25*scrsize(1)) + fixpt(1);
     corrected_y= dot_y + fixpt(2);
 end

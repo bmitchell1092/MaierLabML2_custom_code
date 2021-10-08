@@ -15,7 +15,7 @@ JIT = 0; % add jitter to interstimulus interval: 0 or 1
 GABOR = 0; 
 DOMEYE = 2; % name dominant eye e
 
-rf = [-4 -2];
+rf = [-1.5 -1.3];
 scrsize = getCoord;
 
 clear params
@@ -23,7 +23,7 @@ params.xpos                = [rf(1) rf(1)];     % enter x position (1st element-
 params.ypos                = [rf(2) rf(2)];     % enter y position (1st element--RIGHT eye, 2nd--LEFT eye)
 params.varyeye             = [3];               % 2 for R, 3 for L (applicable for cinteroc, cosinteroc, and sss cinteroc/cosinteroc--varyeye will get "fixedc" contrasts. ss--vary eye will be the ND eye
 params.eye                 = [1];               % [MEASUREDEYE];      %cinteroc/cosinteroc--varyeye will get "fixedc" contrasts. ss--vary eye will be the ND eye
-params.diameters           = [3];               % enter diameter of gratingc
+params.diameters           = [1];               % enter diameter of gratingc
 params.contrasts           = [0.9];             % choose one contrast
 params.fixedc              = [];                % fixed contrast (really contrast(s) for ND eye)
 params.spatial_freq        = [3./(2)];          % units are (1/cyc/deg)***** choose holder spatial frequency, NAN makes RN patch
@@ -37,7 +37,7 @@ params.gabor               = [0];
 switch paradigm
    
     case 'rfori' 
-        prespertr = 5;
+        prespertr = 3;
         % parameters to vary:
         params.orientations = [0:11.25:168.75]; % degrees
         mintr = 15; 

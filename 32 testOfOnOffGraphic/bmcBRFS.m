@@ -24,19 +24,23 @@ scrsize = Screen.SubjectScreenFullSize / Screen.PixelsPerDegree;  % Screen size 
 lower_right = [(scrsize(1)*0.5-0.5) (scrsize(2)*(-0.5)+0.5)];
 
 % Set receptive field
-rf = [3 -3]; % [x y] in visual degrees
+rf = [-1.5 -1.3]; % [x y] in visual degrees
 setRF(rf);
 
 % Set the fixation point
 fixpt = [0 0]; % [x y] in visual degrees
 
+
+hotkey('c', 'forced_eye_drift_correction([((-0.25*scrsize(1))+fixpt(1)) fixpt(2)],1);');  % eye1
+
+
 % Set the constant conditions
 % de = 3;                                 % Dominant eye: 1 = binocular, 2 = right eye, 3 = left eye
-fixTreshold = 3;
-PrefOri = [0];                              % Preferred orientation of grating
-sf = [1];                               % Cycles per degree
+fixTreshold = 1;
+PrefOri = [158];                              % Preferred orientation of grating
+sf = [4];                               % Cycles per degree
 tf = [0];                               % Cycles per second (0=static, 4=drifting)
-diameter = [3];                         % Diameter of the grating
+diameter = [1];                         % Diameter of the grating
 left_xloc = (-0.25*scrsize(1))+rf(1);   % Left eye x-coordinate
 right_xloc = (0.25*scrsize(1))+rf(1);   % Right eye x-coordinate                   % Grating color 2
 phase_angle = [0];                      % Phase angle in degrees (0-360)
@@ -44,6 +48,8 @@ phase_angle = [0];                      % Phase angle in degrees (0-360)
 % define time intervals (in ms):
 wait_for_fix = 3000;
 initial_fix = 250;
+
+set_bgcolor([0.5 0.5 0.5]);
 
 
 %% Trial 1 initilization
