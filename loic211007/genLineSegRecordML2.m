@@ -63,7 +63,7 @@ switch paradigm
         end
         
         case  'squareStim' %'simult'
-        cond_code = [4];
+        params.cond_code = [4];
         
         all_con = combvec(params.cond_code,params.linelen, params.location,params.ori); % All possible combos
         [row, col] = size(all_con); % Size of the combo vector

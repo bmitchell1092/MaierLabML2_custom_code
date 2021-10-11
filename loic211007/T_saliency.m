@@ -19,11 +19,11 @@ set_bgcolor([0.5 0.5 0.5]);
 
 
 % Paradigm selection
-pdgm = 'notsalientNrw'; %incongruent stim appear at the beginning of the trial, stimuli are not salient, monkey gets no reward
+%pdgm = 'notsalientNrw'; %incongruent stim appear at the beginning of the trial, stimuli are not salient, monkey gets no reward
 %pdgm = 'notsalientRw'; 
 %pdgm = 'fixSpotOn'; %same as 'notsalientNrw' with a fixation spot on during stimulation duration
 %pdgm = 'flashedNrw';
-%pdgm = 'squareStim';
+pdgm = 'squareStim';
 
 timestamp = datestr(now); % Get the current time on the computer
 
@@ -157,7 +157,7 @@ switch stim_code %
         trig_delay = 0;
         %fixation point adapter
         crc = CircleGraphic(null_);
-        crc.List = { [1 0 0], [1 0 0], 0.3,center_left ;  [1 0 0], [1 0 0], 0.3, center_right;};
+        crc.List = { [], [], 0.3,center_left ;  [], [], 0.3, center_right;};
         figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\squareGrounds','\',sprintf('squareGround_random_line_segm_gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
 
      
@@ -262,10 +262,10 @@ koom.OnMarker = 116; %if wth1 failed, its because the monkey broke fixation
 %con2 = Concurrent(koom);
 %con2.add(tc1); %add img to scene
 %con2.add(box); %add photodiode to scene
-ac2 = OrAdapter(koom); %
-ac2.add(tc2);
+%ac2 = OrAdapter(koom); %
+%ac2.add(tc2);
 
-scene2 = create_scene(ac2); % call create_scene when the property setting is done
+scene2 = create_scene(tc2); % call create_scene when the property setting is done
       
 %% 3) Scene 3 (reward) or 4 (no reward) (stimulus goes off with this scene, reward or no reward)
 fix3 = SingleTarget(tracker);
@@ -313,7 +313,7 @@ if 0==error_type %if wth1.Success
     if kc.Success
         kc.Success, dashboard(1, sprintf('Key press time: %d ms', kc.Time(1)));
     end
-    if ~ac2.Success         % The failure of Concurrent indicates that the subject didn't respond on time or broke fixation.
+    if ~tc2.Success    %~ac2.Success         % The failure of Concurrent indicates that the subject didn't respond on time or broke fixation.
         error_type = 6;      % So it is a "Incorrect (6)" error.
         eventmarker(97); %97 = broke fixation. Since this is a monkey we don't have to worry about mouse press  only relevant for rewarder paradigm
     end
