@@ -19,11 +19,11 @@ set_bgcolor([0.5 0.5 0.5]);
 
 
 % Paradigm selection
-pdgm = 'notsalientNrw'; %incongruent stim appear at the beginning of the trial, stimuli are not salient, monkey gets no reward
+%pdgm = 'notsalientNrw'; %incongruent stim appear at the beginning of the trial, stimuli are not salient, monkey gets no reward
 %pdgm = 'notsalientRw'; 
 %pdgm = 'fixSpotOn'; %same as 'notsalientNrw' with a fixation spot on during stimulation duration
 %pdgm = 'flashedNrw';
-%pdgm = 'squareStim';
+pdgm = 'squareStim';
 
 timestamp = datestr(now); % Get the current time on the computer
 
@@ -35,7 +35,8 @@ setRF(rf);
 % Set the constant conditions
 screenCenter = [0,0];
 linedensity = 5; %5 lines per square degree of visual angle
-diameter = [asind(150*0.252/(10*51))];  % Diameter of the figure
+viewdist = 60;
+diameter = [asind(150*0.252/(10*viewdist))];  % Diameter of the figure
 time = [1700];                          % Duration of trial in [ms]
 left_xloc = (-0.25*scrsize(1))+rf(1);         % Left eye x-coordinate
 right_xloc = (0.25*scrsize(1))+rf(1);         % Right eye x-coordinate
@@ -157,7 +158,7 @@ switch stim_code %
         trig_delay = 0;
         %fixation point adapter
         crc = CircleGraphic(null_);
-        crc.List = { [1 0 0], [1 0 0], 0.3,center_left ;  [1 0 0], [1 0 0], 0.3, center_right;};
+        crc.List = { [], [], 0.3,center_left ;  [], [], 0.3, center_right;};
         figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\squareGrounds','\',sprintf('squareGround_random_line_segm_gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
 
      
@@ -248,25 +249,25 @@ tc2 = TimeCounter(img2);
 tc2.Duration = hold_target_time;
 
 %press mouse key if detect stim. don't press key if not
-kc = KeyChecker(mouse_);
-kc.KeyNum =1;   %  
+%kc = KeyChecker(mouse_);
+%kc.KeyNum =1;   %  
 %koom = OnOffMarker(kc);
 %koom.OnMarker = 116; %if wth1 failed, its because the monkey broke fixation
 
-wthk = WaitThenHold(kc);
-wthk.WaitTime = hold_target_time; %wait time to acccount for mouse press
-wthk.HoldTime = 0; 
-koom = OnOffMarker(wthk);
-koom.OnMarker = 116; %if wth1 failed, its because the monkey broke fixation
+%wthk = WaitThenHold(kc);
+%wthk.WaitTime = hold_target_time; %wait time to acccount for mouse press
+%wthk.HoldTime = 0; 
+%koom = OnOffMarker(wthk);
+%koom.OnMarker = 116; %if wth1 failed, its because the monkey broke fixation
 
 %con2 = Concurrent(koom);
 %con2.add(tc1); %add img to scene
 %con2.add(box); %add photodiode to scene
-ac2 = OrAdapter(koom); %
-ac2.add(tc2);
+%ac2 = OrAdapter(koom); %
+%ac2.add(tc2);
 
-scene2 = create_scene(ac2); % call create_scene when the property setting is done
-      
+%scene2 = create_scene(ac2); % call create_scene when the property setting is done
+ scene2 = create_scene(tc2);    
 %% 3) Scene 3 (reward) or 4 (no reward) (stimulus goes off with this scene, reward or no reward)
 fix3 = SingleTarget(tracker);
 fix3.Target = fixation_point;
@@ -306,20 +307,20 @@ else
     eventmarker(8); % 8 = fixation occurs
 end
 
-rt2 = wthk.AcquiredTime;
+%rt2 = wthk.AcquiredTime;
 if 0==error_type %if wth1.Success
     % run scene  
     run_scene(scene2,23); %add event code of stim onset
-    if kc.Success
-        kc.Success, dashboard(1, sprintf('Key press time: %d ms', kc.Time(1)));
-    end
-    if ~ac2.Success         % The failure of Concurrent indicates that the subject didn't respond on time or broke fixation.
+    %if kc.Success
+    %    kc.Success, dashboard(1, sprintf('Key press time: %d ms', kc.Time(1)));
+   % end
+    if ~tc2.Success         % The failure of Concurrent indicates that the subject didn't respond on time or broke fixation.
         error_type = 6;      % So it is a "Incorrect (6)" error.
         eventmarker(97); %97 = broke fixation. Since this is a monkey we don't have to worry about mouse press  only relevant for rewarder paradigm
     end
 end
 
-if 0==error_type %if ac2.Success
+if 0==error_type %if tc2.Success
         if reward == 1
             % run scene    
             run_scene(scene3,24);
