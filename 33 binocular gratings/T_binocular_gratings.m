@@ -203,6 +203,13 @@ GratingList.right = ...
     [stereo_xpos(2) grating_ypos(2)], grating_diameter(2)/2, gratR_tilt(2), grating_sf(2), grating_tf(2), grating_phase(2), gratR_color1(2), gratR_color2(2), 'circular', [];...
     [stereo_xpos(3) grating_ypos(3)], grating_diameter(3)/2, gratR_tilt(3), grating_sf(3), grating_tf(3), grating_phase(3), gratR_color1(3), gratR_color2(3), 'circular', []};
 
+
+%% Trial sequence event markers
+% send some event markers
+eventmarker(116 + TrialRecord.CurrentBlock); %block first
+eventmarker(116 + TrialRecord.CurrentCondition); %condition second
+eventmarker(116 + mod(TrialRecord.CurrentTrialNumber,10)); %last diget of trial sent third
+
 %% Scene 1. Fixation
 % Set fixation to the left eye for tracking
 fix1 = SingleTarget(eye_); % Initialize the eye tracking adapter

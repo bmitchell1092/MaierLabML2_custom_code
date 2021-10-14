@@ -249,6 +249,11 @@ bmcBRFSparamNum = r(1).stim_code;
 % % 0,...
 % % now);
 
+%% Trial sequence event markers
+% send some event markers
+eventmarker(116 + TrialRecord.CurrentBlock); %block first
+eventmarker(116 + TrialRecord.CurrentCondition); %condition second
+eventmarker(116 + mod(TrialRecord.CurrentTrialNumber,10)); %last diget of trial sent third
 
 
 

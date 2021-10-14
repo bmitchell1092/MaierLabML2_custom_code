@@ -147,6 +147,13 @@ files = dir(imagedir); files(1:2) = [];
 image = strcat(imagedir,files(img_id).name);
 imSize = [Screen.SubjectScreenFullSize(1)/12 Screen.SubjectScreenFullSize(2)/7];
 
+%% Trial sequence event markers
+% send some event markers
+eventmarker(116 + TrialRecord.CurrentBlock); %block first
+eventmarker(116 + TrialRecord.CurrentCondition); %condition second
+eventmarker(116 + mod(TrialRecord.CurrentTrialNumber,10)); %last diget of trial sent third
+
+
 %% Scene 1. Initial fixation
 % Set fixation to the left eye for tracking
 fix1 = SingleTarget(eye_); % Initialize the eye tracking adapter

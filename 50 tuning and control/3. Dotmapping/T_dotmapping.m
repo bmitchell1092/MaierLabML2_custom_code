@@ -104,6 +104,11 @@ elseif dot_eye == 3
     corrected_y= dot_y + fixpt(2);
 end
 
+%% Trial sequence event markers
+% send some event markers
+eventmarker(116 + TrialRecord.CurrentBlock); %block first
+eventmarker(116 + TrialRecord.CurrentCondition); %condition second
+eventmarker(116 + mod(TrialRecord.CurrentTrialNumber,10)); %last diget of trial sent third
 
 %% Scene 1. Fixation
 % Set fixation to the left eye for tracking

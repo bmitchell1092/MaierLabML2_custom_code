@@ -165,6 +165,13 @@ GratingList.right = ...
     [stereo_xpos(3) grating_ypos(3)], grating_diameter(3)/2, grating_tilt(3), grating_sf(3), grating_tf(3), grating_phase(3), color1, color2, 'circular', []};
 
 
+%% Trial sequence event markers
+% send some event markers
+eventmarker(116 + TrialRecord.CurrentBlock); %block first
+eventmarker(116 + TrialRecord.CurrentCondition); %condition second
+eventmarker(116 + mod(TrialRecord.CurrentTrialNumber,10)); %last diget of trial sent third
+
+
 %% Scene 1. Fixation
 
 
