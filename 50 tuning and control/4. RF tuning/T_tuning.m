@@ -30,7 +30,7 @@ end
 % 'phzdisparity'    Grating phase angle varies from trial to trial (DEV)
 % 'cone'            Grating colors vary trial to trial, eye to eye (DEV)
 
-paradigm = 'rfsize';
+paradigm = 'rfori';
 
 timestamp = datestr(now); % Get the current time on the computer
 
