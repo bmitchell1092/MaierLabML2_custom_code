@@ -11,15 +11,17 @@ end
 
 datafile = MLConfig.FormattedName;
 USER = getenv('username');
+outputFolder = datafile(1:8);
+flag_save = 1;
 
-if strcmp(USER,'maierlab')
-    SAVEPATH = 'C:\MLData\temp'; 
+if strcmp(USER,'maierlab') && flag_save == 1
+    SAVEPATH = strcat('C:\MLData\',outputFolder); 
 else
     SAVEPATH = strcat(fileparts(which('T_tuning.m')),'\','output files');
 end
 
 
-%% Paradigm selection : 5 presentations per trial
+%% Paradigm selection : 3 presentations per trial
 
 % 'rfori'           Grating orientation varies trial to trial
 % 'rfsize'          Grating size varies trial to trial
@@ -28,7 +30,7 @@ end
 % 'phzdisparity'    Grating phase angle varies from trial to trial (DEV)
 % 'cone'            Grating colors vary trial to trial, eye to eye (DEV)
 
-paradigm = 'rfori';
+paradigm = 'rfsize';
 
 timestamp = datestr(now); % Get the current time on the computer
 

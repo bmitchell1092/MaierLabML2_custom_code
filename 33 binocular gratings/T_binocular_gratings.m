@@ -28,16 +28,16 @@ set_bgcolor([0.5 0.5 0.5]);
 % 'mcosinteroc', 'bcosinteroc'
 % 'contrastresp'
 
-paradigm = 'mcosinteroc';
+paradigm = 'bminteroc';
 
 timestamp = datestr(now); % Get the current time on the computer
 
 % Set fixation point
 fixpt = [0 0]; % [x y] in viual degrees
-fixThreshold = .8; % degrees of visual angle
+fixThreshold = 1; % degrees of visual angle
 
 % define intervals for WaitThenHold
-wait_for_fix = 3000;
+wait_for_fix = 5000;
 initial_fix = 200; % hold fixation for 200ms to initiate trial
 
 % Find screen size
@@ -383,7 +383,7 @@ end
 % reward
 if 0==error_type
     run_scene(scene6,[32,36]); % event code for fix cross OFF 
-    goodmonkey(100, 'juiceline',1, 'numreward',1, 'pausetime',500, 'eventmarker',96); % 100 ms of juice x 2. Event marker for reward
+    goodmonkey(100, 'juiceline',1, 'numreward',2, 'pausetime',500, 'eventmarker',96); % 100 ms of juice x 2. Event marker for reward
 end
 
 

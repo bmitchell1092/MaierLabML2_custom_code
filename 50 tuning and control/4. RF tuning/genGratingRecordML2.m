@@ -13,9 +13,9 @@ JIT = 0; % add jitter to interstimulus interval: 0 or 1
 
 % parameters to keep constant (overwrite below where appropriate):
 GABOR = 0; 
-DOMEYE = 2; % name dominant eye e
+DOMEYE = 3; % name dominant eye e
 
-rf = [-1.5 -1.3];
+rf = [-3 -2];
 scrsize = getCoord;
 
 clear params
@@ -23,12 +23,12 @@ params.xpos                = [rf(1) rf(1)];     % enter x position (1st element-
 params.ypos                = [rf(2) rf(2)];     % enter y position (1st element--RIGHT eye, 2nd--LEFT eye)
 params.varyeye             = [3];               % 2 for R, 3 for L (applicable for cinteroc, cosinteroc, and sss cinteroc/cosinteroc--varyeye will get "fixedc" contrasts. ss--vary eye will be the ND eye
 params.eye                 = [1];               % [MEASUREDEYE];      %cinteroc/cosinteroc--varyeye will get "fixedc" contrasts. ss--vary eye will be the ND eye
-params.diameters           = [1];               % enter diameter of gratingc
+params.diameters           = [2.3];               % enter diameter of gratingc
 params.contrasts           = [0.9];             % choose one contrast
 params.fixedc              = [];                % fixed contrast (really contrast(s) for ND eye)
-params.spatial_freq        = [3./(2)];          % units are (1/cyc/deg)***** choose holder spatial frequency, NAN makes RN patch
+params.spatial_freq        = [2.5];          % units are (1/cyc/deg)***** choose holder spatial frequency, NAN makes RN patch
 params.temporal_freq       = [0];               % cycles/sec (slowest--.75)
-params.orientations        = [90];               % preferred orientation--remember 0 deg is vertical orientation, 90 deg is horizontal,  NAN makes RN patch
+params.orientations        = [45];               % preferred orientation--remember 0 deg is vertical orientation, 90 deg is horizontal,  NAN makes RN patch
 params.phase               = [0];               % phase of grating, 0 to pi,
 params.disparity           = [0];               % interocular phase difference (in degrees)
 params.stereo_xpos         = [-0.25*scrsize(1)+rf(1) 0.25*scrsize(1)+rf(1)]; % enter x position (1st element--RIGHT eye, 2nd--LEFT eye)
@@ -82,12 +82,12 @@ switch paradigm
         end
         
     case 'rfsize'
-        prespertr = 5;
+        prespertr = 3;
         params.diameters  = [logspace(log10(.5),log10(6),7)];
         params.eye        = params.eye; 
         all_con           = combvec(params.diameters,params.eye,params.phase); %all possible conditions of the parameters that vary
         
-        npres   = 20;
+        npres   = 15;
         minpres = npres* length(all_con); % total number of presentations per condition
         minntrs = minpres/prespertr;      % number of trials
         
@@ -130,7 +130,7 @@ switch paradigm
         params.spatial_freq =  1./logspace(log10(0.5),log10(4),4);%[0.05 0.1 0.2 0.4 0.8 1];
         all_con  = combvec(params.spatial_freq,params.eye,params.phase); %all possible conditions of the paramters that vary
         
-        mintr = 20; 
+        mintr = 15; 
         minpres = mintr* length(all_con); % total number of presentations per condition
         minntrs = minpres/prespertr;      % number of trials
         

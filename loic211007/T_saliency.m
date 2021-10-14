@@ -35,7 +35,8 @@ setRF(rf);
 % Set the constant conditions
 screenCenter = [0,0];
 linedensity = 5; %5 lines per square degree of visual angle
-diameter = [asind(150*0.252/(10*51))];  % Diameter of the figure
+viewdist = 60;
+diameter = [asind(150*0.252/(10*viewdist))];  % Diameter of the figure
 time = [1700];                          % Duration of trial in [ms]
 left_xloc = (-0.25*scrsize(1))+rf(1);         % Left eye x-coordinate
 right_xloc = (0.25*scrsize(1))+rf(1);         % Right eye x-coordinate

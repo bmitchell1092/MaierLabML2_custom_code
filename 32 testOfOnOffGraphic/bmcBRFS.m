@@ -11,36 +11,34 @@ end
 
 datafile = MLConfig.FormattedName;
 USER = getenv('username');
+outputFolder = datafile(1:8);
+flag_save = 1;
 
-if strcmp(USER,'maierlab')
-    SAVEPATH = 'C:\MLData\temp'; 
+if strcmp(USER,'maierlab') && flag_save == 1
+    SAVEPATH = strcat('C:\MLData\',outputFolder);
 else
     SAVEPATH = strcat(fileparts(which('bmcBRFS.m')),filesep,'output files');
 end
 
-
-
 scrsize = Screen.SubjectScreenFullSize / Screen.PixelsPerDegree;  % Screen size [x y] in degrees
 lower_right = [(scrsize(1)*0.5-0.5) (scrsize(2)*(-0.5)+0.5)];
 
-% Set receptive field
-rf = [-1.5 -1.3]; % [x y] in visual degrees
-setRF(rf);
-
 % Set the fixation point
 fixpt = [0 0]; % [x y] in visual degrees
-
 
 hotkey('c', 'forced_eye_drift_correction([((-0.25*scrsize(1))+fixpt(1)) fixpt(2)],1);');  % eye1
 
 
 % Set the constant conditions
 % de = 3;                                 % Dominant eye: 1 = binocular, 2 = right eye, 3 = left eye
+% Set receptive field
+rf = [-3 -2]; % [x y] in visual degrees
+setRF(rf);
+diameter = [2.3];                         % Diameter of the grating
 fixTreshold = 1;
-PrefOri = [158];                              % Preferred orientation of grating
-sf = [4];                               % Cycles per degree
+PrefOri = [45];                              % Preferred orientation of grating
+sf = [2.5];                               % Cycles per degree
 tf = [0];                               % Cycles per second (0=static, 4=drifting)
-diameter = [1];                         % Diameter of the grating
 left_xloc = (-0.25*scrsize(1))+rf(1);   % Left eye x-coordinate
 right_xloc = (0.25*scrsize(1))+rf(1);   % Right eye x-coordinate                   % Grating color 2
 phase_angle = [0];                      % Phase angle in degrees (0-360)
@@ -406,7 +404,7 @@ end
 % reward
 if 0==error_type
     run_scene(scene5,[36]); % event code for fix cross OFF 
-    goodmonkey(100, 'juiceline',1, 'numreward',1, 'pausetime',500, 'eventmarker',96); % 100 ms of juice x 2. 96 - Event marker for reward
+    goodmonkey(100, 'juiceline',1, 'numreward',2, 'pausetime',500, 'eventmarker',96); % 100 ms of juice x 2. 96 - Event marker for reward
 end
 
 trialerror(error_type);      % Add the result to the trial history
