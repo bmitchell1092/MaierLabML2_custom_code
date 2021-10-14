@@ -197,7 +197,7 @@ wait_for_fix = 500;
 hold_target_time = 1000;
 fig_offset_time = 500; %duration after figure disappears, during which the monkey is rewarded
 
-%% Trial sequence event markers
+%% Trial sequence event markers %for correct trial organization in .nev
 % send some event markers
 eventmarker(116 + TrialRecord.CurrentBlock); %block first
 eventmarker(116 + TrialRecord.CurrentCondition); %condition second
