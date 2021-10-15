@@ -127,7 +127,7 @@ switch stim_code %
         %fixation point adapter
         crc = CircleGraphic(null_);
         crc.List = { [], [], 0.3,center_left ;  [], [], 0.3, center_right;};
-        figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims','\',sprintf('figGround_random_line_segm_gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
+        figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\circleFigs','\',sprintf('gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
 
     case 2 %'fixSpotOn'
         % %Simult, not so salient, fix spot
@@ -139,8 +139,8 @@ switch stim_code %
         %fixation point adapter
         crc = CircleGraphic(null_);
         crc.List = { [1 0 0], [1 0 0], 0.3,center_left ;  [1 0 0], [1 0 0], 0.3, center_right;};   
-        figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims','\',sprintf('figGround_random_line_segm_gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
-     
+        figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\circleFigs','\',sprintf('gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
+
     case 3
         % flashed, salient no reward
         % fixation window (in degrees):
@@ -159,7 +159,7 @@ switch stim_code %
         %fixation point adapter
         crc = CircleGraphic(null_);
         crc.List = { [], [], 0.3,center_left ;  [], [], 0.3, center_right;};
-        figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\squareGrounds','\',sprintf('squareGround_random_line_segm_gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
+        figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\squareFigs','\',sprintf('gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
 
      
     case 5 %'notsalientRw'
@@ -171,7 +171,7 @@ switch stim_code %
         %fixation point adapter
         crc = CircleGraphic(null_);
         crc.List = { [1 0 0], [1 0 0], 0.3,center_left ;  [], [], 0.3, center_right;};
-        figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims','\',sprintf('figGround_random_line_segm_gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
+        figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\circleFigs','\',sprintf('gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
 
 end
 
