@@ -95,7 +95,7 @@ stim_ori = LINESEGRECORD(tr).ori;
 fig_xloc = stim_loc(1);
 fig_yloc = stim_loc(2);
 %for saving the figure location in degrees
-fig_xloc_d = stim_loc(1)*scrsize(1)/1980;
+fig_xloc_d = stim_loc(1)*scrsize(1)/1920;
 fig_yloc_d = stim_loc(2)*scrsize(2)/1080;
 
 ground_ori = stim_ori(1);
