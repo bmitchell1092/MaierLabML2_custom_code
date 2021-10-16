@@ -26,7 +26,7 @@ params.eye                 = [1];               % [MEASUREDEYE];      %cinteroc/
 params.diameters           = [2.3];               % enter diameter of gratingc
 params.contrasts           = [0.9];             % choose one contrast
 params.fixedc              = [];                % fixed contrast (really contrast(s) for ND eye)
-params.spatial_freq        = [2.5];          % units are (1/cyc/deg)***** choose holder spatial frequency, NAN makes RN patch
+params.spatial_freq        = [2];          % units are (1/cyc/deg)***** choose holder spatial frequency, NAN makes RN patch
 params.temporal_freq       = [0];               % cycles/sec (slowest--.75)
 params.orientations        = [45];               % preferred orientation--remember 0 deg is vertical orientation, 90 deg is horizontal,  NAN makes RN patch
 params.phase               = [0];               % phase of grating, 0 to pi,
@@ -166,6 +166,95 @@ switch paradigm
             
         end
         
+    case 'rfphase'
+        prespertr = 3;
+        %vary:
+        params.phase = [0:45:180]; 
+        all_con  = combvec(params.eye,params.phase); %all possible conditions of the paramters that vary
+        
+        mintr = 15;
+        minpres = mintr* length(all_con); % total number of presentations per condition
+        minntrs = minpres/prespertr;      % number of trials
+        
+        fprintf('The number of trials will be %d with %d presentations per trial.\n',minntrs,prespertr);
+        
+        % Randomly draw parameters for stimulus
+        shuflocs = randi([1 length(all_con)],minpres,1);
+        idxtr = 1;
+        theseid = [1:prespertr];
+        for tr = 1:minntrs
+            
+            theseid = [((tr-1)*prespertr+ 1):((tr-1)*prespertr + prespertr)];
+            % Randomly draw parameters for stimulus
+            GRATINGRECORD(tr).grating_tilt          = repmat(params.orientations, prespertr,1)';
+            GRATINGRECORD(tr).grating_eye           = all_con(1,shuflocs((theseid)));
+            GRATINGRECORD(tr).grating_sf            = repmat(params.spatial_freq, prespertr,1)';
+            GRATINGRECORD(tr).grating_tf            = repmat(params.temporal_freq,prespertr,1)';
+            GRATINGRECORD(tr).grating_contrast      = repmat(params.contrasts, prespertr,1)';
+            GRATINGRECORD(tr).grating_phase         = all_con(2,shuflocs((theseid)));
+            GRATINGRECORD(tr).grating_diameter      = repmat(params.diameters, prespertr,1)';
+            GRATINGRECORD(tr).grating_xpos          = repmat(params.xpos, prespertr,1)';
+            GRATINGRECORD(tr).stereo_xpos           = repmat(params.stereo_xpos,prespertr,1)';
+            GRATINGRECORD(tr).grating_ypos          = repmat(params.ypos, prespertr,1)';
+            GRATINGRECORD(tr).header                = 'rfphase';
+            GRATINGRECORD(tr).timestamp             = clock;
+            GRATINGRECORD(tr).grating_varyeye       = repmat(nan, prespertr,1);
+            GRATINGRECORD(tr).grating_fixedc        = repmat(nan, prespertr,1);
+            GRATINGRECORD(tr).grating_oridist       = repmat(nan, prespertr,1);
+            GRATINGRECORD(tr).grating_outerdiameter = repmat(nan, prespertr,1);
+            GRATINGRECORD(tr).grating_space         = repmat(nan, prespertr,1);
+            GRATINGRECORD(tr).grating_isi           = 200; %interstimulus interval
+            GRATINGRECORD(tr).grating_stimdur       = 200; %interstimulus interval
+            
+        end
+        
+        
+    case 'phzdisparity'
+        prespertr = 3;
+        %vary:
+        params.phase_L = [0:90:270];
+        params.phase_R = [0:90:270];
+        params.temporal_freq = .75;
+        params.eye = 1;
+        all_con  = combvec(params.eye,params.phase_L,params.phase_R); %all possible conditions of the paramters that vary
+        
+        mintr = 15;
+        minpres = mintr* length(all_con); % total number of presentations per condition
+        minntrs = minpres/prespertr;      % number of trials
+        
+        fprintf('The number of trials will be %d with %d presentations per trial.\n',minntrs,prespertr);
+        
+        % Randomly draw parameters for stimulus
+        shuflocs = randi([1 length(all_con)],minpres,1);
+        idxtr = 1;
+        theseid = [1:prespertr];
+        for tr = 1:minntrs
+            
+            theseid = [((tr-1)*prespertr+ 1):((tr-1)*prespertr + prespertr)];
+            % Randomly draw parameters for stimulus
+            GRATINGRECORD(tr).grating_tilt          = repmat(params.orientations, prespertr,1)';
+            GRATINGRECORD(tr).grating_eye           = all_con(1,shuflocs((theseid)));
+            GRATINGRECORD(tr).grating_sf            = repmat(params.spatial_freq, prespertr,1)';
+            GRATINGRECORD(tr).grating_tf            = repmat(params.temporal_freq,prespertr,1)';
+            GRATINGRECORD(tr).grating_contrast      = repmat(params.contrasts, prespertr,1)';
+            GRATINGRECORD(tr).grating_phase         = repmat(nan, prespertr,1);
+            GRATINGRECORD(tr).grating_phase_L       = all_con(2,shuflocs((theseid)));
+            GRATINGRECORD(tr).grating_phase_R       = all_con(3,shuflocs((theseid)));
+            GRATINGRECORD(tr).grating_diameter      = repmat(params.diameters, prespertr,1)';
+            GRATINGRECORD(tr).grating_xpos          = repmat(params.xpos, prespertr,1)';
+            GRATINGRECORD(tr).stereo_xpos           = repmat(params.stereo_xpos,prespertr,1)';
+            GRATINGRECORD(tr).grating_ypos          = repmat(params.ypos, prespertr,1)';
+            GRATINGRECORD(tr).header                = 'phzdisparity';
+            GRATINGRECORD(tr).timestamp             = clock;
+            GRATINGRECORD(tr).grating_varyeye       = repmat(nan, prespertr,1);
+            GRATINGRECORD(tr).grating_fixedc        = repmat(nan, prespertr,1);
+            GRATINGRECORD(tr).grating_oridist       = repmat(nan, prespertr,1);
+            GRATINGRECORD(tr).grating_outerdiameter = repmat(nan, prespertr,1);
+            GRATINGRECORD(tr).grating_space         = repmat(nan, prespertr,1);
+            GRATINGRECORD(tr).grating_isi           = 300; %interstimulus interval
+            GRATINGRECORD(tr).grating_stimdur       = 2000; %interstimulus interval
+            
+        end
         
     case 'cinteroc'
         prespertr = 3;
