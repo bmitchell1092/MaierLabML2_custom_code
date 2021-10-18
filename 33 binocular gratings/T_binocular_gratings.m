@@ -28,7 +28,7 @@ set_bgcolor([0.5 0.5 0.5]);
 % 'mcosinteroc', 'bcosinteroc'
 % 'contrastresp'
 
-paradigm = 'bminteroc';
+paradigm = 'phzdisparity';
 
 timestamp = datestr(now); % Get the current time on the computer
 
@@ -123,6 +123,12 @@ grating_space = GRATINGRECORD(tr).grating_space;
 grating_isi = GRATINGRECORD(tr).grating_isi;
 grating_stimdur = GRATINGRECORD(tr).grating_stimdur;
 
+if strcmp(grating_header,'phzdisparity')
+    grating_phase_L = GRATINGRECORD(tr).grating_phase_L;
+    grating_phase_R = GRATINGRECORD(tr).grating_phase_R;
+end
+
+
 % xloc_left = (-0.25*scrsize(1)+grating_xpos(2,1));   % Left eye x-coordinate
 % xloc_right = (0.25*scrsize(1)+grating_xpos(1,1));   % Right eye x-coordinate
 
@@ -132,8 +138,29 @@ gratL_color1 = nan(3,3); gratL_color2 = nan(3,3); % left grating contrast
 gratR_color1 = nan(3,3); gratR_color2 = nan(3,3); % right grating contrast
 
 switch grating_header
+    case 'phzdisparity'
+        
+        % contrast
+        for p = 1:prespertr
+            gratL_color1(p,:) = gray + (grating_contrast(p) ./ 2);
+            gratL_color2(p,:) = gray - (grating_contrast(p) ./ 2);
+            
+            gratR_color1(p,:) = gray + (grating_contrast(p) ./ 2);
+            gratR_color2(p,:) = gray - (grating_contrast(p) ./ 2);
+        end
+   
+        % orientation
+        gratL_tilt = grating_tilt;
+        gratR_tilt = grating_tilt;
+        
+        % phase
+        gratL_phase = grating_phase_L;
+        gratR_phase = grating_phase_R;
+
+
     case {'cinteroc'} % binocualr gratings, dichoptic contrasts
         
+        % contrast
         for p = 1:prespertr
         gratL_color1(p,:) = gray + (grating_contrast(p) ./ 2);
         gratL_color2(p,:) = gray - (grating_contrast(p) ./ 2);
@@ -142,13 +169,17 @@ switch grating_header
         gratR_color2(p,:) = gray - (grating_fixedc(p) ./ 2);
         end
         
+        % orientation
         gratL_tilt = grating_tilt;
         gratR_tilt = grating_tilt;
+        
+        % phase
+        gratL_phase = grating_phase;
+        gratR_phase = grating_phase;
         
     case 'contrastresp' % monocular and dioptic gratings
-        gratL_tilt = grating_tilt;
-        gratR_tilt = grating_tilt;
-        
+
+        % contrast
         for p = 1:prespertr
             if grating_eye(p) == 1 % show to both eyes
                 gratL_color1(p,:) = gray + (grating_contrast(p) / 2);
@@ -176,7 +207,17 @@ switch grating_header
             end
         end
         
-    case {'mcosinteroc','bminteroc'} % dichoptic (contrast and ori) and monocular gratings
+        % orientation
+        gratL_tilt = grating_tilt;
+        gratR_tilt = grating_tilt;
+        
+        % phase
+        gratL_phase = grating_phase;
+        gratR_phase = grating_phase;
+        
+    case {'mcosinteroc','bcosinteroc'} % dichoptic (contrast and ori) and monocular gratings
+        
+        % contrast
         for p = 1:prespertr
             gratL_color1(p,:) = gray + (grating_contrast(p) ./ 2);
             gratL_color2(p,:) = gray - (grating_contrast(p) ./ 2);
@@ -185,23 +226,47 @@ switch grating_header
             gratR_color2(p,:) = gray - (grating_fixedc(p) ./ 2);
         end
         
+        % orientation
         gratL_tilt = grating_tilt;
         gratR_tilt = grating_oridist;
+        
+        % phase
+        gratL_phase = grating_phase;
+        gratR_phase = grating_phase;
+        
+    case 'bminteroc'
+        
+        % contrast
+        for p = 1:prespertr
+            gratL_color1(p,:) = gray + (grating_contrast(p) ./ 2);
+            gratL_color2(p,:) = gray - (grating_contrast(p) ./ 2);
+            
+            gratR_color1(p,:) = gray + (grating_fixedc(p) ./ 2);
+            gratR_color2(p,:) = gray - (grating_fixedc(p) ./ 2);
+        end
+        
+        % orientation
+        gratL_tilt = grating_tilt;
+        gratR_tilt = grating_tilt;
+        
+        % phase
+        gratL_phase = grating_phase;
+        gratR_phase = grating_phase;
 end
 
 
 %% Preallocate grating struct
 GratingList.left = ...
-    {[other_stereo_xpos(1) other_ypos(1)], grating_diameter(1)/2, gratL_tilt(1), grating_sf(1), grating_tf(1), grating_phase(1), gratL_color1(1), gratL_color2(1), 'circular', []; ...
-    [other_stereo_xpos(2) other_ypos(2)], grating_diameter(2)/2, gratL_tilt(2), grating_sf(2), grating_tf(2), grating_phase(2), gratL_color1(2), gratL_color2(2), 'circular', [];...
-    [other_stereo_xpos(3) other_ypos(3)], grating_diameter(3)/2, gratL_tilt(3), grating_sf(3), grating_tf(3), grating_phase(3), gratL_color1(3), gratL_color2(3), 'circular', []};
+    {[other_stereo_xpos(1) other_ypos(1)], grating_diameter(1)/2, gratL_tilt(1), grating_sf(1), grating_tf(1), gratL_phase(1), gratL_color1(1), gratL_color2(1), 'circular', []; ...
+    [other_stereo_xpos(2) other_ypos(2)], grating_diameter(2)/2, gratL_tilt(2), grating_sf(2), grating_tf(2), gratL_phase(2), gratL_color1(2), gratL_color2(2), 'circular', [];...
+    [other_stereo_xpos(3) other_ypos(3)], grating_diameter(3)/2, gratL_tilt(3), grating_sf(3), grating_tf(3), gratL_phase(3), gratL_color1(3), gratL_color2(3), 'circular', []};
     
 
 
 GratingList.right = ...
-    {[stereo_xpos(1) grating_ypos(1)], grating_diameter(1)/2, gratR_tilt(1), grating_sf(1), grating_tf(1), grating_phase(1), gratR_color1(1), gratR_color2(1), 'circular', []; ...
-    [stereo_xpos(2) grating_ypos(2)], grating_diameter(2)/2, gratR_tilt(2), grating_sf(2), grating_tf(2), grating_phase(2), gratR_color1(2), gratR_color2(2), 'circular', [];...
-    [stereo_xpos(3) grating_ypos(3)], grating_diameter(3)/2, gratR_tilt(3), grating_sf(3), grating_tf(3), grating_phase(3), gratR_color1(3), gratR_color2(3), 'circular', []};
+    {[stereo_xpos(1) grating_ypos(1)], grating_diameter(1)/2, gratR_tilt(1), grating_sf(1), grating_tf(1), gratR_phase(1), gratR_color1(1), gratR_color2(1), 'circular', []; ...
+    [stereo_xpos(2) grating_ypos(2)], grating_diameter(2)/2, gratR_tilt(2), grating_sf(2), grating_tf(2), gratR_phase(2), gratR_color1(2), gratR_color2(2), 'circular', [];...
+    [stereo_xpos(3) grating_ypos(3)], grating_diameter(3)/2, gratR_tilt(3), grating_sf(3), grating_tf(3), gratR_phase(3), gratR_color1(3), gratR_color2(3), 'circular', []};
 
 
 %% Trial sequence event markers

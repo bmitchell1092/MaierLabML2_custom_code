@@ -26,11 +26,12 @@ end
 % 'rfori'           Grating orientation varies trial to trial
 % 'rfsize'          Grating size varies trial to trial
 % 'rfsf'            Grating spatial frequency varies trial to trial
-% 'posdisparity'    Grating x-position varies from trial to trial (DEV)
-% 'phzdisparity'    Grating phase angle varies from trial to trial (DEV)
+% 'rfphase'         Grating phase varies trial to trial
+% 'posdisparity'    Grating absolute disparity (x-position) varies between the eyes, trial to trial (DEV)
+% 'phzdisparity'    Grating phase disparity varies between the eyes, trial to trial (DEV)
 % 'cone'            Grating colors vary trial to trial, eye to eye (DEV)
 
-paradigm = 'rfori';
+paradigm = 'rfphase';
 
 timestamp = datestr(now); % Get the current time on the computer
 
@@ -104,7 +105,7 @@ end
 path = nan;
 grating_tilt = GRATINGRECORD(tr).grating_tilt;
 grating_eye = GRATINGRECORD(tr).grating_eye;
-grating_phase = GRATINGRECORD(tr).grating_phase;
+grating_hase = GRATINGRECORD(tr).grating_phase;
 grating_sf = GRATINGRECORD(tr).grating_sf;
 grating_tf = GRATINGRECORD(tr).grating_tf;
 grating_contrast = GRATINGRECORD(tr).grating_contrast;
