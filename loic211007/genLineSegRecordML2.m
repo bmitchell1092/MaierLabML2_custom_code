@@ -4,7 +4,7 @@ function genLineSegRecordML2(paradigm, TrialRecord)
 global LINESEGRECORD SAVEPATH datafile
 params.linelen = [1,2, 3, 4, 5, 6,7, 8,16];
 params.asynch = [500];                 % Asynchrony in [ms] (200 and/or 800)
-params.location = [-248,247,-248,247;-270,-270,270,270]; %stimulus location
+params.location = [-240,240,-240,240;-270,-270,270,270]; %stimulus location
 params.ori = [45,135; 135, 45];
 params.contrast       =  0.8; % must be scaler! edit g
 oldLINESEGRECORD = LINESEGRECORD;
