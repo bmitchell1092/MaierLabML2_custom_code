@@ -252,7 +252,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_outerdiameter = repmat(nan, prespertr,1);
             GRATINGRECORD(tr).grating_space         = repmat(nan, prespertr,1);
             GRATINGRECORD(tr).grating_isi           = 300; %interstimulus interval
-            GRATINGRECORD(tr).grating_stimdur       = 250; %interstimulus interval
+            GRATINGRECORD(tr).grating_stimdur       = 2000; %interstimulus interval
             
         end
         
@@ -288,8 +288,8 @@ switch paradigm
             GRATINGRECORD(tr).grating_xpos          = repmat(params.xpos, prespertr,1)';
             GRATINGRECORD(tr).stereo_xpos           = repmat(params.stereo_xpos,prespertr,1)';
             GRATINGRECORD(tr).grating_ypos          = repmat(params.ypos, prespertr,1)';
-            GRATINGRECORD(tr).grating_posdist       = all_con(2,shuflocs((theseid)));
-            GRATINGRECORD(tr).header                = 'posdisparity';
+            GRATINGRECORD(tr).grating_posdist       = 'needs dev';
+            GRATINGRECORD(tr).header                = 'phzdisparity';
             GRATINGRECORD(tr).timestamp             = clock;
             GRATINGRECORD(tr).grating_varyeye       = repmat(nan, prespertr,1);
             GRATINGRECORD(tr).grating_fixedc        = repmat(nan, prespertr,1);
@@ -297,7 +297,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_outerdiameter = repmat(nan, prespertr,1);
             GRATINGRECORD(tr).grating_space         = repmat(nan, prespertr,1);
             GRATINGRECORD(tr).grating_isi           = 300; %interstimulus interval
-            GRATINGRECORD(tr).grating_stimdur       = 250; %interstimulus interval
+            GRATINGRECORD(tr).grating_stimdur       = 2000; %interstimulus interval
             
         end
         
