@@ -283,12 +283,13 @@ switch paradigm
             GRATINGRECORD(tr).grating_sf            = repmat(params.spatial_freq, prespertr,1)';
             GRATINGRECORD(tr).grating_tf            = repmat(params.temporal_freq,prespertr,1)';
             GRATINGRECORD(tr).grating_contrast      = repmat(params.contrasts, prespertr,1)';
-            GRATINGRECORD(tr).grating_phase         = repmat(nan, prespertr,1);
+            GRATINGRECORD(tr).grating_phase         = repmat(params.phase, prespertr,1);
             GRATINGRECORD(tr).grating_diameter      = repmat(params.diameters, prespertr,1)';
             GRATINGRECORD(tr).grating_xpos          = repmat(params.xpos, prespertr,1)';
             GRATINGRECORD(tr).stereo_xpos           = repmat(params.stereo_xpos,prespertr,1)';
             GRATINGRECORD(tr).grating_ypos          = repmat(params.ypos, prespertr,1)';
             GRATINGRECORD(tr).grating_posdist       = all_con(2,shuflocs((theseid)));
+            GRATINGRECORD(tr).grating_phzdist       = repmat(nan, prespertr,1);
             GRATINGRECORD(tr).header                = 'posdisparity';
             GRATINGRECORD(tr).timestamp             = clock;
             GRATINGRECORD(tr).grating_varyeye       = repmat(nan, prespertr,1);

@@ -28,7 +28,7 @@ set_bgcolor([0.5 0.5 0.5]);
 % 'mcosinteroc', 'bcosinteroc'
 % 'contrastresp'
 
-paradigm = 'phzdisparity';
+paradigm = 'posdisparity';
 
 timestamp = datestr(now); % Get the current time on the computer
 
@@ -127,12 +127,14 @@ if strcmp(grating_header,'phzdisparity')
     grating_phase_L = GRATINGRECORD(tr).grating_phase_L;
     grating_phase_R = GRATINGRECORD(tr).grating_phase_R;
     grating_phzdist = grating_phase_L - grating_phase_R;
+else
+    grating_phzdist = nan(prespertr,1);
 end
 
 if strcmp(grating_header,'posdisparity')
     grating_posdist = GRATINGRECORD(tr).grating_posdist;
 else
-    grating_posdist = 0;
+    grating_posdist = nan(prespertr,1);
 end
 
 
@@ -247,6 +249,16 @@ switch grating_header
             
             gratR_color1(p,:) = gray + (grating_contrast(p) ./ 2);
             gratR_color2(p,:) = gray - (grating_contrast(p) ./ 2);
+            
+            % x-position shift
+            if grating_eye(p) == 2
+                grating_xpos(p) = grating_xpos(p) + grating_posdist(p);
+                stereo_xpos(p) = stereo_xpos(p) + grating_posdist(p);
+            elseif grating_eye(p) == 3
+                other_xpos(p) = other_xpos(p) + grating_posdist(p);
+                other_stereo_xpos(p) = other_stereo_xpos(p) + grating_posdist(p);
+            end
+            
         end
         
         % orientation
@@ -257,12 +269,6 @@ switch grating_header
         gratL_phase = grating_phase;
         gratR_phase = grating_phase;
         
-        % x-position shift
-        if grating_eye == 2
-            stereo_xpos = stereo_xpos + posdist;
-        elseif grating_eye == 3
-            other_xpos = other_xpos + posdist;
-        end
 end
 
 
