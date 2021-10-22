@@ -76,7 +76,7 @@ if trialNum == 1
     
 elseif size(DOTRECORD,2) < trialNum
     %GENERATE NEW GRATING RECORD IF THIS TRIAL IS LONGER THAN CURRENT GRATINGRECORD
-    genGratingRecordML2(TrialRecord);
+    genDotRecordML2(TrialRecord);
     disp('Number of minimum trials met');
 end
 
