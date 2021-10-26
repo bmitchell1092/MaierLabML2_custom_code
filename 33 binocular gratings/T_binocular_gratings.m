@@ -24,6 +24,7 @@ set_bgcolor([0.5 0.5 0.5]);
 
 %% Initial code
 % Paradigm selection
+% 'phzdisparity', 'posdisparity'
 % 'cinteroc', 'bminteroc'
 % 'mcosinteroc', 'bcosinteroc'
 % 'contrastresp'
