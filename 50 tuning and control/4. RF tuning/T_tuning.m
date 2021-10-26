@@ -1,6 +1,26 @@
-%% Jun 2019, Jacob Rogatinsky
-% Sept. 2021, Revised by Blake Mitchell
+%% Sept. 2021, Blake Mitchell
 
+% User Guide: *Important*
+% Companion function: genGratingRecordMl2
+% Before running any paradigm (see below), always check:
+% 1) Position, 2) Orientation, 3) Spatial frequency
+% 4) Phase, 5) Diameter (size), and 6) Contrast! 
+
+% % PARADIGMS
+%  NAME      | # of correct trials 
+% -----------------------------------
+% 'rfori'    | 90           
+% 'rfsize'   |      
+% 'rfsf'     |        
+% 'rfphase'  |
+   
+
+%% Paradigm selection : 3 presentations per trial
+paradigm = 'rfphase';
+
+% Note: Open genGratingRecordML2 to change parameters of gratings.
+
+%% BEGIN
 % Initialize the escape key
 hotkey('esc', 'escape_screen(); assignin(''caller'',''continue_'',false);');
 
@@ -20,17 +40,7 @@ else
     SAVEPATH = strcat(fileparts(which('T_tuning.m')),'\','output files');
 end
 
-
-%% Paradigm selection : 3 presentations per trial
-
-% 'rfori'           Grating orientation varies trial to trial
-% 'rfsize'          Grating size varies trial to trial
-% 'rfsf'            Grating spatial frequency varies trial to trial
-% 'rfphase'         Grating phase varies trial to trial
-% 'cone'            Grating colors vary trial to trial, eye to eye (DEV)
-
-paradigm = 'rfphase';
-
+%% Constant variables
 timestamp = datestr(now); % Get the current time on the computer
 
 % Set fixation point

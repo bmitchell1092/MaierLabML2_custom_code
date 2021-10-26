@@ -1,6 +1,17 @@
-%% Aug 2019, Jacob Rogatinsky
-% Sept 2021, Edited by Blake Mitchell
+%% Sept. 2021, Blake Mitchell
 
+% User Guide: *Important*
+% Companion function: genDotRecordMl2
+% Before running dotmapping (see below), open genDotRecordMl2:
+% 1) Theta, 2) Eccentricity, 3) Contrast
+
+% % PARADIGM
+%  NAME         | # of correct trials 
+% -----------------------------------
+% 'dotmapping'  | 90           
+
+
+%% BEGIN
 % Initialize the escape key
 hotkey('esc', 'escape_screen(); assignin(''caller'',''continue_'',false);');
 

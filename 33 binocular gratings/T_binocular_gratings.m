@@ -1,6 +1,30 @@
-%% Sept. 2021, Blake Mitchell 
-% Aug 2019, Jacob Rogatinsky
+%% Sept. 2021, Blake Mitchell
 
+% User Guide: *Important*
+% Companion function: genGratingRecordMl2
+% Before running any paradigm (see below), always check:
+% 1) Position, 2) Orientation, 3) Spatial frequency
+% 4) Phase, 5) Diameter (size), and 6) Contrast! 
+
+% % PARADIGMS
+%  NAME            | # of correct trials 
+% -----------------------------------
+% 'bminteroc'      | 360            
+% 'cinteroc'       |      
+% 'bcosinteroc'    |        
+% 'phzdisparity'   |
+% 'posdisparity'   |        
+
+% 10/26/2021: Note to Brock / Loic, if otherwise not instructed,
+% always run 'bminteroc'
+
+%% Paradigm selection
+paradigm = 'bminteroc';
+
+% Note: Open genGratingRecordML2 to change general parameters (params
+% struct). 
+
+%% BEGIN
 % Initialize the escape key
 hotkey('esc', 'escape_screen(); assignin(''caller'',''continue_'',false);');
 
@@ -23,13 +47,6 @@ end
 set_bgcolor([0.5 0.5 0.5]);
 
 %% Initial code
-% Paradigm selection
-% 'phzdisparity', 'posdisparity'
-% 'cinteroc', 'bminteroc'
-% 'mcosinteroc', 'bcosinteroc'
-% 'contrastresp'
-
-paradigm = 'posdisparity';
 
 timestamp = datestr(now); % Get the current time on the computer
 
@@ -47,8 +64,6 @@ setCoord(scrsize); % Send value to a global variable
 lower_right = [(scrsize(1)*0.5-0.5) (scrsize(2)*(-0.5)+0.5)];
 
 hotkey('c', 'forced_eye_drift_correction([((-0.25*scrsize(1))+fixpt(1)) fixpt(2)],1);');  % eye1
-
-
 
 % Trial number increases by 1 for every iteration of the code
 tr = tnum(TrialRecord);
