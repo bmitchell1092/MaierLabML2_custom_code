@@ -27,8 +27,6 @@ end
 % 'rfsize'          Grating size varies trial to trial
 % 'rfsf'            Grating spatial frequency varies trial to trial
 % 'rfphase'         Grating phase varies trial to trial
-% 'posdisparity'    Grating absolute disparity (x-position) varies between the eyes, trial to trial (DEV)
-% 'phzdisparity'    Grating phase disparity varies between the eyes, trial to trial (DEV)
 % 'cone'            Grating colors vary trial to trial, eye to eye (DEV)
 
 paradigm = 'rfphase';
