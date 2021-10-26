@@ -1,4 +1,4 @@
-function [DOT,dot_diameter] = makeDots2(TrialRecord,Screen, presN)
+function [DOT,dot_diameter] = makeDots(TrialRecord,Screen, presN)
 
 global DOTRECORD GABOR
 CurrentTrialNumber    = TrialRecord.CurrentTrialNumber;
