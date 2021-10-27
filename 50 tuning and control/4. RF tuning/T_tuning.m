@@ -9,14 +9,14 @@
 % % PARADIGMS
 %  NAME      | # of correct trials 
 % -----------------------------------
-% 'rfori'    | 90           
-% 'rfsize'   |      
-% 'rfsf'     |        
+% 'rfori'    | 80           
+% 'rfsize'   |     
+% 'rfsf'     | 20       
 % 'rfphase'  |
    
 
 %% Paradigm selection : 3 presentations per trial
-paradigm = 'rfphase';
+paradigm = 'rfsize';
 
 % Note: Open genGratingRecordML2 to change parameters of gratings.
 
@@ -113,7 +113,7 @@ end
 path = nan;
 grating_tilt = GRATINGRECORD(tr).grating_tilt;
 grating_eye = GRATINGRECORD(tr).grating_eye;
-grating_hase = GRATINGRECORD(tr).grating_phase;
+grating_phase = GRATINGRECORD(tr).grating_phase;
 grating_sf = GRATINGRECORD(tr).grating_sf;
 grating_tf = GRATINGRECORD(tr).grating_tf;
 grating_contrast = GRATINGRECORD(tr).grating_contrast;
