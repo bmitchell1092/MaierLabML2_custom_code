@@ -5,8 +5,7 @@ global LINESEGRECORD SAVEPATH datafile
 params.linelen = [1,2, 3, 4, 5, 6,7, 8,16];
 params.asynch = [500];                 % Asynchrony in [ms] (200 and/or 800)
 params.location = [-240,240,-240,240;-270,-270,270,270]; %stimulus location
-params.ori = [45,135; 135, 45];
-params.contrast       =  0.8; % must be scaler! edit g
+params.contrast       =  1; % must be scaler! edit g
 oldLINESEGRECORD = LINESEGRECORD;
 LINESEGRECORD = [];
 struct(LINESEGRECORD);
@@ -15,6 +14,7 @@ switch paradigm
     
     case 'notsalientNrw'
         params.cond_code = [1];
+        params.ori = [45,135; 135, 45];
         fprintf('n conditions %u\n',length(params.linelen)*size(params.location,2)*size(params.ori,2)*length(params.cond_code)); 
 
         all_con = combvec(params.cond_code,params.linelen, params.location,params.ori); % All possible combos
@@ -32,6 +32,7 @@ switch paradigm
         
     case 'fixSpotOn'
         params.cond_code = [2];
+        params.ori = [45,135; 135, 45];
         fprintf('n conditions %u\n',length(params.linelen)*size(params.location,2)*size(params.ori,2)*length(params.cond_code)); 
 
         all_con = combvec(params.cond_code,params.linelen, params.location,params.ori); % All possible combos
@@ -49,6 +50,7 @@ switch paradigm
         
     case  'flashedNrw' %'simult'
         params.cond_code = [3];
+        params.ori = [45,135; 135, 45];
         
         all_con = combvec(params.cond_code,params.linelen, params.location,params.ori); % All possible combos
         [row, col] = size(all_con); % Size of the combo vector
@@ -64,6 +66,7 @@ switch paradigm
         
         case  'squareStim' %'simult'
         params.cond_code = [4];
+        params.ori = [45,135; 135, 45];
         
         all_con = combvec(params.cond_code,params.linelen, params.location,params.ori); % All possible combos
         [row, col] = size(all_con); % Size of the combo vector
@@ -79,6 +82,23 @@ switch paradigm
         
     case 'notsalientRw'
         params.cond_code = [5];
+        params.ori = [45,135; 135, 45];
+        
+        all_con = combvec(params.cond_code,params.linelen, params.location,params.ori); % All possible combos
+        [row, col] = size(all_con); % Size of the combo vector
+        ntrials = 15 * col; % 15 of each combination
+        shuffle = randi([1 col],ntrials,1); % Randomly order them
+        
+        for tr = 1:ntrials
+            LINESEGRECORD(tr).cond_code = all_con(1,shuffle(tr));
+            LINESEGRECORD(tr).linelen = all_con(2,shuffle(tr));
+            LINESEGRECORD(tr).location = all_con(3:4,shuffle(tr));
+            LINESEGRECORD(tr).ori = all_con(5:6,shuffle(tr));
+            
+        end
+    case 'squareNoBG'
+        params.cond_code = [6];
+        params.ori = [NaN,NaN;45,135];
         
         all_con = combvec(params.cond_code,params.linelen, params.location,params.ori); % All possible combos
         [row, col] = size(all_con); % Size of the combo vector

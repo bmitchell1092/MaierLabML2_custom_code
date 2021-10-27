@@ -23,7 +23,8 @@ set_bgcolor([0.5 0.5 0.5]);
 %pdgm = 'notsalientRw'; 
 %pdgm = 'fixSpotOn'; %same as 'notsalientNrw' with a fixation spot on during stimulation duration
 %pdgm = 'flashedNrw';
-pdgm = 'squareStim';
+%pdgm = 'squareStim';
+pdgm = 'squareNoBG';
 
 timestamp = datestr(now); % Get the current time on the computer
 
@@ -34,14 +35,14 @@ rf = [3 -3]; % [x y] in visual degrees
 setRF(rf);
 % Set the constant conditions
 screenCenter = [0,0];
-linedensity = 5; %5 lines per square degree of visual angle
+linedensity = 11; %11 lines per square degree of visual angle
 viewdist = 60;
 diameter = [asind(150*0.252/(10*viewdist))];  % Diameter of the figure
 time = [1700];                          % Duration of trial in [ms]
 left_xloc = (-0.25*scrsize(1))+rf(1);         % Left eye x-coordinate
 right_xloc = (0.25*scrsize(1))+rf(1);         % Right eye x-coordinate
 %phase_angle = [0];                      % Phase angle in degrees (0-360)
-contr = 0.8; %contrast level
+contr = 1; %contrast level
 % Trial number increases by 1 for every iteration of the code
 tr = tnum(TrialRecord);
 filename = fullfile(SAVEPATH,sprintf('%s.lineSeg%s_di',datafile,pdgm));
@@ -51,7 +52,7 @@ if tr == 1
     sdnum = getSeed;
     genLineSegRecordML2(pdgm, TrialRecord);
     % generate fixation cross on convergence background
-    genFixCross((screenCenter(1)*Screen.PixelsPerDegree), (screenCenter(2)*Screen.PixelsPerDegree));
+    %genFixCross((screenCenter(1)*Screen.PixelsPerDegree), (screenCenter(2)*Screen.PixelsPerDegree));
    
     fid = fopen(filename, 'w');
     %fid = fopen(strcat('C:\Users\daumail\OneDrive - Vanderbilt\Documents\loic_code_042021\saliency_learning_study\ML_task\simple_task\',sprintf('RANDLINESEG%s',pdgm)), 'w'); % Write to a text file
@@ -99,8 +100,7 @@ fig_xloc_d = stim_loc(1)*scrsize(1)/1920;
 fig_yloc_d = stim_loc(2)*scrsize(2)/1080;
 
 ground_ori = stim_ori(1);
-fig_ori = stim_ori(2); %use preferred orientation (mostly relevant for V1)
-
+fig_ori = stim_ori(2);
 %possible screen locations 
 %centers of left and right sides of stereoscope 
 center_right =  [(0.25*scrsize(1)+screenCenter(1)) screenCenter(2)];
@@ -127,6 +127,7 @@ switch stim_code %
         %fixation point adapter
         crc = CircleGraphic(null_);
         crc.List = { [], [], 0.3,center_left ;  [], [], 0.3, center_right;};
+
         figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\circleFigs','\',sprintf('gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
 
     case 2 %'fixSpotOn'
@@ -138,7 +139,8 @@ switch stim_code %
         reward = 0; %if reward = 1; monkey receives reward. If reward = 0, monkey doesn't receive reward
         %fixation point adapter
         crc = CircleGraphic(null_);
-        crc.List = { [1 0 0], [1 0 0], 0.3,center_left ;  [1 0 0], [1 0 0], 0.3, center_right;};   
+        crc.List = { [1 0 0], [1 0 0], 0.3,center_left ;  [1 0 0], [1 0 0], 0.3, center_right;};  
+
         figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\circleFigs','\',sprintf('gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
 
     case 3
@@ -159,7 +161,8 @@ switch stim_code %
         %fixation point adapter
         crc = CircleGraphic(null_);
         crc.List = { [], [], 0.3,center_left ;  [], [], 0.3, center_right;};
-        figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\squareFigs','\',sprintf('gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
+        
+        figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\squareFigs_rightpos','\',sprintf('gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
 
      
     case 5 %'notsalientRw'
@@ -170,9 +173,21 @@ switch stim_code %
         reward = 1; %if reward = 1; monkey receives reward. If reward = 0, monkey doesn't receive reward
         %fixation point adapter
         crc = CircleGraphic(null_);
-        crc.List = { [1 0 0], [1 0 0], 0.3,center_left ;  [], [], 0.3, center_right;};
-        figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\circleFigs','\',sprintf('gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
+        crc.List = { [1 0 0], [1 0 0], 0.3,center_left ;  [1 0 0], [1 0 0], 0.3, center_right;};
+        
 
+        figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\circleFigs','\',sprintf('gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
+    case 6 %'squareNoBG'
+        fix_radius = 31;
+        reward = 0; 
+        % Set the trigger delay
+        trig_delay = 0;
+        %fixation point adapter
+        crc = CircleGraphic(null_);
+        crc.List = { [], [], 0.3,center_left ;  [], [], 0.3, center_right;};
+        
+        figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\squareFigs_noBG','\',sprintf('fori%d_cont%d_len%d_xlocation%d_ylocation%d.png', fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
+   
 end
 
 %% Monkey Logic 2.2 code
@@ -296,8 +311,18 @@ con3 = Concurrent(tc3);
 con3.add(rwoom);
 scene3 = create_scene(con3); % call create_scene when the property setting is done
 
-%scene 4 = if no reward
-scene4 = create_scene(tc3);
+%% scene 4 = if no reward
+
+fix4 = SingleTarget(tracker);
+fix4.Target = fixation_point;
+fix4.Threshold = fix_radius;
+img4 = ImageGraphic(fix4);
+img4.List = { {'graybackground.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+
+tc4 = TimeCounter(img4);
+tc4.Duration = 0; %we can consider this as the inter-trial interval
+
+scene4 = create_scene(tc4);
 
 %% TASK 
 tic
@@ -334,6 +359,7 @@ if 0==error_type %if tc2.Success
         else
             if reward == 0
                 run_scene(scene4,24);
+                %idle(0);
             end
         end
 end

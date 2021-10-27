@@ -1,0 +1,4 @@
+trial	horzdva	vertdva	grating_xpos	grating_ypos	other_xpos	other_ypos	grating_tilt	grating_sf	grating_contrast	grating_fixedc	grating_diameter	grating_eye	grating_varyeye	grating_oridist	gaborfilter_on	gabor_std	header	grating_phase	path	timestamp
+0001	-9.837612	-3.000000	3.000000	-3.000000	3.000000	-3.000000	90.000000	1.500000	0.000000	NaN	3.000000	3.000000	NaN	NaN	0	0.000000	contrastresp	0.000000	0.000000	738432.877687
+0001	-9.837612	-3.000000	3.000000	-3.000000	3.000000	-3.000000	90.000000	1.500000	0.900000	NaN	3.000000	3.000000	NaN	NaN	0	0.000000	contrastresp	0.000000	0.000000	738432.877687
+0001	-9.837612	-3.000000	3.000000	-3.000000	3.000000	-3.000000	90.000000	1.500000	0.900000	NaN	3.000000	3.000000	NaN	NaN	0	0.000000	contrastresp	0.000000	0.000000	738432.877687
