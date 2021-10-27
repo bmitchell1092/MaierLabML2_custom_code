@@ -1,5 +1,14 @@
 %% Sept 2021, Blake Mitchell
 
+% User Guide: *Important*
+% Companion function: n/a
+
+% % PARADIGMS
+%  NAME    | # of trials 
+% -----------------------------------
+% 'evp'    | 200        
+
+
 %% Initial code
 timestamp = datestr(now);
 

@@ -1,6 +1,30 @@
-%% Sept. 2021, Blake Mitchell 
-% Aug 2019, Jacob Rogatinsky
+%% Sept. 2021, Blake Mitchell
 
+% User Guide: *Important*
+% Companion function: genGratingRecordMl2
+% Before running any paradigm (see below), always check:
+% 1) Position, 2) Orientation, 3) Spatial frequency
+% 4) Phase, 5) Diameter (size), and 6) Contrast! 
+
+% % PARADIGMS
+%  NAME            | # of correct trials 
+% -----------------------------------
+% 'bminteroc'      | 360            
+% 'cinteroc'       |      
+% 'bcosinteroc'    |        
+% 'phzdisparity'   |
+% 'posdisparity'   |        
+
+% 10/26/2021: Note to Brock / Loic, if otherwise not instructed,
+% always run 'bminteroc'
+
+%% Paradigm selection
+paradigm = 'bminteroc';
+
+% Note: Open genGratingRecordML2 to change general parameters (params
+% struct). 
+
+%% BEGIN
 % Initialize the escape key
 hotkey('esc', 'escape_screen(); assignin(''caller'',''continue_'',false);');
 
@@ -23,12 +47,6 @@ end
 set_bgcolor([0.5 0.5 0.5]);
 
 %% Initial code
-% Paradigm selection
-% 'cinteroc', 'bminteroc'
-% 'mcosinteroc', 'bcosinteroc'
-% 'contrastresp'
-
-paradigm = 'phzdisparity';
 
 timestamp = datestr(now); % Get the current time on the computer
 
@@ -46,8 +64,6 @@ setCoord(scrsize); % Send value to a global variable
 lower_right = [(scrsize(1)*0.5-0.5) (scrsize(2)*(-0.5)+0.5)];
 
 hotkey('c', 'forced_eye_drift_correction([((-0.25*scrsize(1))+fixpt(1)) fixpt(2)],1);');  % eye1
-
-
 
 % Trial number increases by 1 for every iteration of the code
 tr = tnum(TrialRecord);
@@ -82,8 +98,8 @@ if tr == 1 % on the first trial
         'grating_eye',...
         'grating_varyeye',...
         'grating_oridist',...
-        'gaborfilter_on',...
-        'gabor_std',...
+        'grating_phzdist',...
+        'grating_posdist',...
         'header',...
         'grating_phase',...
         'path',...
@@ -126,11 +142,17 @@ grating_stimdur = GRATINGRECORD(tr).grating_stimdur;
 if strcmp(grating_header,'phzdisparity')
     grating_phase_L = GRATINGRECORD(tr).grating_phase_L;
     grating_phase_R = GRATINGRECORD(tr).grating_phase_R;
+    grating_phzdist = grating_phase_L - grating_phase_R;
+else
+    grating_phzdist = nan(prespertr,1);
 end
 
+if strcmp(grating_header,'posdisparity')
+    grating_posdist = GRATINGRECORD(tr).grating_posdist;
+else
+    grating_posdist = nan(prespertr,1);
+end
 
-% xloc_left = (-0.25*scrsize(1)+grating_xpos(2,1));   % Left eye x-coordinate
-% xloc_right = (0.25*scrsize(1)+grating_xpos(1,1));   % Right eye x-coordinate
 
 %% Conversion from old framework to new framework (save in both frameworks). 
 gray = [0.5 0.5 0.5];
@@ -156,26 +178,6 @@ switch grating_header
         % phase
         gratL_phase = grating_phase_L;
         gratR_phase = grating_phase_R;
-
-
-    case {'cinteroc'} % binocualr gratings, dichoptic contrasts
-        
-        % contrast
-        for p = 1:prespertr
-        gratL_color1(p,:) = gray + (grating_contrast(p) ./ 2);
-        gratL_color2(p,:) = gray - (grating_contrast(p) ./ 2);
-        
-        gratR_color1(p,:) = gray + (grating_fixedc(p) ./ 2);
-        gratR_color2(p,:) = gray - (grating_fixedc(p) ./ 2);
-        end
-        
-        % orientation
-        gratL_tilt = grating_tilt;
-        gratR_tilt = grating_tilt;
-        
-        % phase
-        gratL_phase = grating_phase;
-        gratR_phase = grating_phase;
         
     case 'contrastresp' % monocular and dioptic gratings
 
@@ -234,7 +236,7 @@ switch grating_header
         gratL_phase = grating_phase;
         gratR_phase = grating_phase;
         
-    case 'bminteroc'
+    case {'bminteroc','cinteroc'}
         
         % contrast
         for p = 1:prespertr
@@ -252,6 +254,37 @@ switch grating_header
         % phase
         gratL_phase = grating_phase;
         gratR_phase = grating_phase;
+        
+        
+    case {'posdisparity'}
+        
+        % contrast
+        for p = 1:prespertr
+            gratL_color1(p,:) = gray + (grating_contrast(p) ./ 2);
+            gratL_color2(p,:) = gray - (grating_contrast(p) ./ 2);
+            
+            gratR_color1(p,:) = gray + (grating_contrast(p) ./ 2);
+            gratR_color2(p,:) = gray - (grating_contrast(p) ./ 2);
+            
+            % x-position shift
+            if grating_eye(p) == 2
+                grating_xpos(p) = grating_xpos(p) + grating_posdist(p);
+                stereo_xpos(p) = stereo_xpos(p) + grating_posdist(p);
+            elseif grating_eye(p) == 3
+                other_xpos(p) = other_xpos(p) + grating_posdist(p);
+                other_stereo_xpos(p) = other_stereo_xpos(p) + grating_posdist(p);
+            end
+            
+        end
+        
+        % orientation
+        gratL_tilt = grating_tilt;
+        gratR_tilt = grating_tilt;
+        
+        % phase
+        gratL_phase = grating_phase;
+        gratR_phase = grating_phase;
+        
 end
 
 
@@ -487,8 +520,8 @@ for pres = 1:prespertr
         grating_eye(pres),...
         grating_varyeye(pres),...
         grating_oridist(pres),...
-        0,...
-        0,...
+        grating_phzdist(pres),...
+        grating_posdist(pres),...
         grating_header,...
         grating_phase(pres),...
         0,...

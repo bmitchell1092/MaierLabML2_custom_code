@@ -8,16 +8,16 @@
 % % PARADIGM
 %  NAME         | # of correct trials 
 % -----------------------------------
-% 'dotmapping'  | 90           
+% 'rds'  | 90           
 
 
 %% BEGIN
 % Initialize the escape key
 hotkey('esc', 'escape_screen(); assignin(''caller'',''continue_'',false);');
 
-global SAVEPATH DOTRECORD datafile npres
+global SAVEPATH RDSRECORD datafile npres
 if TrialRecord.CurrentTrialNumber == 1
-    DOTRECORD = [];
+    RDSRECORD = [];
 end
 
 datafile = MLConfig.FormattedName;
@@ -28,10 +28,10 @@ flag_save = 1;
 if strcmp(USER,'maierlab') && flag_save == 1
     SAVEPATH = strcat('C:\MLData\',outputFolder);
 else
-    SAVEPATH = strcat(fileparts(which('T_dotmapping.m')),'\','output files');
+    SAVEPATH = strcat(fileparts(which('T_rds.m')),'\','output files');
 end
 
-set_bgcolor([0.5 0.5 0.5]);
+set_bgcolor([0.5 0.5 0.5]); % This is to force eye calibration to have gray background
 
 %% Initial code
 
@@ -63,7 +63,7 @@ isi = 200;
 
 if trialNum == 1
     % Generate dOTRECORD
-    genDotRecordML2(TrialRecord);
+    genRDSRecordML2(TrialRecord);
     
     % Generate the background image
     genFixCross((fixpt(1)*Screen.PixelsPerDegree), (fixpt(2)*Screen.PixelsPerDegree));
@@ -85,13 +85,14 @@ if trialNum == 1
         'timestamp');
     fclose(fid);
     
-elseif size(DOTRECORD,2) < trialNum
+elseif size(RDSRECORD,2) < trialNum
     %GENERATE NEW GRATING RECORD IF THIS TRIAL IS LONGER THAN CURRENT GRATINGRECORD
     genDotRecordML2(TrialRecord);
     disp('Number of minimum trials met');
 end
 
 %% Create Dots for the current trial
+% DEV: 10/26/2021 Needs to be developed from here down. 
 
 for presN = 1:npres
     [DOTS{presN}, dot_diameter(presN)] = makeDots(TrialRecord,Screen,presN);
@@ -449,3 +450,5 @@ for pres = 1:npres
     
     fclose(fid);
 end
+
+    
