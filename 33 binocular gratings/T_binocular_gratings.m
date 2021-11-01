@@ -12,14 +12,14 @@
 % 'bminteroc'      | 360            
 % 'cinteroc'       |      
 % 'bcosinteroc'    |        
-% 'phzdisparity'   |
+% 'phzdisparity'   | 80
 % 'posdisparity'   |        
 
 % 10/26/2021: Note to Brock / Loic, if otherwise not instructed,
 % always run 'bminteroc'
 
 %% Paradigm selection
-paradigm = 'bminteroc';
+paradigm = 'phzdisparity';
 
 % Note: Open genGratingRecordML2 to change general parameters (params
 % struct). 
