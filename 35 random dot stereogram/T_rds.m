@@ -68,7 +68,7 @@ if trialNum == 1
     % Generate the background image
     genFixCross((fixpt(1)*Screen.PixelsPerDegree), (fixpt(2)*Screen.PixelsPerDegree));
     
-    filename = fullfile(SAVEPATH,sprintf('%s.gDotsXY_di',datafile));
+    filename = fullfile(SAVEPATH,sprintf('%s.gRdsXY_di',datafile));
     fid = fopen(filename, 'w');
     formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\r\n';
     fprintf(fid,formatSpec,...
