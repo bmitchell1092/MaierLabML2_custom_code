@@ -1,2 +1,2 @@
 Condition	Frequency	Block	Timing File	TaskObject#1	TaskObject#2	TaskObject#3	TaskObject#4	
-1		1		1	T_saliency	pic(graybackground.png,0,0)		
+1		1		1	T_saliency	pic(graybackgroundcross.png,0,0)		

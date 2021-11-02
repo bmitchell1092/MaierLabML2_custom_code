@@ -3,7 +3,7 @@ global SAVEPATH LINESEGRECORD datafile
 if TrialRecord.CurrentTrialNumber == 1
     LINESEGRECORD = [];
 end
-outputFolder = datafile(1:8);
+outputFolder = datafile; %(1:8);
 flag_save = 1;
 
 datafile = MLConfig.FormattedName;
@@ -19,15 +19,13 @@ end
 
 set_bgcolor([0.5 0.5 0.5]);
 
-
-
 % Paradigm selection
-%pdgm = 'notsalientNrw'; %incongruent stim appear at the beginning of the trial, stimuli are not salient, monkey gets no reward
+%pdgm = 'notsalientNrw'; %update 11/2/2021 %incongruent stim appear at the beginning of the trial, stimuli are not salient, monkey gets no reward
 %pdgm = 'notsalientRw'; 
 %pdgm = 'fixSpotOn'; %same as 'notsalientNrw' with a fixation spot on during stimulation duration
-%pdgm = 'flashedNrw';
+%pdgm = 'flashedNrw'; %update 11/2/2021
 %pdgm = 'squareStim';
-pdgm = 'squareNoBG';
+pdgm = 'squareNoBG'; %update 11/2/2021
 
 timestamp = datestr(now); % Get the current time on the computer
 
@@ -59,7 +57,7 @@ if tr == 1
    
     fid = fopen(filename, 'w');
     %fid = fopen(strcat('C:\Users\daumail\OneDrive - Vanderbilt\Documents\loic_code_042021\saliency_learning_study\ML_task\simple_task\',sprintf('RANDLINESEG%s',pdgm)), 'w'); % Write to a text file
-    formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n';
+    formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n';
     fprintf(fid,formatSpec,...
         'Trial Number',...
         'Line Density',...
@@ -72,6 +70,7 @@ if tr == 1
         'Figure Diameter',...
         'Paradigm',...
         'Time Stamp',...
+        'Flash Delay',...
         'Fixation X-Coord',...
         'Fixation Y-Coord');
     fclose(fid);
@@ -130,7 +129,8 @@ switch stim_code %
         %fixation point adapter
         crc = CircleGraphic(null_);
         crc.List = { [], [], 0.3,center_left ;  [], [], 0.3, center_right;};
-
+        prestimDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\backgrounds','\','graybackground.png');
+        bgDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\backgrounds','\','graybackground.png');
         figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\circleFigs','\',sprintf('gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
 
     case 2 %'fixSpotOn'
@@ -143,17 +143,23 @@ switch stim_code %
         %fixation point adapter
         crc = CircleGraphic(null_);
         crc.List = { [1 0 0], [1 0 0], 0.3,center_left ;  [1 0 0], [1 0 0], 0.3, center_right;};  
-
+        prestimDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\backgrounds','\','graybackground.png');
+        bgDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\backgrounds','\',sprintf('gori%d_cont%d_len%d.png',ground_ori, 100*contr,linelen));
         figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\circleFigs','\',sprintf('gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
 
-    case 3
+    case 3 %'flashedNrw'
         % flashed, salient no reward
         % fixation window (in degrees):
         fix_radius = 31;
-        reward = 0; 
+        reward = 0;
         % Set the trigger delay
         trig_delay = 500;
-        
+        crc = CircleGraphic(null_);
+        crc.List = { [], [], 0.3,center_left ;  [], [], 0.3, center_right;};
+        prestimDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\backgrounds','\','white_background.png');
+        bgDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\backgrounds','\',sprintf('gori%d_cont%d_len%d.png',ground_ori, 100*contr,linelen));
+        figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\squareFigs_rightpos','\',sprintf('gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
+
      case 4
         % square stimulus no reward
         % fixation window (in degrees):
@@ -164,7 +170,8 @@ switch stim_code %
         %fixation point adapter
         crc = CircleGraphic(null_);
         crc.List = { [], [], 0.3,center_left ;  [], [], 0.3, center_right;};
-        
+        prestimDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\backgrounds','\','graybackground.png');
+        bgDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\backgrounds','\','graybackground.png');
         figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\squareFigs_rightpos','\',sprintf('gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
 
      
@@ -177,18 +184,20 @@ switch stim_code %
         %fixation point adapter
         crc = CircleGraphic(null_);
         crc.List = { [1 0 0], [1 0 0], 0.3,center_left ;  [1 0 0], [1 0 0], 0.3, center_right;};
-        
-
+        prestimDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\backgrounds','\','graybackground.png');
+        bgDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\backgrounds','\',sprintf('gori%d_cont%d_len%d.png',ground_ori, 100*contr,linelen));
         figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\circleFigs','\',sprintf('gori%d_fori%d_cont%d_len%d_xlocation%d_ylocation%d.png',ground_ori, fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
+    
     case 6 %'squareNoBG'
-        fix_radius = 31;
+        fix_radius = 4;
         reward = 0; 
         % Set the trigger delay
         trig_delay = 0;
         %fixation point adapter
         crc = CircleGraphic(null_);
         crc.List = { [], [], 0.3,center_left ;  [], [], 0.3, center_right;};
-        
+        prestimDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\backgrounds','\','white_background.png');
+        bgDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\backgrounds','\','white_background.png');
         figDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\squareFigs_noBG','\',sprintf('fori%d_cont%d_len%d_xlocation%d_ylocation%d.png', fig_ori, 100*contr,linelen,fig_xloc,fig_yloc));
    
 end
@@ -236,7 +245,7 @@ wth1.HoldTime = 200; % Set the hold time
 
 % Set the convergence cue background image
 img1 = ImageGraphic(wth1);
-img1.List = { {'graybackground.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+img1.List = {prestimDir, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
 %fixation spot on
 on1 = OnOffGraphic(fix1);
@@ -268,9 +277,33 @@ box.Position = lower_right;
 
 img2 = ImageGraphic(box);
 imSize = [Screen.SubjectScreenFullSize(1)/2 Screen.SubjectScreenFullSize(2)];
-img2.List = {figDir, center_left,[0 0 0],imSize;figDir, center_right,  [0 0 0], imSize };   % put only one image in each row
+img2.List = {bgDir, center_left,[0 0 0],imSize;bgDir, center_right,  [0 0 0], imSize };   % put only one image in each row
 
-tc2 = TimeCounter(img2);
+% Delay
+trig = TriggerTimer(img2);
+trig.Delay = trig_delay;
+
+on2 = OnOffGraphic(trig);
+on2.setOffGraphic(img2);
+on3 = OnOffGraphic(on2);
+on3.setOffGraphic(box);
+
+%photodiode turns black when target is on %needs to be coded ahead of stimulus so
+%it is displayed on overlay of stimulus
+blackbox = BoxGraphic(on3);
+blackbox.EdgeColor = [0 0 0];
+blackbox.FaceColor = [0 0 0];
+blackbox.Size = [3 3];
+blackbox.Position = lower_right;
+
+target = ImageGraphic(blackbox);
+target.List = {figDir, center_left,[0 0 0],imSize;figDir, center_right,  [0 0 0], imSize };   % put only one image in each row
+target.Trigger = true;
+
+%eventTarget = OnOffMarker(target); %make event code update when use flashed paradigm
+%eventTraget.OnMarker = 25;
+
+tc2 = TimeCounter(target);
 tc2.Duration = hold_target_time;
 
 %press mouse key if detect stim. don't press key if not
@@ -298,7 +331,7 @@ fix3 = SingleTarget(tracker);
 fix3.Target = fixation_point;
 fix3.Threshold = fix_radius;
 img3 = ImageGraphic(fix3);
-img3.List = { {'graybackground.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+img3.List = {prestimDir, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
 tc3 = TimeCounter(img3);
 tc3.Duration = fig_offset_time; %we can consider this as the inter-trial interval
@@ -320,7 +353,7 @@ fix4 = SingleTarget(tracker);
 fix4.Target = fixation_point;
 fix4.Threshold = fix_radius;
 img4 = ImageGraphic(fix4);
-img4.List = { {'graybackground.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+img4.List = {prestimDir, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
 tc4 = TimeCounter(img4);
 tc4.Duration = 0; %we can consider this as the inter-trial interval
@@ -375,7 +408,7 @@ toc
 %% Write info to file
 
 fid = fopen(filename, 'a');
-formatSpec =  '%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%s\t%s\t%f\t%f\t\n';
+formatSpec =  '%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%s\t%s\t%f\t%f\t%f\t\n';
 fprintf(fid,formatSpec,...
     tr,...
     linedensity,...
@@ -388,6 +421,7 @@ fprintf(fid,formatSpec,...
     diameter,...
     pdgm,...
     timestamp,...
+    trig_delay,...
     ((-0.25*scrsize(1))+0),...
     0);
 
