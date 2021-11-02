@@ -3,7 +3,7 @@ global SAVEPATH LINESEGRECORD datafile
 if TrialRecord.CurrentTrialNumber == 1
     LINESEGRECORD = [];
 end
-outputFolder = datafile; %(1:8);
+outputFolder = datafile(1:8);
 flag_save = 1;
 
 datafile = MLConfig.FormattedName;
@@ -17,7 +17,8 @@ end
 
 %% Initial code
 
-set_bgcolor([0.5 0.5 0.5]);
+%set_bgcolor([0.5 0.5 0.5]); 11-2-2021 (testing)
+set_bgcolor([1 1 1]); % testing white background for calibration
 
 % Paradigm selection
 %pdgm = 'notsalientNrw'; %update 11/2/2021 %incongruent stim appear at the beginning of the trial, stimuli are not salient, monkey gets no reward
@@ -241,7 +242,7 @@ fix1.Threshold = fix_radius; % Set the fixation threshold
 % Wait for fixation
 wth1 = WaitThenHold(fix1); % Initialize the wait and hold adapter
 wth1.WaitTime = 5000; % Set the wait time until fixation is acquired
-wth1.HoldTime = 200; % Set the hold time
+wth1.HoldTime = 0; % Set the hold time
 
 % Set the convergence cue background image
 img1 = ImageGraphic(wth1);
