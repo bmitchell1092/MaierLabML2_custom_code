@@ -6,7 +6,7 @@ function genGratingRecordML2(paradigm,TrialRecord)
 % Note by BM: GRATINGRECORD is exactly as it was, with two additions: 1)
 % .tf (temporal frequency) and 2) .stereo_xpos
 
-global GRATINGRECORD presN SAVEPATH DOMEYE GABOR JIT CENTER prespertr datafile RF
+global GRATINGRECORD presN SAVEPATH DOMEYE GABOR prespertr datafile params
 oldGRATINGRECORD = GRATINGRECORD; 
 GRATINGRECORD = [];
 JIT = 0; % add jitter to interstimulus interval: 0 or 1
@@ -15,7 +15,7 @@ JIT = 0; % add jitter to interstimulus interval: 0 or 1
 GABOR = 0; 
 DOMEYE = 3; % name dominant eye e
 
-rf = [-3 -2];
+rf = [-2.2 -1.5];
 scrsize = getCoord;
 
 clear params
@@ -28,7 +28,7 @@ params.contrasts           = [0.9];             % choose one contrast
 params.fixedc              = [];                % fixed contrast (really contrast(s) for ND eye)
 params.spatial_freq        = [2];          % units are (1/cyc/deg)***** choose holder spatial frequency, NAN makes RN patch
 params.temporal_freq       = [0];               % cycles/sec (slowest--.75)
-params.orientations        = [45];               % preferred orientation--remember 0 deg is vertical orientation, 90 deg is horizontal,  NAN makes RN patch
+params.orientations        = [101.2];               % preferred orientation--remember 0 deg is vertical orientation, 90 deg is horizontal,  NAN makes RN patch
 params.phase               = [0];               % phase of grating, 0 to pi,
 params.disparity           = [0];               % interocular phase difference (in degrees)
 params.stereo_xpos         = [-0.25*scrsize(1)+rf(1) 0.25*scrsize(1)+rf(1)]; % enter x position (1st element--RIGHT eye, 2nd--LEFT eye)

@@ -10,13 +10,13 @@
 %  NAME      | # of correct trials 
 % -----------------------------------
 % 'rfori'    | 80           
-% 'rfsize'   |     
+% 'rfsize'   | 35   
 % 'rfsf'     | 20       
 % 'rfphase'  |
    
 
 %% Paradigm selection : 3 presentations per trial
-paradigm = 'rfsize';
+paradigm = 'rfsf';
 
 % Note: Open genGratingRecordML2 to change parameters of gratings.
 

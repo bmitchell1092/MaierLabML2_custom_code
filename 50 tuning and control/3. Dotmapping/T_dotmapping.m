@@ -8,7 +8,7 @@
 % % PARADIGM
 %  NAME         | # of correct trials 
 % -----------------------------------
-% 'dotmapping'  | 90           
+% 'dotmapping'  | 100-200           
 
 
 %% BEGIN
@@ -104,15 +104,17 @@ dot_x                 = DOTRECORD(trialNum).dot_xpos;
 dot_y                 = DOTRECORD(trialNum).dot_ypos;
 dot_eye               = DOTRECORD(trialNum).dot_eye;
 
-corrected_x = []; % preallocate
-corrected_y = [];
+corrected_x = nan(1,5); % preallocate
+corrected_y = nan(1,5);
 
-if dot_eye == 2
-    corrected_x= dot_x + (0.25*scrsize(1)) + fixpt(1);
-    corrected_y= dot_y + fixpt(2);
-elseif dot_eye == 3
-    corrected_x= dot_x - (0.25*scrsize(1)) + fixpt(1);
-    corrected_y= dot_y + fixpt(2);
+for p = 1:npres
+    if dot_eye(p) == 2
+        corrected_x(p) = dot_x(p) + (0.25*scrsize(1)) + fixpt(1);
+        corrected_y(p) = dot_y(p) + fixpt(2);
+    elseif dot_eye(p) == 3
+        corrected_x(p) = dot_x(p) - (0.25*scrsize(1)) + fixpt(1);
+        corrected_y(p) = dot_y(p) + fixpt(2);
+    end
 end
 
 %% Trial sequence event markers
@@ -431,7 +433,7 @@ filename = fullfile(SAVEPATH,sprintf('%s.gDotsXY_di',datafile));
 
 
 for pres = 1:npres
-    [X(pres),Y(pres)] = findScreenPosML2(dot_eye,Screen,dot_x(pres),dot_y(pres),'cart');
+    [X(pres),Y(pres)] = findScreenPosML2(dot_eye(pres),Screen,dot_x(pres),dot_y(pres),'cart');
     fid = fopen(filename, 'a');  % append
     formatSpec =  '%04u\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\r\n';
     fprintf(fid,formatSpec,...
