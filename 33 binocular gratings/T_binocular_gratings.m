@@ -15,7 +15,7 @@
 % 'phzdisparity'   | 80
 % 'posdisparity'   |        
 
-% 10/26/2021: Note to Brock / Loic, if otherwise not instructed,
+% 10/26/2021: Note to Brock / Loic - if not instructed,
 % always run 'bminteroc'
 
 %% Paradigm selection

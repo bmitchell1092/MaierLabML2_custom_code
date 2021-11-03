@@ -12,11 +12,11 @@
 % 'rfori'    | 80           
 % 'rfsize'   | 35   
 % 'rfsf'     | 20       
-% 'rfphase'  |
+% 'rfphase'  | 25
    
 
 %% Paradigm selection : 3 presentations per trial
-paradigm = 'rfsf';
+paradigm = 'rfphase';
 
 % Note: Open genGratingRecordML2 to change parameters of gratings.
 
@@ -454,7 +454,7 @@ end
 % reward
 if 0==error_type
     run_scene(scene8,[32,36]); % event code for fix cross OFF 
-    goodmonkey(100, 'juiceline',1, 'numreward',2, 'pausetime',500, 'eventmarker',96); % 100 ms of juice x 2. Event marker for reward
+    goodmonkey(100, 'juiceline',1, 'numreward',1, 'pausetime',200, 'eventmarker',96); % 100 ms of juice x 2. Event marker for reward
 end
 
 trialerror(error_type);      % Add the result to the trial history

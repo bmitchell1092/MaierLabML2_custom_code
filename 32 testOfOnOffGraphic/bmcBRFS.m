@@ -32,11 +32,11 @@ hotkey('c', 'forced_eye_drift_correction([((-0.25*scrsize(1))+fixpt(1)) fixpt(2)
 % Set the constant conditions
 % de = 3;                                 % Dominant eye: 1 = binocular, 2 = right eye, 3 = left eye
 % Set receptive field
-rf = [-2.2 -1.5]; % [x y] in visual degrees
+rf = [-1.8 -2.6]; % [x y] in visual degrees
 setRF(rf);
-diameter = [2.3];                         % Diameter of the grating
+diameter = [3.85];                         % Diameter of the grating
 fixTreshold = 1;
-PrefOri = [101.2];                              % Preferred orientation of grating
+PrefOri = [0];                              % Preferred orientation of grating
 sf = [2];                               % Cycles per degree
 tf = [0];                               % Cycles per second (0=static, 4=drifting)
 left_xloc = (-0.25*scrsize(1))+rf(1);   % Left eye x-coordinate
