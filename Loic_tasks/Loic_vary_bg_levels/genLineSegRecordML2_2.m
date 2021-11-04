@@ -1,8 +1,8 @@
-function genLineSegRecordML2(paradigm, TrialRecord)
+function genLineSegRecordML2_2(paradigm, TrialRecord)
 %generate variable that pre-sets grating parameters for n number of trials
 
 global LINESEGRECORD SAVEPATH datafile
-params.linelen = [1,2, 3, 4, 5, 6,7, 8,16];
+params.linelen = [1,3, 4, 5, 6];% [1,2, 3, 4, 5, 6,7, 8,16];
 params.asynch = [500];                 % Asynchrony in [ms] (200 and/or 800)
 params.location = [-240,240,-240,240;-270,-270,270,270]; %stimulus location
 %params.contrast       =  1; % must be scaler! edit g
