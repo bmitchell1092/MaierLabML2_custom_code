@@ -16,7 +16,7 @@
    
 
 %% Paradigm selection : 3 presentations per trial
-paradigm = 'rfphase';
+paradigm = 'rfori';
 
 % Note: Open genGratingRecordML2 to change parameters of gratings.
 
@@ -161,10 +161,15 @@ color2 = gray - (grating_contrast(1) / 2);
 % %     [stereo_xpos(4) grating_ypos(4)], grating_diameter(4)/2, grating_tilt(4), grating_sf(4), grating_tf(4), grating_phase(4), color1, color2, 'circular', []; ...
 % %     [stereo_xpos(5) grating_ypos(5)], grating_diameter(5)/2, grating_tilt(5), grating_sf(5), grating_tf(5), grating_phase(5), color1, color2, 'circular', []};
 
+% % GratingList.left = ...
+% %     {[other_stereo_xpos(1) other_ypos(1)], grating_diameter(1)/2, grating_tilt(1), grating_sf(1), grating_tf(1), grating_phase(1), color1, color2, 'circular', []; ...
+% %     [other_stereo_xpos(2) other_ypos(2)], grating_diameter(2)/2, grating_tilt(2), grating_sf(2), grating_tf(2), grating_phase(2), color1, color2, 'circular', [];...
+% %     [other_stereo_xpos(3) other_ypos(3)], grating_diameter(3)/2, grating_tilt(3), grating_sf(3), grating_tf(3), grating_phase(3), color1, color2, 'circular', []};
+
 GratingList.left = ...
-    {[other_stereo_xpos(1) other_ypos(1)], grating_diameter(1)/2, grating_tilt(1), grating_sf(1), grating_tf(1), grating_phase(1), color1, color2, 'circular', []; ...
-    [other_stereo_xpos(2) other_ypos(2)], grating_diameter(2)/2, grating_tilt(2), grating_sf(2), grating_tf(2), grating_phase(2), color1, color2, 'circular', [];...
-    [other_stereo_xpos(3) other_ypos(3)], grating_diameter(3)/2, grating_tilt(3), grating_sf(3), grating_tf(3), grating_phase(3), color1, color2, 'circular', []};
+    {[other_stereo_xpos(1) other_ypos(1)], 0, grating_tilt(1), grating_sf(1), grating_tf(1), grating_phase(1), color1, color2, 'circular', []; ...
+    [other_stereo_xpos(2) other_ypos(2)], 0, grating_tilt(2), grating_sf(2), grating_tf(2), grating_phase(2), color1, color2, 'circular', [];...
+    [other_stereo_xpos(3) other_ypos(3)], 0, grating_tilt(3), grating_sf(3), grating_tf(3), grating_phase(3), color1, color2, 'circular', []};
 
 
 
@@ -454,7 +459,7 @@ end
 % reward
 if 0==error_type
     run_scene(scene8,[32,36]); % event code for fix cross OFF 
-    goodmonkey(100, 'juiceline',1, 'numreward',1, 'pausetime',200, 'eventmarker',96); % 100 ms of juice x 2. Event marker for reward
+    goodmonkey(100, 'juiceline',1, 'numreward',2, 'pausetime',200, 'eventmarker',96); % 100 ms of juice x 2. Event marker for reward
 end
 
 trialerror(error_type);      % Add the result to the trial history
