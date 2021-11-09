@@ -6,7 +6,7 @@ function genGratingRecordML2(paradigm,TrialRecord)
 % Note by BM: GRATINGRECORD is exactly as it was, with two additions: 1)
 % .tf (temporal frequency) and 2) .stereo_xpos
 
-global GRATINGRECORD presN SAVEPATH DOMEYE GABOR prespertr datafile params
+global GRATINGRECORD SAVEPATH DOMEYE GABOR prespertr datafile params
 oldGRATINGRECORD = GRATINGRECORD; 
 GRATINGRECORD = [];
 JIT = 0; % add jitter to interstimulus interval: 0 or 1
@@ -19,19 +19,19 @@ rf = [-1.2, -1.4];
 scrsize = getCoord;
 
 clear params
-params.xpos                = [rf(1) rf(1)];     % enter x position (1st element--RIGHT eye, 2nd--LEFT eye)
-params.ypos                = [rf(2) rf(2)];     % enter y position (1st element--RIGHT eye, 2nd--LEFT eye)
-params.varyeye             = [2];               % 2 for R, 3 for L (applicable for cinteroc, cosinteroc, and sss cinteroc/cosinteroc--varyeye will get "fixedc" contrasts. ss--vary eye will be the ND eye
-params.eye                 = [3];               % [MEASUREDEYE];      %cinteroc/cosinteroc--varyeye will get "fixedc" contrasts. ss--vary eye will be the ND eye
-params.diameters           = [1.2];               % enter diameter of gratingc
+params.xpos                = [rf(1) rf(1)];     % enter x position (1st element--LEFT eye, 2nd--RIGHT eye)
+params.ypos                = [rf(2) rf(2)];     % enter y position (1st element--LEFT eye, 2nd--RIGHT eye)
+params.varyeye             = [nan];             % 2 for R, 3 for L (applicable for cinteroc, cosinteroc, and sss cinteroc/cosinteroc--varyeye will get "fixedc" contrasts. ss--vary eye will be the ND eye
+params.eye                 = [1];               % leave this [1] by default
+params.diameters           = [2];               % enter diameter of gratingc
 params.contrasts           = [0.9];             % choose one contrast
 params.fixedc              = [];                % fixed contrast (really contrast(s) for ND eye)
-params.spatial_freq        = [1.5];          % units are (1/cyc/deg)***** choose holder spatial frequency, NAN makes RN patch
+params.spatial_freq        = [1.5];             % units are (1/cyc/deg)***** choose holder spatial frequency, NAN makes RN patch
 params.temporal_freq       = [0];               % cycles/sec (slowest--.75)
 params.orientations        = [45];               % preferred orientation--remember 0 deg is vertical orientation, 90 deg is horizontal,  NAN makes RN patch
 params.phase               = [0];               % phase of grating, 0 to pi,
 params.disparity           = [0];               % interocular phase difference (in degrees)
-params.stereo_xpos         = [-0.25*scrsize(1)+rf(1) 0.25*scrsize(1)+rf(1)]; % enter x position (1st element--RIGHT eye, 2nd--LEFT eye)
+params.stereo_xpos         = [-0.25*scrsize(1)+rf(1) 0.25*scrsize(1)+rf(1)]; % enter x position (1st element--LEFT eye, 2nd--RIGHT eye)
 params.gabor               = [0];
 
 switch paradigm
@@ -79,6 +79,53 @@ switch paradigm
             GRATINGRECORD(tr).grating_space         = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_isi           = 200; %interstimulus interval
             GRATINGRECORD(tr).grating_stimdur       = 200; %stim interval
+        end
+        
+    case 'rforiWithBlanks'
+        prespertr = 3;
+        % parameters to vary:
+        params.orientations = [0:11.25:168.75]; % degrees
+        params.eye = [1,2,3]; % this should be both eyes, right eye, or left eye
+        mintr = 15;
+        all_con  = combvec(params.orientations,params.eye,params.phase); %all possible conditions of the parameters that vary
+        minpres = mintr* length(all_con); % total number of presentations at 10 per loc
+        minntrs = floor(minpres/prespertr);   % number of trials
+        
+        fprintf('\nThe number of trials will be %d with %d presentations per trial.\n',minntrs,prespertr);
+        
+        % Randomly draw parameters for stimulus
+        rng shuffle
+        shuflocs = []; idx = 1:length(all_con);
+        for i = 1:mintr
+            shuflocs = [shuflocs uShuffle(idx)];
+        end
+        idxtr = 1;
+        theseid = [1:prespertr];
+        
+        for tr = 1:minntrs
+            
+            theseid = [((tr-1)*prespertr + 1):((tr-1)*prespertr + prespertr)];
+            % Randomly draw parameters for stimulus
+            GRATINGRECORD(tr).grating_tilt          = all_con(1,shuflocs((theseid)));
+            GRATINGRECORD(tr).grating_eye           = all_con(2,shuflocs((theseid)));
+            GRATINGRECORD(tr).grating_phase         = all_con(3,shuflocs((theseid)));
+            GRATINGRECORD(tr).grating_sf            = repmat(params.spatial_freq,prespertr,1)';
+            GRATINGRECORD(tr).grating_tf            = repmat(params.temporal_freq,prespertr,1)';
+            GRATINGRECORD(tr).grating_contrast      = repmat(params.contrasts,prespertr,1)';
+            GRATINGRECORD(tr).grating_diameter      = repmat(params.diameters,prespertr,1)';
+            GRATINGRECORD(tr).grating_xpos          = repmat(params.xpos,prespertr,1)';
+            GRATINGRECORD(tr).stereo_xpos           = repmat(params.stereo_xpos,prespertr,1)';
+            GRATINGRECORD(tr).grating_ypos          = repmat(params.ypos,prespertr,1)';
+            GRATINGRECORD(tr).header                = 'rforiWithBlanks';
+            GRATINGRECORD(tr).timestamp             = clock;
+            GRATINGRECORD(tr).grating_varyeye       = repmat(nan,prespertr,1);
+            GRATINGRECORD(tr).grating_fixedc        = repmat(nan,prespertr,1);
+            GRATINGRECORD(tr).grating_oridist       = repmat(nan,prespertr,1);
+            GRATINGRECORD(tr).grating_outerdiameter = repmat(nan,prespertr,1);
+            GRATINGRECORD(tr).grating_space         = repmat(nan,prespertr,1);
+            GRATINGRECORD(tr).grating_isi           = 200; %interstimulus interval
+            GRATINGRECORD(tr).grating_stimdur       = 200; %stim interval
+            GRATINGRECORD(tr).blankLikelihood       = 0.15;
         end
         
     case 'rfsize'
@@ -360,6 +407,8 @@ switch paradigm
         
         params.contrasts  = [0 0.055 0.11 0.225 0.45 0.90];
         params.fixedc     = [0 0.055 0.11 0.225 0.45 0.90]; % contrast for second eye
+        params.eye = nan;
+        params.phase = 0;
         
         all_con  = combvec(params.contrasts,params.eye,params.fixedc,params.phase); %all possible conditions of the paramters that vary
         

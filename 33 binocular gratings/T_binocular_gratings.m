@@ -118,21 +118,21 @@ end
 
 path = nan;
 grating_tilt = GRATINGRECORD(tr).grating_tilt;
-grating_eye = GRATINGRECORD(tr).grating_eye;
+grating_eye = GRATINGRECORD(tr).grating_eye; % 1 = both eyes, 2 = right eye, 3 = left eye
 grating_phase = GRATINGRECORD(tr).grating_phase;
 grating_sf = GRATINGRECORD(tr).grating_sf;
 grating_tf = GRATINGRECORD(tr).grating_tf;
-grating_contrast = GRATINGRECORD(tr).grating_contrast;
+grating_contrast = GRATINGRECORD(tr).grating_contrast; % contrast shown to right eye
 grating_diameter = GRATINGRECORD(tr).grating_diameter;
-grating_xpos = GRATINGRECORD(tr).grating_xpos(1,:);
+grating_xpos = GRATINGRECORD(tr).grating_xpos(1,:); %
 grating_ypos = GRATINGRECORD(tr).grating_ypos(1,:);
 other_xpos  = GRATINGRECORD(tr).grating_xpos(2,:);
 other_ypos  = GRATINGRECORD(tr).grating_ypos(2,:);
-stereo_xpos = GRATINGRECORD(tr).stereo_xpos(1,:);
-other_stereo_xpos = GRATINGRECORD(tr).stereo_xpos(2,:);
+stereo_xpos = GRATINGRECORD(tr).stereo_xpos(1,:); % LEFT eye position
+other_stereo_xpos = GRATINGRECORD(tr).stereo_xpos(2,:); % RIGHT eye position
 grating_header = GRATINGRECORD(tr).header;
 grating_varyeye = GRATINGRECORD(tr).grating_varyeye;
-grating_fixedc = GRATINGRECORD(tr).grating_fixedc;
+grating_fixedc = GRATINGRECORD(tr).grating_fixedc; % contrast shown to left eye
 grating_oridist = GRATINGRECORD(tr).grating_oridist;
 grating_outerdiameter = GRATINGRECORD(tr).grating_outerdiameter;
 grating_space = GRATINGRECORD(tr).grating_space;
@@ -160,7 +160,7 @@ gratL_color1 = nan(3,3); gratL_color2 = nan(3,3); % left grating contrast
 gratR_color1 = nan(3,3); gratR_color2 = nan(3,3); % right grating contrast
 
 switch grating_header
-    case 'phzdisparity'
+    case 'phzdisparity' % needs DEV to check
         
         % contrast
         for p = 1:prespertr
@@ -240,11 +240,19 @@ switch grating_header
         
         % contrast
         for p = 1:prespertr
-            gratL_color1(p,:) = gray + (grating_contrast(p) ./ 2);
-            gratL_color2(p,:) = gray - (grating_contrast(p) ./ 2);
+            gratR_color1(p,:) = gray + (grating_contrast(p) ./ 2); % grating_contrast corresponds to RIGHT eye
+            gratR_color2(p,:) = gray - (grating_contrast(p) ./ 2);
             
-            gratR_color1(p,:) = gray + (grating_fixedc(p) ./ 2);
-            gratR_color2(p,:) = gray - (grating_fixedc(p) ./ 2);
+            gratL_color1(p,:) = gray + (grating_fixedc(p) ./ 2); % grating_fixedc corresponds to LEFT eye
+            gratL_color2(p,:) = gray - (grating_fixedc(p) ./ 2);
+            
+            if grating_contrast(p) == 0 && grating_fixedc(p) > 0 % if right eye contrast was 0
+                grating_eye(p) = 3; % then the eye was 3 (left)
+            elseif grating_fixedc(p) == 0 && grating_contrast(p) > 0 % if the left eye contrast was 0
+                grating_eye(p) = 2; % then the eye was 2 (right)
+            else
+                grating_eye(p) = 1; % if neither eye had zero contrast, then it was binocular (1)
+            end
         end
         
         % orientation
@@ -289,17 +297,28 @@ end
 
 
 %% Preallocate grating struct
+% GratingList.left = ...
+%     {[other_stereo_xpos(1) other_ypos(1)], grating_diameter(1)/2, gratL_tilt(1), grating_sf(1), grating_tf(1), gratL_phase(1), gratL_color1(1), gratL_color2(1), 'circular', []; ...
+%     [other_stereo_xpos(2) other_ypos(2)], grating_diameter(2)/2, gratL_tilt(2), grating_sf(2), grating_tf(2), gratL_phase(2), gratL_color1(2), gratL_color2(2), 'circular', [];...
+%     [other_stereo_xpos(3) other_ypos(3)], grating_diameter(3)/2, gratL_tilt(3), grating_sf(3), grating_tf(3), gratL_phase(3), gratL_color1(3), gratL_color2(3), 'circular', []};
+%     
+
+
+% GratingList.right = ...
+%     {[stereo_xpos(1) grating_ypos(1)], grating_diameter(1)/2, gratR_tilt(1), grating_sf(1), grating_tf(1), gratR_phase(1), gratR_color1(1), gratR_color2(1), 'circular', []; ...
+%     [stereo_xpos(2) grating_ypos(2)], grating_diameter(2)/2, gratR_tilt(2), grating_sf(2), grating_tf(2), gratR_phase(2), gratR_color1(2), gratR_color2(2), 'circular', [];...
+%     [stereo_xpos(3) grating_ypos(3)], grating_diameter(3)/2, gratR_tilt(3), grating_sf(3), grating_tf(3), gratR_phase(3), gratR_color1(3), gratR_color2(3), 'circular', []};
+
 GratingList.left = ...
-    {[other_stereo_xpos(1) other_ypos(1)], grating_diameter(1)/2, gratL_tilt(1), grating_sf(1), grating_tf(1), gratL_phase(1), gratL_color1(1), gratL_color2(1), 'circular', []; ...
-    [other_stereo_xpos(2) other_ypos(2)], grating_diameter(2)/2, gratL_tilt(2), grating_sf(2), grating_tf(2), gratL_phase(2), gratL_color1(2), gratL_color2(2), 'circular', [];...
-    [other_stereo_xpos(3) other_ypos(3)], grating_diameter(3)/2, gratL_tilt(3), grating_sf(3), grating_tf(3), gratL_phase(3), gratL_color1(3), gratL_color2(3), 'circular', []};
+    {[stereo_xpos(1) grating_ypos(1)], grating_diameter(1)/2, gratL_tilt(1), grating_sf(1), grating_tf(1), gratL_phase(1), gratL_color1(1), gratL_color2(1), 'circular', []; ...
+    [stereo_xpos(2) grating_ypos(2)], grating_diameter(2)/2, gratL_tilt(2), grating_sf(2), grating_tf(2), gratL_phase(2), gratL_color1(2), gratL_color2(2), 'circular', [];...
+    [stereo_xpos(3) grating_ypos(3)], grating_diameter(3)/2, gratL_tilt(3), grating_sf(3), grating_tf(3), gratL_phase(3), gratL_color1(3), gratL_color2(3), 'circular', []};
     
 
-
 GratingList.right = ...
-    {[stereo_xpos(1) grating_ypos(1)], grating_diameter(1)/2, gratR_tilt(1), grating_sf(1), grating_tf(1), gratR_phase(1), gratR_color1(1), gratR_color2(1), 'circular', []; ...
-    [stereo_xpos(2) grating_ypos(2)], grating_diameter(2)/2, gratR_tilt(2), grating_sf(2), grating_tf(2), gratR_phase(2), gratR_color1(2), gratR_color2(2), 'circular', [];...
-    [stereo_xpos(3) grating_ypos(3)], grating_diameter(3)/2, gratR_tilt(3), grating_sf(3), grating_tf(3), gratR_phase(3), gratR_color1(3), gratR_color2(3), 'circular', []};
+    {[other_stereo_xpos(1) other_ypos(1)], grating_diameter(1)/2, gratR_tilt(1), grating_sf(1), grating_tf(1), gratR_phase(1), gratR_color1(1), gratR_color2(1), 'circular', []; ...
+    [other_stereo_xpos(2) other_ypos(2)], grating_diameter(2)/2, gratR_tilt(2), grating_sf(2), grating_tf(2), gratR_phase(2), gratR_color1(2), gratR_color2(2), 'circular', [];...
+    [other_stereo_xpos(3) other_ypos(3)], grating_diameter(3)/2, gratR_tilt(3), grating_sf(3), grating_tf(3), gratR_phase(3), gratR_color1(3), gratR_color2(3), 'circular', []};
 
 
 %% Trial sequence event markers
@@ -506,8 +525,8 @@ for pres = 1:prespertr
     formatSpec =  '%04u\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%u\t%f\t%s\t%f\t%f\t%f\r\n';
     fprintf(fid,formatSpec,...
         TrialRecord.CurrentTrialNumber,...
-        stereo_xpos(pres),... % needs verification
-        grating_ypos(pres),...  % needs verification 
+        stereo_xpos(pres),... % actual stereo-xposition 
+        grating_ypos(pres),...  
         grating_xpos(pres),...
         grating_ypos(pres),...
         other_xpos(pres),...
