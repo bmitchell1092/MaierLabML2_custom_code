@@ -214,6 +214,18 @@ eventmarker(116 + TrialRecord.CurrentBlock); %block first
 eventmarker(116 + TrialRecord.CurrentCondition); %condition second
 eventmarker(116 + mod(TrialRecord.CurrentTrialNumber,10)); %last diget of trial sent third
 
+
+% helps with testing
+global prespertr
+for p = 1:prespertr
+    if condition(p) == 1
+        stereo_string = 'None';
+    else
+        stereo_string = 'Relative Disparity';
+    end
+    fprintf('Trial #%d | Pres %d = %s \n',tr,p,stereo_string);
+end
+
 %% Scene 1. Fixation
 % Set fixation to the left eye for tracking
 fix1 = SingleTarget(eye_); % Initialize the eye tracking adapter
