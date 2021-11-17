@@ -15,12 +15,13 @@
 
 %% Paradigm selection 
 paradigm = 'natstereo';
+stimulus_set = 'A';
 
 %% BEGIN
 % Initialize the escape key
 hotkey('esc', 'escape_screen(); assignin(''caller'',''continue_'',false);');
 
-global SAVEPATH IMAGERECORD datafile 
+global SAVEPATH IMAGERECORD datafile IMAGEPATH
 if TrialRecord.CurrentTrialNumber == 1
     IMAGERECORD = [];
 end
@@ -70,22 +71,44 @@ if tr == 1
     % Generate the background image
     cd(fileparts(which('genImageRecordML2.m')))
     genFixCross((fixpt(1)*Screen.PixelsPerDegree), (fixpt(2)*Screen.PixelsPerDegree));
+ 
+    % Set the image path
+    IMAGEPATH = char(strcat(fileparts(which('T_natural_images.m')),filesep,'stereo stimuli',{' '},stimulus_set));
     
     filename = fullfile(SAVEPATH,sprintf('%s.gImageXY_di',datafile));
     fid = fopen(filename, 'w');
-    formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\r\n';
+    formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\r\n';
     fprintf(fid,formatSpec,...
         'trial',...
-        'horzdva',...
-        'vertdva',...
-        'image_id',...
-        'image_x',...
-        'image_y',...
-        'image_eye',...
-        'diameter',...
-        'contrast',...
+        'header',...
+        'stimulus set',...
+        'image_number',...
+        'L_image_ID',...
+        'R_image_ID',...
+        'L_image_x',...
+        'R_image_x',...
+        'L_image_y',...
+        'R_image_y',...
+        'L_horzdva',...
+        'R_horzdva',...
+        'L_vertdva',...
+        'R_vertdva',...
+        'image_scalar',...
+        'image_width',...
+        'image_height',...
+        'mean_luminance',...
+        'condition',...
+        'x_disparity',...
+        'y_disparity',...
+        'scramble',...
+        'ori',...
+        'eye',...
+        'stim_dur',...
+        'isi',...
         'fix_x',...
         'fix_y',...
+        'rf_x',...
+        'rf_y',...
         'timestamp');
     fclose(fid);
     
@@ -97,106 +120,114 @@ end
 
 %% Image selection / features 
 
-% Pull parameters from IMAGERECORD
-header = IMAGERECORD(tr).header;
-img_id = IMAGERECORD(tr).image_id;
-xpos_L = IMAGERECORD(tr).image_xpos_L; % Left eye x-coordinate
-xpos_R = IMAGERECORD(tr).image_xpos_R; % Right eye x-coordinate
-ypos_L = IMAGERECORD(tr).image_ypos_L; % Right eye x-coordinate
-ypos_R = IMAGERECORD(tr).image_ypos_R; % Right eye x-coordinate
+% Image info / placement
+img_num = IMAGERECORD(tr).num;
+xpos_L = IMAGERECORD(tr).xpos_L; % Left eye x-coordinate
+xpos_R = IMAGERECORD(tr).xpos_R; % Right eye x-coordinate
+ypos_L = IMAGERECORD(tr).ypos_L; % Right eye x-coordinate
+ypos_R = IMAGERECORD(tr).ypos_R; % Right eye x-coordinate
 
+% condition information
+eye = IMAGERECORD(tr).eye;
 condition = IMAGERECORD(tr).condition; 
-xshift = IMAGERECORD(tr).image_xshift;
-ori = IMAGERECORD(tr).image_ori;
-scramble = IMAGERECORD(tr).image_scramble;
-diameter = IMAGERECORD(tr).image_diameter;
-isi = IMAGERECORD(tr).image_isi;
-stimdur = IMAGERECORD(tr).image_stimdur;
+shifted_eye = IMAGERECORD(tr).shifted_eye; 
+x_disparity = IMAGERECORD(tr).x_disparity;
+y_disparity = IMAGERECORD(tr).y_disparity;
+ori = IMAGERECORD(tr).ori;
+scramble = IMAGERECORD(tr).scramble;
+scale = IMAGERECORD(tr).scale;
+
+% general information
+header = IMAGERECORD(tr).header;
+isi = IMAGERECORD(tr).isi;
+stimdur = IMAGERECORD(tr).stimdur;
+rf_x = IMAGERECORD(tr).rf_x;
+rf_y = IMAGERECORD(tr).rf_x;
 gray = [0.5 0.5 0.5]; 
 
-% xshift = 0 for rel disparity
-de = 2;
-if de == 2
-    xpos_L = xpos_L + xshift;
-elseif de == 3
-    xpos_R = xpos_R + xshift;
+% if shift values = zero, it's zero or relative disparity 
+if shifted_eye == 1 % left eye 
+    xpos_L = xpos_L + x_disparity;
+    ypos_L = ypos_L + y_disparity;
+elseif shifted_eye == 2 % right eye
+    xpos_R = xpos_R + x_disparity;
+    ypos_R = ypos_R + y_disparity;
 end
 
 % Grab images
-
-task_dir = strcat(fileparts(which('T_natural_images.m')),filesep,'stereo stimuli A');
-
 switch header
-    case 'natdisparity_abs' % taking just one image and moving it horizontally in one eye across trials
+%     case 'natdisparity_abs' % taking just one image and moving it horizontally in one eye across trials
+%         
+%         for i = 1:length(img_num)
+%             if scramble(i) == 0
+%                 L_imagedir = strcat(IMAGEPATH,'/image_L/');
+%             else
+%                 L_imagedir = strcat(IMAGEPATH,'/image_L_scr/');
+%             end
+%             
+%             files = dir(L_imagedir); files(1:2) = [];
+%             
+%             image(i).L = strcat(L_imagedir,files(img_num(i)).name);
+%             image(i).R = strcat(L_imagedir,files(img_num(i)).name);
+%             
+%         end
         
-        for i = 1:length(img_id)
-            if scramble(i) == 0
-                L_imagedir = strcat(task_dir,'/image_L/');
-            else
-                L_imagedir = strcat(task_dir,'/image_L_scr/');
-            end
-            
-            files = dir(L_imagedir); files(1:2) = [];
-            
-            image(i).L = strcat(L_imagedir,files(img_id(i)).name);
-            image(i).R = strcat(L_imagedir,files(img_id(i)).name);
-            
-        end
-        
-    case 'natdisparity_rel' % taking just one image and moving it horizontally in one eye across trials
-        
-        for i = 1:length(img_id)
-            if scramble(i) == 0
-                L_imagedir = strcat(task_dir,'/image_L/');
-                R_imagedir = strcat(task_dir,'/image_R/');
-            else
-                L_imagedir = strcat(task_dir,'/image_L_scr/');
-                R_imagedir = strcat(task_dir,'/image_R_scr/');
-            end
-            
-            files_L = dir(L_imagedir); files_L(1:2) = [];
-            files_R = dir(R_imagedir); files_R(1:2) = [];
-            
-            image(i).L = strcat(L_imagedir,files_L(img_id(i)).name);
-            image(i).R = strcat(R_imagedir,files_R(img_id(i)).name);
-            
-        end
+%     case 'natdisparity_rel' % taking just one image and moving it horizontally in one eye across trials
+%         
+%         for i = 1:length(img_num)
+%             if scramble(i) == 0
+%                 L_imagedir = strcat(IMAGEPATH,'/image_L/');
+%                 R_imagedir = strcat(IMAGEPATH,'/image_R/');
+%             else
+%                 L_imagedir = strcat(IMAGEPATH,'/image_L_scr/');
+%                 R_imagedir = strcat(IMAGEPATH,'/image_R_scr/');
+%             end
+%             
+%             files_L = dir(L_imagedir); files_L(1:2) = [];
+%             files_R = dir(R_imagedir); files_R(1:2) = [];
+%             
+%             image(i).L = strcat(L_imagedir,files_L(img_num(i)).name);
+%             image(i).R = strcat(R_imagedir,files_R(img_num(i)).name);
+%             
+%         end
         
     case 'natstereo' % taking just one image and moving it horizontally in one eye across trials
         
-        for i = 1:length(img_id)
-            if scramble(i) == 0
-                if condition == 1 % cyclopean view
-                    L_imagedir = strcat(task_dir,'/L_image/');
-                    R_imagedir = strcat(task_dir,'/L_image/');
-                else       % stereopsis
-                    L_imagedir = strcat(task_dir,'/L_image/');
-                    R_imagedir = strcat(task_dir,'/R_image/');
+        for i = 1:length(img_num)
+            if scramble(i) == 0 % if image is not scrambled
+                if condition(i) == 1 % cyclopean view
+                    L_imagedir = strcat(IMAGEPATH,'\L_image\');
+                    R_imagedir = strcat(IMAGEPATH,'\L_image\');
+                elseif condition(i) == 2 % relative disparity
+                    L_imagedir = strcat(IMAGEPATH,'\L_image\');
+                    R_imagedir = strcat(IMAGEPATH,'\R_image\');
                 end
-            else
-                if condition == 1 % cyclopean view
-                    L_imagedir = strcat(task_dir,'/L_image_scr/');
-                    R_imagedir = strcat(task_dir,'/L_image_scr/');
-                else
-                    L_imagedir = strcat(task_dir,'/L_image_scr/');
-                    R_imagedir = strcat(task_dir,'/R_image_scr/');
+            elseif scramble(i) == 1
+                if condition(i) == 1 % cyclopean view
+                    L_imagedir = strcat(IMAGEPATH,'\L_image_scr\');
+                    R_imagedir = strcat(IMAGEPATH,'\L_image_scr\');
+                elseif condition(i) == 2 
+                    L_imagedir = strcat(IMAGEPATH,'\L_image_scr\');
+                    R_imagedir = strcat(IMAGEPATH,'\R_image_scr\');
                 end
             end
             
             files_L = dir(L_imagedir); files_L(1:2) = [];
             files_R = dir(R_imagedir); files_R(1:2) = [];
             
-            image(i).L = strcat(L_imagedir,files_L(img_id(i)).name);
-            image(i).R = strcat(R_imagedir,files_R(img_id(i)).name);
+            image(i).L = strcat(L_imagedir,files_L(img_num(i)).name);
+            image(i).R = strcat(R_imagedir,files_R(img_num(i)).name);
             
         end
         
 end
 
+% Image size (length, width)
+pixelsPerDegree = Screen.PixelsPerDegree;
+imSize = [pixelsPerDegree*scale, pixelsPerDegree*scale];
 
-imSize = [Screen.SubjectScreenFullSize(1)/12 Screen.SubjectScreenFullSize(2)/7];
 
-%% Pre-allocate Image list
+%% Pre-load images into structs
 
 ImageList.left = ...
     {{image(1).L},[xpos_L(1) ypos_L(1)], [0 0 0], imSize, ori(1); ...
@@ -215,7 +246,7 @@ eventmarker(116 + TrialRecord.CurrentCondition); %condition second
 eventmarker(116 + mod(TrialRecord.CurrentTrialNumber,10)); %last diget of trial sent third
 
 
-% helps with testing
+% Trialwise command Line announcements (helps with testing)
 global prespertr
 for p = 1:prespertr
     if condition(p) == 1
@@ -227,6 +258,7 @@ for p = 1:prespertr
 end
 
 %% Scene 1. Fixation
+
 % Set fixation to the left eye for tracking
 fix1 = SingleTarget(eye_); % Initialize the eye tracking adapter
 fix1.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
@@ -242,6 +274,7 @@ wth1.HoldTime = initial_fix; % Set the hold time
 scene1 = create_scene(wth1); % Initialize the scene adapter
 
 %% Scene 2. Task Object #1
+
 % Set fixation to the left eye for tracking
 fix2 = SingleTarget(eye_); % Initialize the eye tracking adapter
 fix2.Target = [((-0.25*scrsize(1))+fixpt(1)) fixpt(2)]; % Set the fixation point
@@ -266,7 +299,6 @@ wth2.WaitTime = 0;             % We already knows the fixation is acquired, so w
 wth2.HoldTime = stimdur;
 
 scene2 = create_scene(wth2);
-
 
 %% Scene 3. Task Object #2
 % Set fixation to the left eye for tracking
@@ -350,7 +382,6 @@ cnt6 = TimeCounter(bck6);
 cnt6.Duration = 50;
 scene6 = create_scene(cnt6);
 
-
 %% TASK
 error_type = 0;
 run_scene(scene1,[35,11]); % WaitThenHold | 35 = Fix spot on, 11 = Start wait fixation
@@ -426,31 +457,53 @@ end
 trialerror(error_type);      % Add the result to the trial history
 
 %% Give the monkey a break
-set_iti(500); % Inter-trial interval in [ms]
+set_iti(1000); % Inter-trial interval in [ms]
 
 %% Write info to file
 
-% filename = fullfile(SAVEPATH,sprintf('%s.gDotsXY_di',datafile));
-% 
-% 
-% for pres = 1:npres
-%     [X(pres),Y(pres)] = findScreenPosML2(dot_eye,Screen,image_x(pres),image_y(pres),'cart');
-%     fid = fopen(filename, 'a');  % append
-%     formatSpec =  '%04u\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\r\n';
-%     fprintf(fid,formatSpec,...
-%         TrialRecord.CurrentTrialNumber,...
-%         X(pres),... % needs DEV (maybe fixed?) does the horizontal DVA match up with older files?
-%         Y(pres),... % needs DEV
-%         dot_x(pres),...
-%         dot_y(pres),...
-%         dot_eye(pres),...
-%         dot_diameter(pres),...
-%         dot_contrast(pres),...
-%         fixpt(1),...
-%         fixpt(2),...
-%         now);
-%     
-%     fclose(fid);
-% end
+filename = fullfile(SAVEPATH,sprintf('%s.gImageXY_di',datafile));
+
+
+for pres = 1:prespertr
+    [~,ID(pres).L,~] = fileparts(image(pres).L);
+    [~,ID(pres).R,~] = fileparts(image(pres).R);
+    
+    fid = fopen(filename, 'a');  % append
+    formatSpec =  '%04u\t%s\t%s\t%f\t%s\t%s\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\r\n';
+    fprintf(fid,formatSpec,...
+        TrialRecord.CurrentTrialNumber,...
+        header,...
+        stimulus_set,...
+        img_num(pres),...
+        string(ID(pres).L),...
+        string(ID(pres).R),...
+        xpos_L(pres),...
+        xpos_R(pres),...
+        ypos_L(pres),...
+        ypos_R(pres),...
+        (xpos_L(pres)+0.25*scrsize(1)),...
+        (xpos_R(pres)-0.25*scrsize(1)),...
+        ypos_L(pres),...
+        ypos_R(pres),...
+        scale(pres),...
+        imSize(1),...
+        imSize(2),...
+        gray(1),... 
+        condition(pres),...
+        x_disparity(pres),...
+        y_disparity(pres),...
+        scramble(pres),...
+        ori(pres),...
+        eye(pres),...
+        stimdur,...
+        isi,...
+        fixpt(1),...
+        fixpt(2),...
+        rf_x,...
+        rf_y,...
+        now);
+    
+    fclose(fid);
+end
 
 
