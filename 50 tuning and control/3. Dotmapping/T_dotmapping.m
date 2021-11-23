@@ -115,7 +115,10 @@ for p = 1:npres
         corrected_x(p) = dot_x(p) - (0.25*scrsize(1)) + fixpt(1);
         corrected_y(p) = dot_y(p) + fixpt(2);
     end
+     sprintf('Trial # %d | x = %d | y = %d \n',trialNum,dot_x(p),dot_y(p))
 end
+
+
 
 %% Trial sequence event markers
 % send some event markers

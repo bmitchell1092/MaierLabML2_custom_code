@@ -4,7 +4,7 @@ function genDotRecordML2(TrialRecord)
 global DOTRECORD SAVEPATH GABOR npres datafile params
 params.eye            =  [2,3]; % can have several inputs here
 params.theta          =  180:10:270; % around 320 -30:5:10; 200:10:250;
-params.eccentricities =  1.5:1:5.5;
+params.eccentricities =  1:1:4;
 params.contrast       =  0.8; % must be scaler! edit g
 GABOR                 =  1; % must be scaler! 
 oldDOTRECORD = DOTRECORD;
@@ -13,7 +13,7 @@ fprintf('n conditions %u\n',length(params.eccentricities)*length(params.theta));
 
 all_con               = combvec(params.theta,params.eccentricities,params.eye); 
 
-minpres = 15;                                   % total number of presentations at each loc
+minpres = 10;                                   % total number of presentations at each loc
 npres   = 5;                                    % number of dot presentations per trial
 minntrs = size(all_con,2)*minpres ./ (npres);    %minpres/npres; % number of trials
 
