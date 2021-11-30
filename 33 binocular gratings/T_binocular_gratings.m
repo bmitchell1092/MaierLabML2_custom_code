@@ -559,8 +559,8 @@ set_iti(800); % Inter-trial interval in [ms]
 
 %% Write info to file
 
-filename_1 = strcat(SAVEPATH,'\',datafile,'.g',upper(paradigm),'Grating_di');
-filename_2 = strcat(SAVEPATH,'\',datafile,'.g',upper(paradigm),'Grating');
+filename_1 = strcat(SAVEPATH,'\',datafile,'.g',upper(paradigm),'Grating_di'); % legacy
+filename_2 = strcat(SAVEPATH,'\',datafile,'.g',upper(paradigm),'Grating'); % 2021 and beyond
     
 for pres = 1:prespertr
     fid = fopen(filename_1, 'a'); % append
@@ -598,9 +598,9 @@ for pres = 1:prespertr
     fprintf(fid,formatSpec,...
         TrialRecord.CurrentTrialNumber,...
         grating_header,...             % 'paradigm'
-        grating_xpos(pres),...           % dva from fused fixation
-        grating_ypos(pres),...           % dva from fused fixation
-        stereo_xpos(pres)',...            % actual x-position of grating in the LE
+        grating_xpos(pres),...          % dva from fused fixation
+        grating_ypos(pres),...          % dva from fused fixation
+        stereo_xpos(pres)',...          % actual x-position of grating in the LE
         other_stereo_xpos(pres),...            % actual x-position of grating in the RE
         grating_ypos(pres),...            % actual y-position of grating in the LE
         other_ypos(pres),...            % actual y-position of grating in the RE

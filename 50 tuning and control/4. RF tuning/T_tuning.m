@@ -13,6 +13,9 @@
 % 'rfsize'   | 35   
 % 'rfsf'     | 20       
 % 'rfphase'  | 25
+
+% Extras
+% 'rforiWithBlanks' 
    
 
 %% Paradigm selection : 3 presentations per trial
@@ -54,7 +57,9 @@ initial_fix = 200; % hold fixation for 200ms to initiate trial
 % Find screen size
 scrsize = Screen.SubjectScreenFullSize / Screen.PixelsPerDegree;  % Screen size [x y] in degrees
 setCoord(scrsize); % Send value to a global variable
-lower_right = [(scrsize(1)*0.5-0.5) (scrsize(2)*(-0.5)+0.5)];
+lower_right = [(scrsize(1)*(0.5)-0.5) (scrsize(2)*(-0.5)+0.5)];
+lower_left  = [(scrsize(1)*(-0.5)+1) (scrsize(2)*(-0.5)+1)];
+
 
 hotkey('c', 'forced_eye_drift_correction([((-0.25*scrsize(1))+fixpt(1)) fixpt(2)],1);');  % eye1
 set_bgcolor([0.5 0.5 0.5]);
@@ -72,9 +77,9 @@ if tr == 1 % on the first trial
     
     % Create a file to write grating information for each trial
 
-    filename = strcat(SAVEPATH,'/',datafile,'.g',upper(paradigm),'Grating_di');
+    filename_1 = strcat(SAVEPATH,'/',datafile,'.g',upper(paradigm),'Grating_di');
     
-    fid = fopen(filename, 'w');
+    fid = fopen(filename_1, 'w');
     formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\r\n';
     fprintf(fid,formatSpec,...
         'trial',...
@@ -90,13 +95,53 @@ if tr == 1 % on the first trial
         'grating_fixedc',...
         'grating_diameter',...
         'grating_eye',...
-        'grating_varyeye',...
+        'grating_tf',...
         'grating_oridist',...
-        'trialHasBlank',... %gaborfilter_on
+        'trialHasBlank',... % whether trial has an oddball blank presentation
         'PresOn',... % gabor_std
         'header',...
         'grating_phase',...
-        'path',...
+        'pathw',...
+        'timestamp');
+    
+    fclose(fid);
+    
+    % 2021 New Grating File
+    filename_2 = strcat(SAVEPATH,'/',datafile,'.g',upper(paradigm),'Grating_di_v2');
+    
+    fid = fopen(filename_2, 'w');
+    formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\r\n';
+    fprintf(fid,formatSpec,...
+        'trial',...             % Trial number
+        'header',...            % 'paradigm'
+        'horzdva',...           % dva from fused fixation
+        'vertdva',...           % dva from fused fixation
+        'xpos_L',...            % actual x-position of grating in the LE
+        'xpos_R',...            % actual x-position of grating in the RE
+        'ypos_L',...            % actual y-position of grating in the LE
+        'ypos_R',...            % actual y-position of grating in the RE
+        'x_disparity',...       % difference (in visual deg) between LE and RE grating x-positions
+        'y_disparity',...       % difference (in visual deg) between LE and RE grating y-positions
+        'contrast_L',...        % Michelson contrast of grating in the LE
+        'contrast_R',...        % Michelson contrast of grating in the RE
+        'ori_L',...             % orientation (tilt) of grating in the LE
+        'ori_R',...             % orientation (tilt) of grating in the RE
+        'phase_L',...           % Phase angle of grating in the LE
+        'phase_R',...           % Phase angle of grating in the RE
+        'sf_L',...              % Spatial frequency (cyc/deg) of grating in the LE
+        'sf_R',...              % Spatial frequency (cyc/deg) of grating in the RE
+        'tf_L',...              % Temporal frequency (cyc/deg/sec) of grating in the LE
+        'tf_R',...              % Temporal frequency (cyc/deg/sec) of grating in the RE
+        'diameter_L',...        % Diameter (size) of grating in the LE
+        'diameter_R',...        % Diameter (size) of grating in the RE
+        'trialHasBlank',...     % whether this trial has a blank presentation
+        'blank',...             % whether this presentation was a blank or not
+        'gabor',...             % whether the grating was gabor filtered
+        'gabor_std',...         % standard deviation of the gabor filter
+        'eye',...               % 1 = LE, 2 = RE, 3 = Both eyes
+        'duration',...          % stimulus duration
+        'isi',...               % interstimulus interval
+        'pathw',...             % for cone isolation
         'timestamp');
     
     fclose(fid);
@@ -133,6 +178,12 @@ grating_space = GRATINGRECORD(tr).grating_space;
 grating_isi = GRATINGRECORD(tr).grating_isi;
 grating_stimdur = GRATINGRECORD(tr).grating_stimdur;
 
+% Variables for new textfile
+tilt_L = grating_tilt; phase_L = grating_phase; sf_L = grating_sf; tf_L = grating_tf; diameter_L = grating_diameter;
+tilt_R = grating_tilt; phase_R = grating_phase; sf_R = grating_sf; tf_R = grating_tf; diameter_R = grating_diameter;
+xpos_L = stereo_xpos; ypos_L = grating_ypos;
+xpos_R = other_stereo_xpos; ypos_R = other_ypos;
+
 if strcmp(grating_header,'rforiWithBlanks')
     blankLikelihood = GRATINGRECORD(tr).blankLikelihood;
     r1 = rand(1,1);
@@ -144,9 +195,13 @@ end
 gray = [0.5 0.5 0.5];
 L_color1 = nan(3,3); L_color2 = nan(3,3); % left grating contrast
 R_color1 = nan(3,3); R_color2 = nan(3,3); % right grating contrast
+pd_color1 = nan(3,3); pd_color2 = nan(3,3); % bottom lefthand corner grating (for pd)
 
 for p = 1:prespertr
     if grating_eye(p) == 1 % both eyes
+        contrast_L(p) = grating_contrast(p);
+        contrast_R(p) = grating_contrast(p);
+        
         L_color1(p,:) = gray + (grating_contrast(p) / 2);
         L_color2(p,:) = gray - (grating_contrast(p) / 2);
         
@@ -154,6 +209,9 @@ for p = 1:prespertr
         R_color2(p,:) = gray - (grating_contrast(p) / 2);
         
     elseif grating_eye(p) == 2 % right eye
+        
+        contrast_L(p) = NaN;
+        contrast_R(p) = grating_contrast(p);
         L_color1(p,:) = gray;
         L_color2(p,:) = gray;
         
@@ -161,6 +219,10 @@ for p = 1:prespertr
         R_color2(p,:) = gray - (grating_contrast(p) / 2);
         
     elseif grating_eye(p) == 3 % left eye
+        
+        contrast_L(p) = grating_contrast(p);
+        contrast_R(p) = NaN;
+        
         L_color1(p,:) = gray + (grating_contrast(p) / 2);
         L_color2(p,:) = gray - (grating_contrast(p) / 2);
         
@@ -178,30 +240,17 @@ for p = 1:prespertr
         R_color2(p,:) = gray;
         
         grating_contrast(p) = 0;
-        %grating_tilt(p) = nan; % ask Jake about this
     end
+    
+    pd_color1(p,:) = gray + (grating_contrast(p) / 2);
+    pd_color2(p,:) = gray - (grating_contrast(p) / 2);
         
 end
 
 
 
-%% Preallocate grating struct
-% % GratingList.left = ...
-% %     {[other_stereo_xpos(1) other_ypos(1)], grating_diameter(1)/2, grating_tilt(1), grating_sf(1), grating_tf(1), grating_phase(1), color1, color2, 'circular', []; ...
-% %     [other_stereo_xpos(2) other_ypos(2)], grating_diameter(2)/2, grating_tilt(2), grating_sf(2), grating_tf(2), grating_phase(2), color1, color2, 'circular', [];...
-% %     [other_stereo_xpos(3) other_ypos(3)], grating_diameter(3)/2, grating_tilt(3), grating_sf(3), grating_tf(3), grating_phase(3), color1, color2, 'circular', []; ...
-% %     [other_stereo_xpos(4) other_ypos(4)], grating_diameter(4)/2, grating_tilt(4), grating_sf(4), grating_tf(4), grating_phase(4), color1, color2, 'circular', []; ...
-% %     [other_stereo_xpos(5) other_ypos(5)], grating_diameter(5)/2, grating_tilt(5), grating_sf(5), grating_tf(5), grating_phase(5), color1, color2, 'circular', []};
-% % 
-% % 
-% % 
-% % GratingList.right = ...
-% %     {[stereo_xpos(1) grating_ypos(1)], grating_diameter(1)/2, grating_tilt(1), grating_sf(1), grating_tf(1), grating_phase(1), color1, color2, 'circular', []; ...
-% %     [stereo_xpos(2) grating_ypos(2)], grating_diameter(2)/2, grating_tilt(2), grating_sf(2), grating_tf(2), grating_phase(2), color1, color2, 'circular', [];...
-% %     [stereo_xpos(3) grating_ypos(3)], grating_diameter(3)/2, grating_tilt(3), grating_sf(3), grating_tf(3), grating_phase(3), color1, color2, 'circular', []; ...
-% %     [stereo_xpos(4) grating_ypos(4)], grating_diameter(4)/2, grating_tilt(4), grating_sf(4), grating_tf(4), grating_phase(4), color1, color2, 'circular', []; ...
-% %     [stereo_xpos(5) grating_ypos(5)], grating_diameter(5)/2, grating_tilt(5), grating_sf(5), grating_tf(5), grating_phase(5), color1, color2, 'circular', []};
 
+%% Preallocate grating struct
 
 GratingList.left = ...
     {[stereo_xpos(1) grating_ypos(1)], grating_diameter(1)/2, grating_tilt(1), grating_sf(1), grating_tf(1), grating_phase(1), L_color1(1,:), L_color2(1,:), 'circular', []; ...
@@ -212,6 +261,11 @@ GratingList.right = ...
     {[other_stereo_xpos(1) other_ypos(1)], grating_diameter(1)/2, grating_tilt(1), grating_sf(1), grating_tf(1), grating_phase(1), R_color1(1,:), R_color2(1,:), 'circular', []; ...
     [other_stereo_xpos(2) other_ypos(2)], grating_diameter(2)/2, grating_tilt(2), grating_sf(2), grating_tf(2), grating_phase(2), R_color1(2,:), R_color2(2,:), 'circular', [];...
     [other_stereo_xpos(3) other_ypos(3)], grating_diameter(3)/2, grating_tilt(3), grating_sf(3), grating_tf(3), grating_phase(3), R_color1(3,:), R_color2(3,:), 'circular', []};
+
+GratingList.drift_pd = ...
+    {[lower_left(1) lower_left(2)], 2, grating_tilt(1), 0, grating_tf(1), grating_phase(1), pd_color1(1,:), pd_color2(1,:), 'circular', []; ...
+    [lower_left(1) lower_left(2)], 2, grating_tilt(2), 0, grating_tf(2), grating_phase(2), pd_color1(2,:), pd_color2(2,:), 'circular', [];...
+    [lower_left(1) lower_left(2)], 2, grating_tilt(3), 0, grating_tf(3), grating_phase(3), pd_color1(3,:), pd_color2(3,:), 'circular', []};
 
 %% Trial sequence event markers
 % send some event markers
@@ -252,12 +306,12 @@ pd2.Position = lower_right;
 
 % Create both gratings
 grat2 = SineGrating(pd2);
-grat2.List = {GratingList.left{1,:};GratingList.right{1,:}};
+grat2.List = {GratingList.left{1,:};GratingList.right{1,:}; GratingList.drift_pd{1,:}};
 img2 = ImageGraphic(grat2);
 img2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 wth2 = WaitThenHold(img2);
 wth2.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth2.HoldTime = 250;
+wth2.HoldTime = grating_stimdur;
 scene2 = create_scene(wth2);
 
 %% Scene 3. Inter-stimulus interval
@@ -277,7 +331,7 @@ bck3.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenF
 
 wth3 = WaitThenHold(bck3);
 wth3.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth3.HoldTime = 200;
+wth3.HoldTime = grating_stimdur;
 scene3 = create_scene(wth3);
 
 %% Scene 4. Task Object #2
@@ -294,12 +348,12 @@ pd4.Position = lower_right;
 
 % Create both gratings
 grat4 = SineGrating(pd4);
-grat4.List =  {GratingList.left{2,:};GratingList.right{2,:}};
+grat4.List =  {GratingList.left{2,:};GratingList.right{2,:}; GratingList.drift_pd{2,:}};
 img4 = ImageGraphic(grat4);
 img4.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 wth4 = WaitThenHold(img4);
 wth4.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth4.HoldTime = 250;
+wth4.HoldTime = grating_stimdur;
 scene4 = create_scene(wth4);
 
 
@@ -317,12 +371,12 @@ pd5.Position = lower_right;
 
 % Create both gratings
 grat5 = SineGrating(pd5);
-grat5.List =  {GratingList.left{3,:};GratingList.right{3,:}};
+grat5.List =  {GratingList.left{3,:};GratingList.right{3,:}; GratingList.drift_pd{3,:}};
 img5 = ImageGraphic(grat5);
 img5.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 wth5 = WaitThenHold(img5);
 wth5.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth5.HoldTime = 250;
+wth5.HoldTime = grating_stimdur;
 scene5 = create_scene(wth5);
 
 
@@ -501,11 +555,12 @@ trialerror(error_type);      % Add the result to the trial history
 %% Give the monkey a break
 set_iti(800); % Inter-trial interval in [ms]
 
-
+%% Create variables to completely describe what was shown to the monkey
 
 %% Write info to file
 
-filename = strcat(SAVEPATH,'\',datafile,'.g',upper(paradigm),'Grating_di');
+filename_1 = strcat(SAVEPATH,'\',datafile,'.g',upper(paradigm),'Grating_di');
+filename_2 = strcat(SAVEPATH,'\',datafile,'.g',upper(paradigm),'Grating_di_v2'); % 2021 and beyond
 
 if trialHasBlank == true
     presOn =[1,0,1]; % if trial has a blank, the 2nd presentation is off '0'
@@ -515,8 +570,8 @@ end
     
 for pres = 1:prespertr
     
-   
-    fid = fopen(filename, 'a'); % append
+    % Legacy file and variables
+    fid = fopen(filename_1, 'a'); % append
     formatSpec =  '%04u\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%u\t%f\t%s\t%f\t%f\t%f\r\n';
     fprintf(fid,formatSpec,...
         TrialRecord.CurrentTrialNumber,...
@@ -532,7 +587,7 @@ for pres = 1:prespertr
         grating_fixedc(pres),...
         grating_diameter(pres),...
         grating_eye(pres),...
-        grating_varyeye(pres),...
+        grating_tf(pres),...
         grating_oridist(pres),...
         trialHasBlank,...
         presOn(pres),...
@@ -542,6 +597,56 @@ for pres = 1:prespertr
         now);
     
     fclose(fid);
+    
+     % Textfile # 2 (beta)
+     % New file and variables
+     
+     % establish what was shown on screen. 
+     if grating_eye(pres) == 2 % if grating appears in right-eye 
+         tilt_L(pres) = NaN; phase_L(pres) = NaN; diameter_L(pres) = NaN;
+         sf_L(pres) = NaN; tf_L(pres) = NaN; xpos_L(pres) = NaN; ypos_L(pres) = NaN;
+     elseif grating_eye(pres) == 3 % if grating appears in left eye
+         tilt_R(pres) = NaN; phase_R(pres) = NaN; diameter_R(pres) = NaN;
+         sf_R(pres) = NaN; tf_R(pres) = NaN; xpos_R(pres) = NaN; ypos_R(pres) = NaN;
+     end
+         
+     
+     fid = fopen(filename_2, 'a'); % append
+     formatSpec =  '%04u\t%s\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\r\n';
+     fprintf(fid,formatSpec,...
+         TrialRecord.CurrentTrialNumber,...
+         grating_header,...             
+         grating_xpos(pres),...           
+         grating_ypos(pres),...          
+         xpos_L(pres)',...           
+         ypos_L(pres),...            
+         contrast_L(pres),...           
+         tilt_L(pres),...            
+         phase_L(pres),...                             
+         sf_L(pres),...                             
+         tf_L(pres),...              
+         diameter_L(pres),...             
+         xpos_R(pres),...             
+         ypos_R(pres),...             
+         contrast_R(pres),...         
+         tilt_R(pres),...          
+         phase_R(pres),...             
+         sf_R(pres),...              
+         tf_R(pres),...              
+         diameter_R(pres),...            
+         0,...                          
+         0,...        
+         trialHasBlank,...                 % whether this trial has a blank presentation
+         presOn(pres),...                  % whether this presentation was a blank or not
+         0,...                             % whether the grating was gabor filtered
+         0,...                             
+         grating_eye(pres),...             % 1 = LE, 2 = RE, 3 = Both eyes
+         grating_stimdur,...               % stimulus duration
+         grating_isi,...                   % interstimulus interval
+         nan,...                            % for cone isolation
+         now);
+     
+     fclose(fid);
 end
 
     

@@ -6,33 +6,27 @@ function genGratingRecordML2(paradigm,TrialRecord)
 % Note by BM: GRATINGRECORD is exactly as it was, with two additions: 1)
 % .tf (temporal frequency) and 2) .stereo_xpos
 
-global GRATINGRECORD SAVEPATH DOMEYE GABOR prespertr datafile params
+global GRATINGRECORD SAVEPATH prespertr datafile params
 oldGRATINGRECORD = GRATINGRECORD; 
 GRATINGRECORD = [];
-JIT = 0; % add jitter to interstimulus interval: 0 or 1
 
 % parameters to keep constant (overwrite below where appropriate):
-GABOR = 0; 
-DOMEYE = 3; % name dominant eye e
-
 rf = [-1.2, -1.4];
 scrsize = getCoord;
 
 clear params
 params.xpos                = [rf(1) rf(1)];     % enter x position (1st element--LEFT eye, 2nd--RIGHT eye)
 params.ypos                = [rf(2) rf(2)];     % enter y position (1st element--LEFT eye, 2nd--RIGHT eye)
-params.varyeye             = [nan];             % 2 for R, 3 for L (applicable for cinteroc, cosinteroc, and sss cinteroc/cosinteroc--varyeye will get "fixedc" contrasts. ss--vary eye will be the ND eye
-params.eye                 = [1];               % leave this [1] by default
-params.diameters           = [2];               % enter diameter of gratingc
-params.contrasts           = [0.9];             % choose one contrast
-params.fixedc              = [];                % fixed contrast (really contrast(s) for ND eye)
-params.spatial_freq        = [1.5];             % units are (1/cyc/deg)***** choose holder spatial frequency, NAN makes RN patch
-params.temporal_freq       = [0];               % cycles/sec (slowest--.75)
-params.orientations        = [45];               % preferred orientation--remember 0 deg is vertical orientation, 90 deg is horizontal,  NAN makes RN patch
-params.phase               = [0];               % phase of grating, 0 to pi,
-params.disparity           = [0];               % interocular phase difference (in degrees)
+params.varyeye             = [nan];             % LEGACY: 2 for R, 3 for L (applicable for cinteroc, cosinteroc, and sss cinteroc/cosinteroc--varyeye will get "fixedc" contrasts. ss--vary eye will be the ND eye
+params.eye                 = [1];               % 1 = both eyes, 2 = right eye, 3 = left eye; leave this [1] by default
+params.diameters           = [2];               % Diameter in degrees
+params.contrasts           = [0.9];             % Michelson contrast
+params.fixedc              = [];                % LEGACY fixed contrast (really contrast(s) for ND eye)
+params.spatial_freq        = [0.2];             % cycles per degree
+params.temporal_freq       = [1];               % cycles per second
+params.orientations        = [45];              % preferred orientation--remember 0 deg is vertical orientation, 90 deg is horizontal,  NAN makes RN patch
+params.phase               = [0];               % phase angle of grating
 params.stereo_xpos         = [-0.25*scrsize(1)+rf(1) 0.25*scrsize(1)+rf(1)]; % enter x position (1st element--LEFT eye, 2nd--RIGHT eye)
-params.gabor               = [0];
 
 switch paradigm
    
@@ -78,7 +72,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_outerdiameter = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_space         = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_isi           = 200; %interstimulus interval
-            GRATINGRECORD(tr).grating_stimdur       = 200; %stim interval
+            GRATINGRECORD(tr).grating_stimdur       = 300; %stim interval
         end
         
     case 'rforiWithBlanks'
@@ -124,7 +118,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_outerdiameter = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_space         = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_isi           = 200; %interstimulus interval
-            GRATINGRECORD(tr).grating_stimdur       = 200; %stim interval
+            GRATINGRECORD(tr).grating_stimdur       = 300; %stim interval
             GRATINGRECORD(tr).blankLikelihood       = 0.15;
         end
         
@@ -167,7 +161,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_outerdiameter = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_space         = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_isi           = 200; %interstimulus interval
-            GRATINGRECORD(tr).grating_stimdur       = 80; %interstimulus interval
+            GRATINGRECORD(tr).grating_stimdur       = 300; % stimdur
         end
         
         
@@ -209,7 +203,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_outerdiameter = repmat(nan, prespertr,1);
             GRATINGRECORD(tr).grating_space         = repmat(nan, prespertr,1);
             GRATINGRECORD(tr).grating_isi           = 200; %interstimulus interval
-            GRATINGRECORD(tr).grating_stimdur       = 200; %interstimulus interval
+            GRATINGRECORD(tr).grating_stimdur       = 300; %interstimulus interval
             
         end
         
@@ -251,7 +245,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_outerdiameter = repmat(nan, prespertr,1);
             GRATINGRECORD(tr).grating_space         = repmat(nan, prespertr,1);
             GRATINGRECORD(tr).grating_isi           = 200; %interstimulus interval
-            GRATINGRECORD(tr).grating_stimdur       = 200; %interstimulus interval
+            GRATINGRECORD(tr).grating_stimdur       = 300; %interstimulus interval
             
         end
         
@@ -299,7 +293,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_outerdiameter = repmat(nan, prespertr,1);
             GRATINGRECORD(tr).grating_space         = repmat(nan, prespertr,1);
             GRATINGRECORD(tr).grating_isi           = 300; %interstimulus interval
-            GRATINGRECORD(tr).grating_stimdur       = 250; %interstimulus interval
+            GRATINGRECORD(tr).grating_stimdur       = 300; %interstimulus interval
             
         end
         
@@ -345,7 +339,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_outerdiameter = repmat(nan, prespertr,1);
             GRATINGRECORD(tr).grating_space         = repmat(nan, prespertr,1);
             GRATINGRECORD(tr).grating_isi           = 300; %interstimulus interval
-            GRATINGRECORD(tr).grating_stimdur       = 250; %interstimulus interval
+            GRATINGRECORD(tr).grating_stimdur       = 300; %interstimulus interval
             
         end
         
@@ -397,7 +391,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_outerdiameter = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_space         = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_isi           = 300; %interstimulus interval
-            GRATINGRECORD(tr).grating_stimdur       = 200; %stimulus duration
+            GRATINGRECORD(tr).grating_stimdur       = 300; %stimulus duration
             
         end
         
@@ -446,7 +440,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_outerdiameter = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_space         = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_isi           = 300; %interstimulus interval
-            GRATINGRECORD(tr).grating_stimdur       = 200; %stimulus duration
+            GRATINGRECORD(tr).grating_stimdur       = 300; %stimulus duration
             
         end
         
