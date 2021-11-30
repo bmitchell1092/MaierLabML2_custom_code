@@ -32,12 +32,12 @@ hotkey('c', 'forced_eye_drift_correction([((-0.25*scrsize(1))+fixpt(1)) fixpt(2)
 % Set the constant conditions
 % de = 3;                                 % Dominant eye: 1 = binocular, 2 = right eye, 3 = left eye
 % Set receptive field
-rf = [-1.2 -1.4]; % [x y] in visual degrees
+rf = [-0.4, -1.7];  % [x y] in visual degrees
 setRF(rf);
-diameter = [1.2];                         % Diameter of the grating
+diameter = [1.7];                         % Diameter of the grating
 fixTreshold = 1;
-PrefOri = [45];                              % Preferred orientation of grating
-sf = [1.5];                               % Cycles per degree
+PrefOri = [45];                          % Preferred orientation of grating
+sf = [2];                             % Cycles per degree
 tf = [0];                               % Cycles per second (0=static, 4=drifting)
 left_xloc = (-0.25*scrsize(1))+rf(1);   % Left eye x-coordinate
 right_xloc = (0.25*scrsize(1))+rf(1);   % Right eye x-coordinate                   % Grating color 2
@@ -72,7 +72,7 @@ if tr == 1 % on the first trial
     filename = strcat(SAVEPATH,filesep,datafile,'.g',upper(paradigm),'Grating_di');
     
     fid = fopen(filename, 'w');
-    formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\r\n';
+    formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\r\n';
     fprintf(fid,formatSpec,...
         'trial',...
         'horzdva',...
@@ -353,7 +353,7 @@ eventmarker(116 + mod(TrialRecord.CurrentTrialNumber,10)); %last diget of trial 
 
     % Set the timer
     cnt5 = TimeCounter(bck5);
-    cnt5.Duration = 250;
+    cnt5.Duration = 100;
     scene5 = create_scene(cnt5);
 
     
@@ -409,7 +409,7 @@ end
 % reward
 if 0==error_type
     run_scene(scene5,[36]); % event code for fix cross OFF 
-    goodmonkey(100, 'juiceline',1, 'numreward',3, 'pausetime',500, 'eventmarker',96); % 100 ms of juice x 2. 96 - Event marker for reward
+    goodmonkey(100, 'juiceline',1, 'numreward',2, 'pausetime',500, 'eventmarker',96); % 100 ms of juice x 2. 96 - Event marker for reward
 end
 
 trialerror(error_type);      % Add the result to the trial history
@@ -419,7 +419,7 @@ trialerror(error_type);      % Add the result to the trial history
 filename = strcat(SAVEPATH,'\',datafile,'.g',upper(paradigm),'Grating_di');
     
 fid = fopen(filename, 'a'); % append
-formatSpec =  '%04u\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%u\t%f\t%s\t%f\t%f\t%f\r\n';
+formatSpec =  '%04u\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%s\t%f\t%f\t%f\t%f\r\n';
 fprintf(fid,formatSpec,...
     TrialRecord.CurrentTrialNumber,...
     stereo_xpos,... % needs verification
