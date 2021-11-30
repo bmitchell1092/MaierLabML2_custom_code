@@ -5,8 +5,8 @@ global IMAGERECORD SAVEPATH prespertr datafile IMAGEPATH
 scrsize = getCoord;  
 
 params.eye          = 1; % 1 = Both, 2 = R, 3 = L
-params.rf           = [-3, -2]; % [0, 0] for humans
-params.scale        = 4; % 10 for humans % in visual degrees (Xsize, Ysize)
+params.rf           = [-0.4, -1.7]; % [0, 0] for humans
+params.scale        = 1.7; % 10 for humans % in visual degrees (Xsize, Ysize)
 params.left_xpos    = (-0.25*scrsize(1)+params.rf(1));   % Left eye x-coordinate
 params.right_xpos   = (0.25*scrsize(1)+params.rf(1));   % Right eye x-coordinate
 
@@ -52,7 +52,7 @@ switch paradigm
             IMAGERECORD(tr).image_xpos_R          = repmat(params.right_xpos,prespertr,1)';
             IMAGERECORD(tr).image_ypos            = repmat(params.rf(2),prespertr,1)';
             IMAGERECORD(tr).image_ori             = all_con(5,shuflocs((theseid)));
-            IMAGERECORD(tr).image_scale           = repmat(params.scale,prespertr,1)';          
+            IMAGERECORD(tr).image_scale           = params.scale;          
             IMAGERECORD(tr).timestamp             = clock;
             IMAGERECORD(tr).image_isi             = 500; %interstimulus interval
             IMAGERECORD(tr).image_stimdur         = 250; %stim duration
@@ -193,10 +193,10 @@ switch paradigm
             IMAGERECORD(tr).y_disparity     = repmat(yshift,prespertr,1)';
             IMAGERECORD(tr).scramble        = all_con(3,shuflocs((theseid)));
             IMAGERECORD(tr).ori             = all_con(4,shuflocs((theseid)));
-            IMAGERECORD(tr).scale           = repmat(params.scale,prespertr,1)';
+            IMAGERECORD(tr).scale           = params.scale;
             IMAGERECORD(tr).timestamp       = clock;
             IMAGERECORD(tr).isi             = 500; %interstimulus interval
-            IMAGERECORD(tr).stimdur         = 5000; %stim duration
+            IMAGERECORD(tr).stimdur         = 250; %stim duration
             IMAGERECORD(tr).rf_x            = params.rf(1); % RF x-pos (determined by dotmapping)
             IMAGERECORD(tr).rf_y            = params.rf(2); % RF y-pos (determined by dotmapping)
         end

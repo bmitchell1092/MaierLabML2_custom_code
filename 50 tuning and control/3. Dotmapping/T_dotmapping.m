@@ -56,7 +56,7 @@ hotkey('c', 'forced_eye_drift_correction([((-0.25*scrsize(1))+fixpt(1)) fixpt(2)
 % Trial number increases by 1 for every iteration of the code
 trialNum = tnum(TrialRecord);
 
-stimdur = 50;
+stimdur = 200;
 isi = 200;
 
 %% On the 1st trial

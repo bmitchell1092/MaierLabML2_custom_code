@@ -19,7 +19,7 @@
    
 
 %% Paradigm selection : 3 presentations per trial
-paradigm = 'rforiWithBlanks';
+paradigm = 'rfsf';
 
 % Note: Open genGratingRecordML2 to change parameters of gratings.
 
@@ -545,7 +545,7 @@ end
 % reward
 if 0==error_type
     run_scene(scene8,[28,36]); % event code for fix cross OFF 
-    goodmonkey(100, 'juiceline',1, 'numreward',2, 'pausetime',200, 'eventmarker',96); % 100 ms of juice x 2. Event marker for reward
+    goodmonkey(100, 'juiceline',1, 'numreward',1, 'pausetime',200, 'eventmarker',96); % 100 ms of juice x 2. Event marker for reward
 end
 
 trialerror(error_type);      % Add the result to the trial history
