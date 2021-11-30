@@ -117,25 +117,25 @@ if tr == 1 % on the first trial
         'horzdva',...           % dva from fused fixation
         'vertdva',...           % dva from fused fixation
         'xpos_L',...            % actual x-position of grating in the LE
-        'xpos_R',...            % actual x-position of grating in the RE
-        'ypos_L',...            % actual y-position of grating in the LE
-        'ypos_R',...            % actual y-position of grating in the RE
-        'x_disparity',...       % difference (in visual deg) between LE and RE grating x-positions
-        'y_disparity',...       % difference (in visual deg) between LE and RE grating y-positions
-        'contrast_L',...        % Michelson contrast of grating in the LE
-        'contrast_R',...        % Michelson contrast of grating in the RE
-        'ori_L',...             % orientation (tilt) of grating in the LE
-        'ori_R',...             % orientation (tilt) of grating in the RE
-        'phase_L',...           % Phase angle of grating in the LE
-        'phase_R',...           % Phase angle of grating in the RE
-        'sf_L',...              % Spatial frequency (cyc/deg) of grating in the LE
+        'ypos_L',...            % actual x-position of grating in the RE
+        'contrast_L',...            % actual y-position of grating in the LE
+        'tilt_L',...            % actual y-position of grating in the RE
+        'phase_L',...       % difference (in visual deg) between LE and RE grating x-positions
+        'sf_L',...       % difference (in visual deg) between LE and RE grating y-positions
+        'tf_L',...        % Michelson contrast of grating in the LE
+        'diameter_R',...        % Michelson contrast of grating in the RE
+        'xpos_R',...             % orientation (tilt) of grating in the LE
+        'ypos_R',...             % orientation (tilt) of grating in the RE
+        'contrast_R',...           % Phase angle of grating in the LE
+        'tilt_R',...           % Phase angle of grating in the RE
+        'phase_R',...              % Spatial frequency (cyc/deg) of grating in the LE
         'sf_R',...              % Spatial frequency (cyc/deg) of grating in the RE
-        'tf_L',...              % Temporal frequency (cyc/deg/sec) of grating in the LE
-        'tf_R',...              % Temporal frequency (cyc/deg/sec) of grating in the RE
-        'diameter_L',...        % Diameter (size) of grating in the LE
-        'diameter_R',...        % Diameter (size) of grating in the RE
+        'tf_R',...              % Temporal frequency (cyc/deg/sec) of grating in the LE
+        'diameter_R',...              % Temporal frequency (cyc/deg/sec) of grating in the RE
+        'x_disparity',...        % Diameter (size) of grating in the LE
+        'y_disparity',...        % Diameter (size) of grating in the RE
         'trialHasBlank',...     % whether this trial has a blank presentation
-        'blank',...             % whether this presentation was a blank or not
+        'presOn',...             % whether this presentation was a blank or not
         'gabor',...             % whether the grating was gabor filtered
         'gabor_std',...         % standard deviation of the gabor filter
         'eye',...               % 1 = LE, 2 = RE, 3 = Both eyes
@@ -242,12 +242,10 @@ for p = 1:prespertr
         grating_contrast(p) = 0;
     end
     
-    pd_color1(p,:) = gray + (grating_contrast(p) / 2);
-    pd_color2(p,:) = gray - (grating_contrast(p) / 2);
+    pd_color1(p,:) = [1 1 1] ; %gray + (grating_contrast(p) / 2);
+    pd_color2(p,:) = [0 0 0] ; %gray - (grating_contrast(p) / 2);
         
 end
-
-
 
 
 %% Preallocate grating struct

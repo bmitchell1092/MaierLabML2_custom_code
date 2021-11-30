@@ -4,9 +4,9 @@ function genImageRecordML2(paradigm, TrialRecord)
 global IMAGERECORD SAVEPATH prespertr datafile IMAGEPATH
 scrsize = getCoord;  
 
-params.eye          = 3; % 1 = L, 2 = R, 3 = Both eyes
-params.rf           = [0, 0];
-params.scale        = 10; % in visual degrees (Xsize, Ysize)
+params.eye          = 1; % 1 = Both, 2 = R, 3 = L
+params.rf           = [-3, -2]; % [0, 0] for humans
+params.scale        = 4; % 10 for humans % in visual degrees (Xsize, Ysize)
 params.left_xpos    = (-0.25*scrsize(1)+params.rf(1));   % Left eye x-coordinate
 params.right_xpos   = (0.25*scrsize(1)+params.rf(1));   % Right eye x-coordinate
 
@@ -158,6 +158,7 @@ switch paradigm
         ori = [0];
         xshift = [0]; % Constant to add to one of the eye's x-coordinate
         yshift = [0]; 
+        
         prespertr = 3;
         mintr = 15;
         all_con  = combvec(img_num,cond,scramble,ori); %all possible conditions of the parameters that vary

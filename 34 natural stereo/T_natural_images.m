@@ -63,6 +63,10 @@ tr = tnum(TrialRecord);
 %% On the 1st trial
 
 if tr == 1
+    
+     % Set the image path
+    IMAGEPATH = char(strcat(fileparts(which('T_natural_images.m')),filesep,'stereo stimuli',{' '},stimulus_set));
+    
     % Generate IMAGERECORD
     genImageRecordML2(paradigm, TrialRecord);
     
@@ -70,9 +74,6 @@ if tr == 1
     cd(fileparts(which('genImageRecordML2.m')))
     genFixCross((fixpt(1)*Screen.PixelsPerDegree), (fixpt(2)*Screen.PixelsPerDegree));
  
-    % Set the image path
-    IMAGEPATH = char(strcat(fileparts(which('T_natural_images.m')),filesep,'stereo stimuli',{' '},stimulus_set));
-    
     filename = fullfile(SAVEPATH,sprintf('%s.gImageXY_di',datafile));
     fid = fopen(filename, 'w');
     formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\r\n';
@@ -144,7 +145,7 @@ rf_y = IMAGERECORD(tr).rf_x;
 gray = [0.5 0.5 0.5]; 
 
 % if shift values = zero, it's zero or relative disparity 
-if shifted_eye == 1 % left eye 
+if shifted_eye == 3 % left eye 
     xpos_L = xpos_L + x_disparity;
     ypos_L = ypos_L + y_disparity;
 elseif shifted_eye == 2 % right eye

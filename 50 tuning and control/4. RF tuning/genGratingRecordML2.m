@@ -8,32 +8,35 @@ function genGratingRecordML2(paradigm,TrialRecord)
 
 global GRATINGRECORD SAVEPATH prespertr datafile params
 oldGRATINGRECORD = GRATINGRECORD; 
-GRATINGRECORD = [];
+GRATINGRECORD = []; scrsize = getCoord;
+clear params   
 
-% parameters to keep constant (overwrite below where appropriate):
-rf = [-1.2, -1.4];
-scrsize = getCoord;
+% General editables 
+params.rf              = [-1.2, -1.4];
+params.diameters       = 2;    % Diameter in degrees
+params.contrasts       = 0.9;  % Michelson contrast
+params.spatial_freq    = 1.5;    % cycles per degree
+params.orientations    = 45;   % preferred orientation--remember 0 deg is vertical orientation, 90 deg is horizontal,  NAN makes RN patch
+params.phase           = 0;    % phase angle of grating
+                                    
+params.stereo_xpos     = [-0.25*scrsize(1)+params.rf(1) 0.25*scrsize(1)+params.rf(1)]; % enter x position (1st element--LEFT eye, 2nd--RIGHT eye)
+params.xpos            = [params.rf(1) params.rf(1)];     % enter x position (1st element--LEFT eye, 2nd--RIGHT eye)
+params.ypos            = [params.rf(2) params.rf(2)];     % enter y posit
 
-clear params
-params.xpos                = [rf(1) rf(1)];     % enter x position (1st element--LEFT eye, 2nd--RIGHT eye)
-params.ypos                = [rf(2) rf(2)];     % enter y position (1st element--LEFT eye, 2nd--RIGHT eye)
-params.varyeye             = [nan];             % LEGACY: 2 for R, 3 for L (applicable for cinteroc, cosinteroc, and sss cinteroc/cosinteroc--varyeye will get "fixedc" contrasts. ss--vary eye will be the ND eye
-params.eye                 = [1];               % 1 = both eyes, 2 = right eye, 3 = left eye; leave this [1] by default
-params.diameters           = [2];               % Diameter in degrees
-params.contrasts           = [0.9];             % Michelson contrast
-params.fixedc              = [];                % LEGACY fixed contrast (really contrast(s) for ND eye)
-params.spatial_freq        = [0.2];             % cycles per degree
-params.temporal_freq       = [1];               % cycles per second
-params.orientations        = [45];              % preferred orientation--remember 0 deg is vertical orientation, 90 deg is horizontal,  NAN makes RN patch
-params.phase               = [0];               % phase angle of grating
-params.stereo_xpos         = [-0.25*scrsize(1)+rf(1) 0.25*scrsize(1)+rf(1)]; % enter x position (1st element--LEFT eye, 2nd--RIGHT eye)
+% legacy editables
+params.varyeye = nan;
+params.fixedc = nan;
 
+% Task editables
 switch paradigm
    
     case 'rfori' 
         prespertr = 3;
         % parameters to vary:
         params.orientations = [0:11.25:168.75]; % degrees
+        params.eye = [1,2,3];
+        params.temporal_freq = 1;
+        
         mintr = 15; 
         all_con  = combvec(params.orientations,params.eye,params.phase); %all possible conditions of the parameters that vary
         minpres = mintr* length(all_con); % total number of presentations at 10 per loc
@@ -80,6 +83,8 @@ switch paradigm
         % parameters to vary:
         params.orientations = [0:11.25:168.75]; % degrees
         params.eye = [1,2,3]; % this should be both eyes, right eye, or left eye
+        params.temporal_freq = 2;
+        
         mintr = 15;
         all_con  = combvec(params.orientations,params.eye,params.phase); %all possible conditions of the parameters that vary
         minpres = mintr* length(all_con); % total number of presentations at 10 per loc
@@ -124,10 +129,11 @@ switch paradigm
         
     case 'rfsize'
         prespertr = 3;
-        params.diameters  = [logspace(log10(.5),log10(6),7)];
-        params.eye        = params.eye; 
-        all_con           = combvec(params.diameters,params.eye,params.phase); %all possible conditions of the parameters that vary
+        params.diameters     = [logspace(log10(.5),log10(6),7)];
+        params.eye           = params.eye; 
+        params.temporal_freq = 0;
         
+        all_con               = combvec(params.diameters,params.eye,params.phase); %all possible conditions of the parameters that vary      
         npres   = 15;
         minpres = npres* length(all_con); % total number of presentations per condition
         minntrs = minpres/prespertr;      % number of trials
@@ -401,8 +407,9 @@ switch paradigm
         
         params.contrasts  = [0 0.055 0.11 0.225 0.45 0.90];
         params.fixedc     = [0 0.055 0.11 0.225 0.45 0.90]; % contrast for second eye
-        params.eye = nan;
+        params.eye = nan;  % this is nan here due to having zero contrast above
         params.phase = 0;
+        params.temporal_freq = 0;
         
         all_con  = combvec(params.contrasts,params.eye,params.fixedc,params.phase); %all possible conditions of the paramters that vary
         

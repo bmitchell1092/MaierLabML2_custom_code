@@ -109,7 +109,7 @@ if tr == 1 % on the first trial
     
     % Textfile # 2 (beta)
     
-    filename_2 = strcat(SAVEPATH,'\',datafile,'.g',upper(paradigm),'Grating');
+    filename_2 = strcat(SAVEPATH,'\',datafile,'.g',upper(paradigm),'Grating_di_v2');
 
     fid = fopen(filename_2, 'w');
     formatSpec =  '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\r\n';
@@ -119,25 +119,25 @@ if tr == 1 % on the first trial
         'horzdva',...           % dva from fused fixation
         'vertdva',...           % dva from fused fixation
         'xpos_L',...            % actual x-position of grating in the LE
-        'xpos_R',...            % actual x-position of grating in the RE
-        'ypos_L',...            % actual y-position of grating in the LE
-        'ypos_R',...            % actual y-position of grating in the RE
-        'x_disparity',...       % difference (in visual deg) between LE and RE grating x-positions
-        'y_disparity',...       % difference (in visual deg) between LE and RE grating y-positions
-        'contrast_L',...        % Michelson contrast of grating in the LE
-        'contrast_R',...        % Michelson contrast of grating in the RE
-        'ori_L',...             % orientation (tilt) of grating in the LE
-        'ori_R',...             % orientation (tilt) of grating in the RE
-        'phase_L',...           % Phase angle of grating in the LE
-        'phase_R',...           % Phase angle of grating in the RE
-        'sf_L',...              % Spatial frequency (cyc/deg) of grating in the LE
+        'ypos_L',...            % actual x-position of grating in the RE
+        'contrast_L',...            % actual y-position of grating in the LE
+        'tilt_L',...            % actual y-position of grating in the RE
+        'phase_L',...       % difference (in visual deg) between LE and RE grating x-positions
+        'sf_L',...       % difference (in visual deg) between LE and RE grating y-positions
+        'tf_L',...        % Michelson contrast of grating in the LE
+        'diameter_L',...        % Michelson contrast of grating in the RE
+        'xpos_R',...             % orientation (tilt) of grating in the LE
+        'ypos_R',...             % orientation (tilt) of grating in the RE
+        'contrast_R',...           % Phase angle of grating in the LE
+        'tilt_R',...           % Phase angle of grating in the RE
+        'phase_R',...              % Spatial frequency (cyc/deg) of grating in the LE
         'sf_R',...              % Spatial frequency (cyc/deg) of grating in the RE
-        'tf_L',...              % Temporal frequency (cyc/deg/sec) of grating in the LE
-        'tf_R',...              % Temporal frequency (cyc/deg/sec) of grating in the RE
-        'diameter_L',...        % Diameter (size) of grating in the LE
-        'diameter_R',...        % Diameter (size) of grating in the RE
+        'tf_R',...              % Temporal frequency (cyc/deg/sec) of grating in the LE
+        'diameter_R',...              % Temporal frequency (cyc/deg/sec) of grating in the RE
+        'x_disparity',...        % Diameter (size) of grating in the LE
+        'y_disparity',...        % Diameter (size) of grating in the RE
         'trialHasBlank',...     % whether this trial has a blank presentation
-        'blank',...             % whether this presentation was a blank or not
+        'presOn',...             % whether this presentation was a blank or not
         'gabor',...             % whether the grating was gabor filtered
         'gabor_std',...         % standard deviation of the gabor filter
         'eye',...               % 1 = LE, 2 = RE, 3 = Both eyes
@@ -180,18 +180,26 @@ grating_space = GRATINGRECORD(tr).grating_space;
 grating_isi = GRATINGRECORD(tr).grating_isi;
 grating_stimdur = GRATINGRECORD(tr).grating_stimdur;
 
+% Variables for new textfile
+tilt_L = grating_tilt; phase_L = grating_phase; sf_L = grating_sf; tf_L = grating_tf; diameter_L = grating_diameter;
+tilt_R = grating_tilt; phase_R = grating_phase; sf_R = grating_sf; tf_R = grating_tf; diameter_R = grating_diameter;
+xpos_L = stereo_xpos; ypos_L = grating_ypos;
+xpos_R = other_stereo_xpos; ypos_R = other_ypos;
+contrast_L = grating_fixedc; contrast_R = grating_contrast;
+presOn = [1,1,1]; trialHasBlank = 0; flag_blank = 0;
+
 if strcmp(grating_header,'phzdisparity')
-    grating_phase_L = GRATINGRECORD(tr).grating_phase_L;
-    grating_phase_R = GRATINGRECORD(tr).grating_phase_R;
-    grating_phzdist = grating_phase_L - grating_phase_R;
+    phase_L = GRATINGRECORD(tr).grating_phase_L;
+    phase_R = GRATINGRECORD(tr).grating_phase_R;
+    phzdist = phase_L - phase_R;
 else
-    grating_phzdist = nan(prespertr,1);
+    phzdist = zeros(prespertr,1);
 end
 
 if strcmp(grating_header,'posdisparity')
-    grating_posdist = GRATINGRECORD(tr).grating_posdist;
+    posdist = GRATINGRECORD(tr).grating_posdist;
 else
-    grating_posdist = nan(prespertr,1);
+    posdist = zeros(prespertr,1);
 end
 
 
@@ -213,12 +221,8 @@ switch grating_header
         end
    
         % orientation
-        gratL_tilt = grating_tilt;
-        gratR_tilt = grating_tilt;
-        
-        % phase
-        gratL_phase = grating_phase_L;
-        gratR_phase = grating_phase_R;
+        tilt_L = grating_tilt;
+        tilt_R = grating_tilt;
         
     case 'contrastresp' % monocular and dioptic gratings
 
@@ -251,12 +255,12 @@ switch grating_header
         end
         
         % orientation
-        gratL_tilt = grating_tilt;
-        gratR_tilt = grating_tilt;
+        tilt_L = grating_tilt;
+        tilt_R = grating_tilt;
         
         % phase
-        gratL_phase = grating_phase;
-        gratR_phase = grating_phase;
+        phase_L = grating_phase;
+        phase_R = grating_phase;
         
     case {'mcosinteroc','bcosinteroc'} % dichoptic (contrast and ori) and monocular gratings
         
@@ -270,12 +274,12 @@ switch grating_header
         end
         
         % orientation
-        gratL_tilt = grating_tilt;
-        gratR_tilt = grating_oridist;
+        tilt_L = grating_tilt;
+        tilt_R = grating_oridist;
         
         % phase
-        gratL_phase = grating_phase;
-        gratR_phase = grating_phase;
+        phase_L = grating_phase;
+        phase_R = grating_phase;
         
     case {'bminteroc','cinteroc'}
         
@@ -292,17 +296,20 @@ switch grating_header
             elseif grating_fixedc(p) == 0 && grating_contrast(p) > 0 % if the left eye contrast was 0
                 grating_eye(p) = 2; % then the eye was 2 (right)
             else
-                grating_eye(p) = 1; % if neither eye had zero contrast, then it was binocular (1)
+                grating_eye(p) = 1; % otherwise, both eyes received same stimulation (could be blank)
+                if grating_contrast(p) == 0 && grating_fixedc(p) == 0
+                    flag_blank = true;
+                end
             end
         end
         
         % orientation
-        gratL_tilt = grating_tilt;
-        gratR_tilt = grating_tilt;
+        tilt_L = grating_tilt;
+        tilt_R = grating_tilt;
         
         % phase
-        gratL_phase = grating_phase;
-        gratR_phase = grating_phase;
+        phase_L = grating_phase;
+        phase_R = grating_phase;
         
         
     case {'posdisparity'}
@@ -317,22 +324,22 @@ switch grating_header
             
             % x-position shift
             if grating_eye(p) == 2
-                grating_xpos(p) = grating_xpos(p) + grating_posdist(p);
-                stereo_xpos(p) = stereo_xpos(p) + grating_posdist(p);
+                grating_xpos(p) = grating_xpos(p) + posdist(p);
+                stereo_xpos(p) = stereo_xpos(p) + posdist(p);
             elseif grating_eye(p) == 3
-                other_xpos(p) = other_xpos(p) + grating_posdist(p);
-                other_stereo_xpos(p) = other_stereo_xpos(p) + grating_posdist(p);
+                other_xpos(p) = other_xpos(p) + posdist(p);
+                other_stereo_xpos(p) = other_stereo_xpos(p) + posdist(p);
             end
             
         end
         
         % orientation
-        gratL_tilt = grating_tilt;
-        gratR_tilt = grating_tilt;
+        tilt_L = grating_tilt;
+        tilt_R = grating_tilt;
         
         % phase
-        gratL_phase = grating_phase;
-        gratR_phase = grating_phase;
+        phase_L = grating_phase;
+        phase_R = grating_phase;
         
 end
 
@@ -351,15 +358,15 @@ end
 %     [stereo_xpos(3) grating_ypos(3)], grating_diameter(3)/2, gratR_tilt(3), grating_sf(3), grating_tf(3), gratR_phase(3), gratR_color1(3), gratR_color2(3), 'circular', []};
 
 GratingList.left = ...
-    {[stereo_xpos(1) grating_ypos(1)], grating_diameter(1)/2, gratL_tilt(1), grating_sf(1), grating_tf(1), gratL_phase(1), gratL_color1(1), gratL_color2(1), 'circular', []; ...
-    [stereo_xpos(2) grating_ypos(2)], grating_diameter(2)/2, gratL_tilt(2), grating_sf(2), grating_tf(2), gratL_phase(2), gratL_color1(2), gratL_color2(2), 'circular', [];...
-    [stereo_xpos(3) grating_ypos(3)], grating_diameter(3)/2, gratL_tilt(3), grating_sf(3), grating_tf(3), gratL_phase(3), gratL_color1(3), gratL_color2(3), 'circular', []};
+    {[stereo_xpos(1) grating_ypos(1)], grating_diameter(1)/2, tilt_L(1), grating_sf(1), grating_tf(1), phase_L(1), gratL_color1(1), gratL_color2(1), 'circular', []; ...
+    [stereo_xpos(2) grating_ypos(2)], grating_diameter(2)/2, tilt_L(2), grating_sf(2), grating_tf(2), phase_L(2), gratL_color1(2), gratL_color2(2), 'circular', [];...
+    [stereo_xpos(3) grating_ypos(3)], grating_diameter(3)/2, tilt_L(3), grating_sf(3), grating_tf(3), phase_L(3), gratL_color1(3), gratL_color2(3), 'circular', []};
     
 
 GratingList.right = ...
-    {[other_stereo_xpos(1) other_ypos(1)], grating_diameter(1)/2, gratR_tilt(1), grating_sf(1), grating_tf(1), gratR_phase(1), gratR_color1(1), gratR_color2(1), 'circular', []; ...
-    [other_stereo_xpos(2) other_ypos(2)], grating_diameter(2)/2, gratR_tilt(2), grating_sf(2), grating_tf(2), gratR_phase(2), gratR_color1(2), gratR_color2(2), 'circular', [];...
-    [other_stereo_xpos(3) other_ypos(3)], grating_diameter(3)/2, gratR_tilt(3), grating_sf(3), grating_tf(3), gratR_phase(3), gratR_color1(3), gratR_color2(3), 'circular', []};
+    {[other_stereo_xpos(1) other_ypos(1)], grating_diameter(1)/2, tilt_R(1), grating_sf(1), grating_tf(1), phase_R(1), gratR_color1(1), gratR_color2(1), 'circular', []; ...
+    [other_stereo_xpos(2) other_ypos(2)], grating_diameter(2)/2, tilt_R(2), grating_sf(2), grating_tf(2), phase_R(2), gratR_color1(2), gratR_color2(2), 'circular', [];...
+    [other_stereo_xpos(3) other_ypos(3)], grating_diameter(3)/2, tilt_R(3), grating_sf(3), grating_tf(3), phase_R(3), gratR_color1(3), gratR_color2(3), 'circular', []};
 
 
 %% Trial sequence event markers
@@ -560,8 +567,12 @@ set_iti(800); % Inter-trial interval in [ms]
 %% Write info to file
 
 filename_1 = strcat(SAVEPATH,'\',datafile,'.g',upper(paradigm),'Grating_di'); % legacy
-filename_2 = strcat(SAVEPATH,'\',datafile,'.g',upper(paradigm),'Grating'); % 2021 and beyond
-    
+filename_2 = strcat(SAVEPATH,'\',datafile,'.g',upper(paradigm),'Grating_di_v2'); % 2021 and beyond
+
+if flag_blank == true
+    trialHasBlank = 1;
+end
+
 for pres = 1:prespertr
     fid = fopen(filename_1, 'a'); % append
     formatSpec =  '%04u\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%u\t%f\t%s\t%f\t%f\t%f\r\n';
@@ -581,8 +592,8 @@ for pres = 1:prespertr
         grating_eye(pres),...
         grating_varyeye(pres),...
         grating_oridist(pres),...
-        grating_phzdist(pres),...
-        grating_posdist(pres),...
+        phzdist(pres),...
+        posdist(pres),...
         grating_header,...
         grating_phase(pres),...
         0,...
@@ -593,39 +604,54 @@ for pres = 1:prespertr
     
     % Textfile # 2 (beta)
     
+    % establish what was shown on screen.
+    if contrast_L(pres) == 0 % if grating contrast in LE is zero
+        tilt_L(pres) = NaN; phase_L(pres) = NaN; diameter_L(pres) = NaN; 
+        sf_L(pres) = NaN; tf_L(pres) = NaN; xpos_L(pres) = NaN; ypos_L(pres) = NaN;
+    end
+    if contrast_R(pres) == 0 % if grating appears in left eye
+        tilt_R(pres) = NaN; phase_R(pres) = NaN; diameter_R(pres) = NaN; 
+        sf_R(pres) = NaN; tf_R(pres) = NaN; xpos_R(pres) = NaN; ypos_R(pres) = NaN;
+    end
+    
+    if contrast_L(pres) == 0 && contrast_R(pres) == 0
+        presOn(pres) = 0;
+    end
+    
+    
     fid = fopen(filename_2, 'a'); % append
     formatSpec =  '%04u\t%s\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\r\n';
     fprintf(fid,formatSpec,...
         TrialRecord.CurrentTrialNumber,...
-        grating_header,...             % 'paradigm'
-        grating_xpos(pres),...          % dva from fused fixation
-        grating_ypos(pres),...          % dva from fused fixation
-        stereo_xpos(pres)',...          % actual x-position of grating in the LE
-        other_stereo_xpos(pres),...            % actual x-position of grating in the RE
-        grating_ypos(pres),...            % actual y-position of grating in the LE
-        other_ypos(pres),...            % actual y-position of grating in the RE
-        grating_posdist(pres),...       % difference (in visual deg) between LE and RE grating x-positions
-        grating_phzdist(pres),...       % difference (in visual deg) between LE and RE grating y-positions
-        grating_fixedc(pres),...        % Michelson contrast of grating in the LE
-        grating_contrast(pres),...        % Michelson contrast of grating in the RE
-        gratL_tilt(pres),...             % orientation (tilt) of grating in the LE
-        gratR_tilt(pres),...             % orientation (tilt) of grating in the RE
-        gratL_phase(pres),...           % Phase angle of grating in the LE
-        gratR_phase(pres),...           % Phase angle of grating in the RE
-        grating_sf(pres),...              % Spatial frequency (cyc/deg) of grating in the LE
-        grating_sf(pres),...              % Spatial frequency (cyc/deg) of grating in the RE
-        grating_tf(pres),...              % Temporal frequency (cyc/deg/sec) of grating in the LE
-        grating_tf(pres),...              % Temporal frequency (cyc/deg/sec) of grating in the RE
-        grating_diameter(pres),...        % Diameter (size) of grating in the LE
-        grating_diameter(pres),...        % Diameter (size) of grating in the RE
-        0,...     % whether this trial has a blank presentation
-        0,...             % whether this presentation was a blank or not
-        0,...             % whether the grating was gabor filtered
-        0,...         % standard deviation of the gabor filter
-        grating_eye(pres),...               % 1 = LE, 2 = RE, 3 = Both eyes
-        grating_stimdur,...          % stimulus duration
-        grating_isi,...               % interstimulus interval
-        nan,...             % for cone isolation
+        paradigm,...
+        grating_xpos(pres),...
+        grating_ypos(pres),...
+        xpos_L(pres)',...
+        ypos_L(pres),...
+        contrast_L(pres),...
+        tilt_L(pres),...
+        phase_L(pres),...
+        sf_L(pres),...
+        tf_L(pres),...
+        diameter_L(pres),...
+        xpos_R(pres),...
+        ypos_R(pres),...
+        contrast_R(pres),...
+        tilt_R(pres),...
+        phase_R(pres),...
+        sf_R(pres),...
+        tf_R(pres),...
+        diameter_R(pres),...
+        0,...
+        0,...
+        trialHasBlank,...                 % whether this trial has a blank presentation
+        presOn(pres),...                  % whether this presentation was a blank or not
+        0,...                             % whether the grating was gabor filtered
+        0,...
+        grating_eye(pres),...             % 1 = LE, 2 = RE, 3 = Both eyes
+        grating_stimdur,...               % stimulus duration
+        grating_isi,...                   % interstimulus interval
+        nan,...                            % for cone isolation
         now);
     
     fclose(fid);
