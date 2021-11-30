@@ -15,7 +15,7 @@ clear params
 params.rf              = [-1.2, -1.4];
 params.diameters       = 2;    % Diameter in degrees
 params.contrasts       = 0.9;  % Michelson contrast
-params.spatial_freq    = 1.5;    % cycles per degree
+params.spatial_freq    = 0.2;  % cycles per degree
 params.orientations    = 45;   % preferred orientation--remember 0 deg is vertical orientation, 90 deg is horizontal,  NAN makes RN patch
 params.phase           = 0;    % phase angle of grating
                                     
@@ -83,7 +83,7 @@ switch paradigm
         % parameters to vary:
         params.orientations = [0:11.25:168.75]; % degrees
         params.eye = [1,2,3]; % this should be both eyes, right eye, or left eye
-        params.temporal_freq = 2;
+        params.temporal_freq = 0.2;
         
         mintr = 15;
         all_con  = combvec(params.orientations,params.eye,params.phase); %all possible conditions of the parameters that vary
@@ -123,7 +123,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_outerdiameter = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_space         = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_isi           = 200; %interstimulus interval
-            GRATINGRECORD(tr).grating_stimdur       = 300; %stim interval
+            GRATINGRECORD(tr).grating_stimdur       = 1000; %stim interval
             GRATINGRECORD(tr).blankLikelihood       = 0.15;
         end
         
