@@ -13,7 +13,7 @@ clear params
 
 % Default parameters
 params.rf              = [-0.40, -1.7];
-params.diameters       = 5;   % Diameter in degrees
+params.diameters       = 1.7;   % Diameter in degrees
 params.contrasts       = 0.9;  % Michelson contrast
 params.spatial_freq    = 1;    % cycles per degree
 params.temporal_freq   = 0;    % cycles per second
@@ -849,14 +849,14 @@ switch paradigm
         
     case 's_cone'
         
-        params.path = [1]; % LM,S,LplusMminus and LminusMplus,MAGNO
-        params.temporal_freq = [30];
-        params.contrasts = 1;
-        params.spatial_freq = [0];
+        params.path = [0,1]; % 1 = S 
+        params.temporal_freq = [5];
+        params.contrasts = 0.5;
+        params.spatial_freq = [0,2];
         params.eye = 1;
         
         mintr    = 25;
-        all_con  = combvec(params.eye,params.temporal_freq,params.contrasts,params.path); %all possible conditions of the parameters that vary
+        all_con  = combvec(params.eye,params.spatial_freq,params.temporal_freq,params.contrasts,params.path); %all possible conditions of the parameters that vary
         minpres  = mintr* size(all_con,2); % total number of presentations at 10 per loc
         minntrs  = floor(minpres/prespertr);   % number of trials
         
@@ -873,9 +873,9 @@ switch paradigm
             GRATINGRECORD(tr).grating_tilt          = repmat(params.orientations,prespertr,1)';
             GRATINGRECORD(tr).grating_eye           = all_con(1,shuflocs((theseid)));
             GRATINGRECORD(tr).grating_phase         = repmat(params.phase,prespertr,1)';
-            GRATINGRECORD(tr).grating_sf            = repmat(params.spatial_freq,prespertr,1)';
-            GRATINGRECORD(tr).grating_tf            = all_con(2,shuflocs((theseid)));
-            GRATINGRECORD(tr).grating_contrast      = all_con(3,shuflocs((theseid)));
+            GRATINGRECORD(tr).grating_sf            = all_con(2,shuflocs((theseid)));
+            GRATINGRECORD(tr).grating_tf            = all_con(3,shuflocs((theseid)));
+            GRATINGRECORD(tr).grating_contrast      = all_con(4,shuflocs((theseid)));
             GRATINGRECORD(tr).grating_diameter      = repmat(params.diameters,prespertr,1)';
             GRATINGRECORD(tr).grating_xpos          = repmat(params.xpos,prespertr,1)';
             GRATINGRECORD(tr).stereo_xpos           = repmat(params.stereo_xpos,prespertr,1)';
@@ -888,8 +888,8 @@ switch paradigm
             GRATINGRECORD(tr).grating_outerdiameter = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_space         = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_isi           = 200; %interstimulus interval
-            GRATINGRECORD(tr).grating_stimdur       = 5000; %stim interval
-            GRATINGRECORD(tr).path                  = all_con(4,shuflocs((theseid)));
+            GRATINGRECORD(tr).grating_stimdur       = 400; %stim interval
+            GRATINGRECORD(tr).path                  = all_con(5,shuflocs((theseid)));
         end
         
     case 'cpatch'
