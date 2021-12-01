@@ -7,19 +7,18 @@
 % 4) Phase, 5) Diameter (size), 6) Contrast, and 7) Eye! 
 
 % % PARADIGMS
-%  NAME      | # of correct trials 
-% -----------------------------------
-% 'rfori'    | 80           
-% 'rfsize'   | 35   
-% 'rfsf'     | 20       
-% 'rfphase'  | 25
+%  NAME             | eyes   | # of correct trials 
+% ---------------------------------------------
+% 'rfori'           | 1,2,3  | 240   
+% 'rforiWithBlanks' | 1,2,3  | 240
+% 'rfsize'          | 1      | 35
+% 'rfsf'            | 1      | 20
+% 'rfphase'         | 1      | 25
+% 's_cone'          | 1      | 
+% ---------------------------------------------
 
-% Extras
-% 'rforiWithBlanks' 
-   
-
-%% Paradigm selection : 3 presentations per trial
-paradigm = 'rfsf';
+% Paradigm selection 
+paradigm = 's_cone';
 
 % Note: Open genGratingRecordML2 to change parameters of gratings.
 
@@ -101,7 +100,7 @@ if tr == 1 % on the first trial
         'PresOn',... % gabor_std
         'header',...
         'grating_phase',...
-        'pathw',...
+        'path',...
         'timestamp');
     
     fclose(fid);
@@ -118,30 +117,30 @@ if tr == 1 % on the first trial
         'vertdva',...           % dva from fused fixation
         'xpos_L',...            % actual x-position of grating in the LE
         'ypos_L',...            % actual x-position of grating in the RE
-        'contrast_L',...            % actual y-position of grating in the LE
+        'contrast_L',...        % actual y-position of grating in the LE
         'tilt_L',...            % actual y-position of grating in the RE
-        'phase_L',...       % difference (in visual deg) between LE and RE grating x-positions
-        'sf_L',...       % difference (in visual deg) between LE and RE grating y-positions
-        'tf_L',...        % Michelson contrast of grating in the LE
+        'phase_L',...           % difference (in visual deg) between LE and RE grating x-positions
+        'sf_L',...              % difference (in visual deg) between LE and RE grating y-positions
+        'tf_L',...              % Michelson contrast of grating in the LE
         'diameter_R',...        % Michelson contrast of grating in the RE
-        'xpos_R',...             % orientation (tilt) of grating in the LE
-        'ypos_R',...             % orientation (tilt) of grating in the RE
-        'contrast_R',...           % Phase angle of grating in the LE
-        'tilt_R',...           % Phase angle of grating in the RE
-        'phase_R',...              % Spatial frequency (cyc/deg) of grating in the LE
+        'xpos_R',...            % orientation (tilt) of grating in the LE
+        'ypos_R',...            % orientation (tilt) of grating in the RE
+        'contrast_R',...        % Phase angle of grating in the LE
+        'tilt_R',...            % Phase angle of grating in the RE
+        'phase_R',...           % Spatial frequency (cyc/deg) of grating in the LE
         'sf_R',...              % Spatial frequency (cyc/deg) of grating in the RE
         'tf_R',...              % Temporal frequency (cyc/deg/sec) of grating in the LE
-        'diameter_R',...              % Temporal frequency (cyc/deg/sec) of grating in the RE
-        'x_disparity',...        % Diameter (size) of grating in the LE
-        'y_disparity',...        % Diameter (size) of grating in the RE
+        'diameter_R',...        % Temporal frequency (cyc/deg/sec) of grating in the RE
+        'x_disparity',...       % Diameter (size) of grating in the LE
+        'y_disparity',...       % Diameter (size) of grating in the RE
         'trialHasBlank',...     % whether this trial has a blank presentation
-        'presOn',...             % whether this presentation was a blank or not
+        'presOn',...            % whether this presentation was a blank or not
         'gabor',...             % whether the grating was gabor filtered
         'gabor_std',...         % standard deviation of the gabor filter
         'eye',...               % 1 = LE, 2 = RE, 3 = Both eyes
         'duration',...          % stimulus duration
         'isi',...               % interstimulus interval
-        'pathw',...             % for cone isolation
+        'path',...             % for cone isolation
         'timestamp');
     
     fclose(fid);
@@ -155,7 +154,7 @@ end
 %% Assign values to each sine grating condition
 % Set the conditions
 
-path = nan;
+
 grating_tilt = GRATINGRECORD(tr).grating_tilt;
 grating_eye = GRATINGRECORD(tr).grating_eye; % 1 = binocular, 2 = right eye, 3 = left eye
 grating_phase = GRATINGRECORD(tr).grating_phase;
@@ -177,6 +176,7 @@ grating_outerdiameter = GRATINGRECORD(tr).grating_outerdiameter;
 grating_space = GRATINGRECORD(tr).grating_space;
 grating_isi = GRATINGRECORD(tr).grating_isi;
 grating_stimdur = GRATINGRECORD(tr).grating_stimdur;
+path = GRATINGRECORD(tr).path;
 
 % Variables for new textfile
 tilt_L = grating_tilt; phase_L = grating_phase; sf_L = grating_sf; tf_L = grating_tf; diameter_L = grating_diameter;
@@ -198,53 +198,109 @@ R_color1 = nan(3,3); R_color2 = nan(3,3); % right grating contrast
 pd_color1 = nan(3,3); pd_color2 = nan(3,3); % bottom lefthand corner grating (for pd)
 
 for p = 1:prespertr
-    if grating_eye(p) == 1 % both eyes
-        contrast_L(p) = grating_contrast(p);
-        contrast_R(p) = grating_contrast(p);
-        
-        L_color1(p,:) = gray + (grating_contrast(p) / 2);
-        L_color2(p,:) = gray - (grating_contrast(p) / 2);
-        
-        R_color1(p,:) = gray + (grating_contrast(p) / 2);
-        R_color2(p,:) = gray - (grating_contrast(p) / 2);
-        
-    elseif grating_eye(p) == 2 % right eye
-        
-        contrast_L(p) = NaN;
-        contrast_R(p) = grating_contrast(p);
-        L_color1(p,:) = gray;
-        L_color2(p,:) = gray;
-        
-        R_color1(p,:) = gray + (grating_contrast(p) / 2);
-        R_color2(p,:) = gray - (grating_contrast(p) / 2);
-        
-    elseif grating_eye(p) == 3 % left eye
-        
-        contrast_L(p) = grating_contrast(p);
-        contrast_R(p) = NaN;
-        
-        L_color1(p,:) = gray + (grating_contrast(p) / 2);
-        L_color2(p,:) = gray - (grating_contrast(p) / 2);
-        
-        R_color1(p,:) = gray;
-        R_color2(p,:) = gray;
-    end
-    
-    if p == 2 && trialHasBlank == true % this is a randomly interspersed blank presentation in the 2nd presentation
-        
-        fprintf('Blank on trial # %d | rng = %.02f \n',tr,r1)
-        L_color1(p,:) = gray; 
-        L_color2(p,:) = gray; 
-        
-        R_color1(p,:) = gray;
-        R_color2(p,:) = gray;
-        
-        grating_contrast(p) = 0;
+    switch path(p)
+        case 0 % achromatic
+            
+            if grating_eye(p) == 1 % both eyes
+                contrast_L(p) = grating_contrast(p);
+                contrast_R(p) = grating_contrast(p);
+                
+                L_color1(p,:) = gray + (grating_contrast(p) / 2);
+                L_color2(p,:) = gray - (grating_contrast(p) / 2);
+                
+                R_color1(p,:) = gray + (grating_contrast(p) / 2);
+                R_color2(p,:) = gray - (grating_contrast(p) / 2);
+                
+            elseif grating_eye(p) == 2 % right eye
+                
+                contrast_L(p) = NaN;
+                contrast_R(p) = grating_contrast(p);
+                L_color1(p,:) = gray;
+                L_color2(p,:) = gray;
+                
+                R_color1(p,:) = gray + (grating_contrast(p) / 2);
+                R_color2(p,:) = gray - (grating_contrast(p) / 2);
+                
+            elseif grating_eye(p) == 3 % left eye
+                
+                contrast_L(p) = grating_contrast(p);
+                contrast_R(p) = NaN;
+                
+                L_color1(p,:) = gray + (grating_contrast(p) / 2);
+                L_color2(p,:) = gray - (grating_contrast(p) / 2);
+                
+                R_color1(p,:) = gray;
+                R_color2(p,:) = gray;
+            end
+            
+            if p == 2 && trialHasBlank == true % this is a randomly interspersed blank presentation in the 2nd presentation
+                
+                fprintf('Blank on trial # %d | rng = %.02f \n',tr,r1)
+                L_color1(p,:) = gray;
+                L_color2(p,:) = gray;
+                
+                R_color1(p,:) = gray;
+                R_color2(p,:) = gray;
+                
+                grating_contrast(p) = 0;
+            end
+        case 1 % S-cone
+            if grating_eye(p) == 1 % both eyes
+                contrast_L(p) = grating_contrast(p);
+                contrast_R(p) = grating_contrast(p);
+                
+                L_color1(p,:) = gray;
+                L_color2(p,:) = [0.5 0.5 0.7];
+                
+                R_color1(p,:) = gray;
+                R_color2(p,:) = [0.5 0.5 0.7];
+                
+            elseif grating_eye(p) == 2 % right eye
+                
+                contrast_L(p) = NaN;
+                contrast_R(p) = grating_contrast(p);
+                L_color1(p,:) = gray;
+                L_color2(p,:) = gray;
+                
+                R_color1(p,:) = gray + (grating_contrast(p) / 2);
+                R_color2(p,:) = gray - (grating_contrast(p) / 2);
+                
+            elseif grating_eye(p) == 3 % left eye
+                
+                contrast_L(p) = grating_contrast(p);
+                contrast_R(p) = NaN;
+                
+                L_color1(p,:) = gray + (grating_contrast(p) / 2);
+                L_color2(p,:) = gray - (grating_contrast(p) / 2);
+                
+                R_color1(p,:) = gray;
+                R_color2(p,:) = gray;
+            end
+            
+            if p == 2 && trialHasBlank == true % this is a randomly interspersed blank presentation in the 2nd presentation
+                
+                fprintf('Blank on trial # %d | rng = %.02f \n',tr,r1)
+                L_color1(p,:) = gray;
+                L_color2(p,:) = gray;
+                
+                R_color1(p,:) = gray;
+                R_color2(p,:) = gray;
+                
+                grating_contrast(p) = 0;
+            end
+            
     end
     
     pd_color1(p,:) = [1 1 1] ; %gray + (grating_contrast(p) / 2);
     pd_color2(p,:) = [0 0 0] ; %gray - (grating_contrast(p) / 2);
+    
+    if grating_tf > 0
+        pd_diameter = 2;
+    else
+        pd_diameter = 0;
+    end
         
+    
 end
 
 
@@ -261,9 +317,9 @@ GratingList.right = ...
     [other_stereo_xpos(3) other_ypos(3)], grating_diameter(3)/2, grating_tilt(3), grating_sf(3), grating_tf(3), grating_phase(3), R_color1(3,:), R_color2(3,:), 'circular', []};
 
 GratingList.drift_pd = ...
-    {[lower_left(1) lower_left(2)], 2, grating_tilt(1), 0, grating_tf(1), grating_phase(1), pd_color1(1,:), pd_color2(1,:), 'circular', []; ...
-    [lower_left(1) lower_left(2)], 2, grating_tilt(2), 0, grating_tf(2), grating_phase(2), pd_color1(2,:), pd_color2(2,:), 'circular', [];...
-    [lower_left(1) lower_left(2)], 2, grating_tilt(3), 0, grating_tf(3), grating_phase(3), pd_color1(3,:), pd_color2(3,:), 'circular', []};
+    {[lower_left(1) lower_left(2)], pd_diameter, grating_tilt(1), 0, grating_tf(1), grating_phase(1), pd_color1(1,:), pd_color2(1,:), 'circular', []; ...
+    [lower_left(1) lower_left(2)], pd_diameter, grating_tilt(2), 0, grating_tf(2), grating_phase(2), pd_color1(2,:), pd_color2(2,:), 'circular', [];...
+    [lower_left(1) lower_left(2)], pd_diameter, grating_tilt(3), 0, grating_tf(3), grating_phase(3), pd_color1(3,:), pd_color2(3,:), 'circular', []};
 
 %% Trial sequence event markers
 % send some event markers
@@ -641,7 +697,7 @@ for pres = 1:prespertr
          grating_eye(pres),...             % 1 = LE, 2 = RE, 3 = Both eyes
          grating_stimdur,...               % stimulus duration
          grating_isi,...                   % interstimulus interval
-         nan,...                            % for cone isolation
+         path(pres),...                            % for cone isolation
          now);
      
      fclose(fid);
