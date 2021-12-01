@@ -245,15 +245,16 @@ for p = 1:prespertr
                 grating_contrast(p) = 0;
             end
         case 1 % S-cone
+            equiLuminantBlue = [78, 128, 229] ./ 256;
             if grating_eye(p) == 1 % both eyes
                 contrast_L(p) = grating_contrast(p);
                 contrast_R(p) = grating_contrast(p);
                 
                 L_color1(p,:) = gray;
-                L_color2(p,:) = [0.5 0.5 0.7];
+                L_color2(p,:) = equiLuminantBlue; 
                 
                 R_color1(p,:) = gray;
-                R_color2(p,:) = [0.5 0.5 0.7];
+                R_color2(p,:) = equiLuminantBlue; 
                 
             elseif grating_eye(p) == 2 % right eye
                 
@@ -262,16 +263,16 @@ for p = 1:prespertr
                 L_color1(p,:) = gray;
                 L_color2(p,:) = gray;
                 
-                R_color1(p,:) = gray + (grating_contrast(p) / 2);
-                R_color2(p,:) = gray - (grating_contrast(p) / 2);
+                R_color1(p,:) = gray;
+                R_color2(p,:) = equiLuminantBlue; 
                 
             elseif grating_eye(p) == 3 % left eye
                 
                 contrast_L(p) = grating_contrast(p);
                 contrast_R(p) = NaN;
                 
-                L_color1(p,:) = gray + (grating_contrast(p) / 2);
-                L_color2(p,:) = gray - (grating_contrast(p) / 2);
+                L_color1(p,:) = gray;
+                L_color2(p,:) = equiLuminantBlue; 
                 
                 R_color1(p,:) = gray;
                 R_color2(p,:) = gray;

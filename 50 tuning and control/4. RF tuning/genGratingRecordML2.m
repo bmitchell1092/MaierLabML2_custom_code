@@ -13,7 +13,7 @@ clear params
 
 % Default parameters
 params.rf              = [-0.40, -1.7];
-params.diameters       = 10;   % Diameter in degrees
+params.diameters       = 5;   % Diameter in degrees
 params.contrasts       = 0.9;  % Michelson contrast
 params.spatial_freq    = 1;    % cycles per degree
 params.temporal_freq   = 0;    % cycles per second
@@ -850,7 +850,7 @@ switch paradigm
     case 's_cone'
         
         params.path = [1]; % LM,S,LplusMminus and LminusMplus,MAGNO
-        params.temporal_freq = [4,8,15];
+        params.temporal_freq = [30];
         params.contrasts = 1;
         params.spatial_freq = [0];
         params.eye = 1;
