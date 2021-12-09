@@ -12,12 +12,12 @@ GRATINGRECORD = []; scrsize = getCoord;
 clear params   
 
 % Default parameters
-params.rf              = [-0.40, -1.7];
-params.diameters       = 1.7;   % Diameter in degrees
+params.rf              = [-0.55, -1.5];
+params.diameters       = 1.9;   % Diameter in degrees
 params.contrasts       = 0.9;  % Michelson contrast
-params.spatial_freq    = 1;    % cycles per degree
+params.spatial_freq    = 1.5;    % cycles per degree
 params.temporal_freq   = 0;    % cycles per second
-params.orientations    = 45;   % preferred orientation--remember 0 deg is vertical orientation, 90 deg is horizontal,  NAN makes RN patch
+params.orientations    = 168.5;   % preferred orientation--remember 0 deg is vertical orientation, 90 deg is horizontal,  NAN makes RN patch
 params.phase           = 0;    % phase angle of grating
                                     
 params.stereo_xpos     = [-0.25*scrsize(1)+params.rf(1) 0.25*scrsize(1)+params.rf(1)]; % enter x position (1st element--LEFT eye, 2nd--RIGHT eye)
@@ -74,7 +74,7 @@ switch paradigm
             GRATINGRECORD(tr).path                  = zeros(1,3); % achromatic
         end
         
-    case 'rforiWithBlanks'
+    case 'rforiDRFT'
 
         % parameters to vary:
         params.orientations = 0:11.25:168.75; % degrees
@@ -106,7 +106,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_xpos          = repmat(params.xpos,prespertr,1)';
             GRATINGRECORD(tr).stereo_xpos           = repmat(params.stereo_xpos,prespertr,1)';
             GRATINGRECORD(tr).grating_ypos          = repmat(params.ypos,prespertr,1)';
-            GRATINGRECORD(tr).header                = 'rforiWithBlanks';
+            GRATINGRECORD(tr).header                = 'rforiDRFT';
             GRATINGRECORD(tr).timestamp             = clock;
             GRATINGRECORD(tr).grating_varyeye       = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_fixedc        = repmat(nan,prespertr,1);
@@ -434,7 +434,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_xpos         = repmat(params.xpos,prespertr,1)';
             GRATINGRECORD(tr).stereo_xpos           = repmat(params.stereo_xpos,prespertr,1)';
             GRATINGRECORD(tr).grating_ypos         = repmat(params.ypos,prespertr,1)';
-            GRATINGRECORD(tr).header               = 'cinteroc';
+            GRATINGRECORD(tr).header               = 'bminteroc';
             GRATINGRECORD(tr).timestamp            = clock;
             GRATINGRECORD(tr).grating_oridist       = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_outerdiameter = repmat(nan,prespertr,1);
@@ -803,7 +803,7 @@ switch paradigm
             GRATINGRECORD(tr).path                  = zeros(1,3); % achromatic
         end
         
-    case 'cone'
+    case 'coneOLD'
         
         % parameters to vary:
         % ALWAYS RUN AT 100% contrast
@@ -847,15 +847,15 @@ switch paradigm
         end
         
         
-    case 's_cone'
+    case 'cone'
         
         params.path = [0,1]; % 1 = S 
-        params.temporal_freq = [5];
-        params.contrasts = 0.5;
-        params.spatial_freq = [0,2];
+        params.temporal_freq = [8];
+        params.contrasts = 0.5; % for achromatic grating
+        params.spatial_freq = [0,1];
         params.eye = 1;
         
-        mintr    = 25;
+        mintr    = 20;
         all_con  = combvec(params.eye,params.spatial_freq,params.temporal_freq,params.contrasts,params.path); %all possible conditions of the parameters that vary
         minpres  = mintr* size(all_con,2); % total number of presentations at 10 per loc
         minntrs  = floor(minpres/prespertr);   % number of trials

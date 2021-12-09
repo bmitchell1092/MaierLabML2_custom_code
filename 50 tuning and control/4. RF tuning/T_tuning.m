@@ -10,15 +10,15 @@
 %  NAME             | eyes   | # of correct trials 
 % ---------------------------------------------
 % 'rfori'           | 1,2,3  | 240   
-% 'rforiWithBlanks' | 1,2,3  | 240
+% 'rforiDRFT'       | 1,2,3  | 240
 % 'rfsize'          | 1      | 35
 % 'rfsf'            | 1      | 20
 % 'rfphase'         | 1      | 25
-% 's_cone'          | 1      | 
+% 'cone'            | 1      | 40
 % ---------------------------------------------
 
 % Paradigm selection 
-paradigm = 's_cone';
+paradigm = 'rfsf';
 
 % Note: Open genGratingRecordML2 to change parameters of gratings.
 
@@ -184,7 +184,7 @@ tilt_R = grating_tilt; phase_R = grating_phase; sf_R = grating_sf; tf_R = gratin
 xpos_L = stereo_xpos; ypos_L = grating_ypos;
 xpos_R = other_stereo_xpos; ypos_R = other_ypos;
 
-if strcmp(grating_header,'rforiWithBlanks')
+if strcmp(grating_header,'rforiDRFT')
     blankLikelihood = GRATINGRECORD(tr).blankLikelihood;
     r1 = rand(1,1);
     trialHasBlank = r1 <= blankLikelihood;
@@ -200,7 +200,6 @@ pd_color1 = nan(3,3); pd_color2 = nan(3,3); % bottom lefthand corner grating (fo
 for p = 1:prespertr
     switch path(p)
         case 0 % achromatic
-            
             if grating_eye(p) == 1 % both eyes
                 contrast_L(p) = grating_contrast(p);
                 contrast_R(p) = grating_contrast(p);
@@ -213,7 +212,7 @@ for p = 1:prespertr
                 
             elseif grating_eye(p) == 2 % right eye
                 
-                contrast_L(p) = NaN;
+                contrast_L(p) = 0;
                 contrast_R(p) = grating_contrast(p);
                 L_color1(p,:) = gray;
                 L_color2(p,:) = gray;
@@ -224,7 +223,7 @@ for p = 1:prespertr
             elseif grating_eye(p) == 3 % left eye
                 
                 contrast_L(p) = grating_contrast(p);
-                contrast_R(p) = NaN;
+                contrast_R(p) = 0;
                 
                 L_color1(p,:) = gray + (grating_contrast(p) / 2);
                 L_color2(p,:) = gray - (grating_contrast(p) / 2);
