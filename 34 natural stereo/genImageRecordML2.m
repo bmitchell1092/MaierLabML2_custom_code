@@ -5,8 +5,8 @@ global IMAGERECORD SAVEPATH prespertr datafile IMAGEPATH
 scrsize = getCoord;  
 
 params.eye          = 1; % 1 = Both, 2 = R, 3 = L
-params.rf           = [-0.55, -1.5]; % [0, 0] for humans
-params.scale        = 1.9; % 10 for humans % in visual degrees (Xsize, Ysize)
+params.rf           = [-1.1, -1.2]; % [0, 0] for humans
+params.scale        = 1.3; % 10 for humans % in visual degrees (Xsize, Ysize)
 params.left_xpos    = (-0.25*scrsize(1)+params.rf(1));   % Left eye x-coordinate
 params.right_xpos   = (0.25*scrsize(1)+params.rf(1));   % Right eye x-coordinate
 

@@ -9,8 +9,8 @@
 % % PARADIGMS
 %  NAME             | eyes   | # of correct trials 
 % ---------------------------------------------
-% 'rfori'           | 1,2,3  | 240   
-% 'rforiDRFT'       | 1,2,3  | 240
+% 'rfori'           | 1,2,3  | 192   
+% 'rforiDRFT'       | 1,2,3  | 192
 % 'rfsize'          | 1      | 35
 % 'rfsf'            | 1      | 20
 % 'rfphase'         | 1      | 25
@@ -18,7 +18,7 @@
 % ---------------------------------------------
 
 % Paradigm selection 
-paradigm = 'rfsf';
+paradigm = 'cone';
 
 % Note: Open genGratingRecordML2 to change parameters of gratings.
 
@@ -601,13 +601,13 @@ end
 % reward
 if 0==error_type
     run_scene(scene8,[28,36]); % event code for fix cross OFF 
-    goodmonkey(100, 'juiceline',1, 'numreward',1, 'pausetime',200, 'eventmarker',96); % 100 ms of juice x 2. Event marker for reward
+    goodmonkey(100, 'juiceline',1, 'numreward',2, 'pausetime',200, 'eventmarker',96); % 100 ms of juice x 2. Event marker for reward
 end
 
 trialerror(error_type);      % Add the result to the trial history
 
 %% Give the monkey a break
-set_iti(800); % Inter-trial interval in [ms]
+set_iti(2000); % Inter-trial interval in [ms]
 
 %% Create variables to completely describe what was shown to the monkey
 

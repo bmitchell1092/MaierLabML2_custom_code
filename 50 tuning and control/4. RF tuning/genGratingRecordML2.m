@@ -12,12 +12,12 @@ GRATINGRECORD = []; scrsize = getCoord;
 clear params   
 
 % Default parameters
-params.rf              = [-0.55, -1.5];
-params.diameters       = 1.9;   % Diameter in degrees
+params.rf              = [-1.15,-0.4];
+params.diameters       = .75;   % Diameter in degrees
 params.contrasts       = 0.9;  % Michelson contrast
-params.spatial_freq    = 1.5;    % cycles per degree
+params.spatial_freq    = .90;    % cycles per degree
 params.temporal_freq   = 0;    % cycles per second
-params.orientations    = 168.5;   % preferred orientation--remember 0 deg is vertical orientation, 90 deg is horizontal,  NAN makes RN patch
+params.orientations    = 112;   % preferred orientation--remember 0 deg is vertical orientation, 90 deg is horizontal,  NAN makes RN patch
 params.phase           = 0;    % phase angle of grating
                                     
 params.stereo_xpos     = [-0.25*scrsize(1)+params.rf(1) 0.25*scrsize(1)+params.rf(1)]; % enter x position (1st element--LEFT eye, 2nd--RIGHT eye)
@@ -37,7 +37,7 @@ switch paradigm
         params.orientations = 0:11.25:168.75; % degrees
         params.eye = [1,2,3];
         
-        mintr = 15; 
+        mintr = 12; 
         all_con  = combvec(params.orientations,params.eye,params.phase); %all possible conditions of the parameters that vary
         minpres = mintr* size(all_con,2); % total number of presentations at 10 per loc
         minntrs = floor(minpres/prespertr);   % number of trials
@@ -81,7 +81,7 @@ switch paradigm
         params.eye = [1,2,3]; % this should be both eyes, right eye, or left eye
         params.temporal_freq = 8;
         
-        mintr = 15;
+        mintr = 12;
         all_con  = combvec(params.orientations,params.eye,params.phase); %all possible conditions of the parameters that vary
         minpres = mintr* size(all_con,2); % total number of presentations at 10 per loc
         minntrs = floor(minpres/prespertr);   % number of trials
@@ -852,7 +852,7 @@ switch paradigm
         params.path = [0,1]; % 1 = S 
         params.temporal_freq = [8];
         params.contrasts = 0.5; % for achromatic grating
-        params.spatial_freq = [0,1];
+        params.spatial_freq = [0,params.spatial_freq];
         params.eye = 1;
         
         mintr    = 20;

@@ -2,9 +2,9 @@ function genDotRecordML2(TrialRecord)
 %generate variable that pre-sets grating parameters for n number of trials
 
 global DOTRECORD SAVEPATH GABOR npres datafile params
-params.eye            =  [2,3]; % can have several inputs here
-params.theta          =  210:10:290; % around 320 -30:5:10; 200:10:250;
-params.eccentricities =  1:0.5:3;
+params.eye            =   [2,3]; % LE (3) is optimal
+params.theta          =   180:5:250; 
+params.eccentricities =   .75:.5:1.5;    %.5:0.5:3;
 params.contrast       =  0.8; % must be scaler! edit g
 GABOR                 =  1; % must be scaler! 
 oldDOTRECORD = DOTRECORD;
@@ -15,7 +15,8 @@ all_con               = combvec(params.theta,params.eccentricities,params.eye);
 
 minpres = 10;                                   % total number of presentations at each loc
 npres   = 5;                                    % number of dot presentations per trial
-minntrs = size(all_con,2)*minpres ./ (npres);    %minpres/npres; % number of trials
+minntrs = size(all_con,2)*minpres ./ (npres);%minpres/npres; % number of trials
+disp(minntrs)
 
 fprintf('The number of trials will be %d with %d presentations per trial.\n',minntrs,npres); 
 
