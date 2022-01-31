@@ -12,8 +12,8 @@ GRATINGRECORD = []; scrsize = getCoord;
 clear params   
 
 % Default parameters
-params.rf              = [-1.15,-0.4];
-params.diameters       = .75;   % Diameter in degrees
+params.rf              = [-2,-1];
+params.diameters       = 2;   % Diameter in degrees
 params.contrasts       = 0.9;  % Michelson contrast
 params.spatial_freq    = .90;    % cycles per degree
 params.temporal_freq   = 0;    % cycles per second
@@ -971,7 +971,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_xpos          = repmat(params.xpos,prespertr,1)';
             GRATINGRECORD(tr).stereo_xpos           = repmat(params.stereo_xpos,prespertr,1)';
             GRATINGRECORD(tr).grating_ypos          = repmat(params.ypos,prespertr,1)';
-            GRATINGRECORD(tr).header                = 'rfori';
+            GRATINGRECORD(tr).header                = 'rfori4lesions';
             GRATINGRECORD(tr).timestamp             = clock;
             GRATINGRECORD(tr).grating_varyeye       = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_fixedc        = repmat(nan,prespertr,1);
@@ -983,7 +983,7 @@ switch paradigm
             GRATINGRECORD(tr).path                  = zeros(1,3); % achromatic
         end
         
-    case 'rforiDRFT4lesion'
+    case 'rforiDRFT4lesions'
 
         % parameters to vary:
         params.orientations = 0:11.25:168.75; % degrees
@@ -1015,7 +1015,7 @@ switch paradigm
             GRATINGRECORD(tr).grating_xpos          = repmat(params.xpos,prespertr,1)';
             GRATINGRECORD(tr).stereo_xpos           = repmat(params.stereo_xpos,prespertr,1)';
             GRATINGRECORD(tr).grating_ypos          = repmat(params.ypos,prespertr,1)';
-            GRATINGRECORD(tr).header                = 'rforiDRFT';
+            GRATINGRECORD(tr).header                = 'rforiDRFT4lesions';
             GRATINGRECORD(tr).timestamp             = clock;
             GRATINGRECORD(tr).grating_varyeye       = repmat(nan,prespertr,1);
             GRATINGRECORD(tr).grating_fixedc        = repmat(nan,prespertr,1);

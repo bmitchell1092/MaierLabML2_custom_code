@@ -15,7 +15,7 @@
 % ---------------------------------------------
 
 % Paradigm selection 
-paradigm = 'rforiDRFT4lesion';
+paradigm = 'cone4lesions';
 
 % Note: Open genGratingRecordML2 to change parameters of gratings.
 
@@ -336,47 +336,47 @@ wth1.HoldTime = initial_fix; % Set the hold time
 
 scene1 = create_scene(wth1); % Initialize the scene adapter
 
+%% Scene 2. Inter-stimulus interval
 
-%% Scene 2. Task Object #1
-% Set fixation to the left eye for tracking
 fix2 = SingleTarget(eye_); % Initialize the eye tracking adapter
-fix2.Target = [((-0.25*scrsize(1))+fixpt(1)) fixpt(2)]; % Set the fixation point
+fix2.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
 fix2.Threshold = fixThreshold; % Set the fixation threshold
 
 pd2 = BoxGraphic(fix2);
-pd2.EdgeColor = [1 1 1];
-pd2.FaceColor = [1 1 1];
+pd2.EdgeColor = [0 0 0];
+pd2.FaceColor = [0 0 0];
 pd2.Size = [3 3];
 pd2.Position = lower_right;
 
-% Create both gratings
-grat2 = SineGrating(pd2);
-grat2.List = {GratingList.left{1,:};GratingList.right{1,:}; GratingList.drift_pd{1,:}};
-img2 = ImageGraphic(grat2);
-img2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
-wth2 = WaitThenHold(img2);
+bck2 = ImageGraphic(pd2);
+bck2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+
+wth2 = WaitThenHold(bck2);
 wth2.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth2.HoldTime = grating_stimdur;
+wth2.HoldTime = grating_isi;
 scene2 = create_scene(wth2);
 
-%% Scene 3. Inter-stimulus interval
 
+%% Scene 3. Task Object #1
+% Set fixation to the left eye for tracking
 fix3 = SingleTarget(eye_); % Initialize the eye tracking adapter
-fix3.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
+fix3.Target = [((-0.25*scrsize(1))+fixpt(1)) fixpt(2)]; % Set the fixation point
 fix3.Threshold = fixThreshold; % Set the fixation threshold
 
 pd3 = BoxGraphic(fix3);
-pd3.EdgeColor = [0 0 0];
-pd3.FaceColor = [0 0 0];
+pd3.EdgeColor = [1 1 1];
+pd3.FaceColor = [1 1 1];
 pd3.Size = [3 3];
 pd3.Position = lower_right;
 
-bck3 = ImageGraphic(pd3);
-bck3.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
-
-wth3 = WaitThenHold(bck3);
+% Create both gratings
+grat3 = SineGrating(pd3);
+grat3.List = {GratingList.left{1,:};GratingList.right{1,:}; GratingList.drift_pd{1,:}};
+img3 = ImageGraphic(grat3);
+img3.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+wth3 = WaitThenHold(img3);
 wth3.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth3.HoldTime = grating_isi;
+wth3.HoldTime = grating_stimdur;
 scene3 = create_scene(wth3);
 
 
@@ -407,7 +407,7 @@ else
 end
 
 if 0==error_type
-    run_scene(scene2,23);    % Run the second scene (eventmarker 23 'taskObject-1 ON')
+    run_scene(scene2);    % Run the second scene (eventmarker 23 'taskObject-1 ON')
     if ~fix2.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
         error_type = 3;      % So it is a "break fixation (3)" error.
         run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
@@ -417,7 +417,7 @@ if 0==error_type
 end
 
 if 0==error_type
-    run_scene(scene3,24);    % Run the third scene - This is the blank offset between flashes
+    run_scene(scene3,23);    % Run the third scene - This is the blank offset between flashes
     if ~fix3.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
         error_type = 3;      % So it is a "break fixation (3)" error.
         run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
@@ -428,7 +428,7 @@ end
 
 % reward
 if 0==error_type
-    run_scene(scene8,36); % event code for fix cross OFF 
+    run_scene(scene8,[24,36]); % event code for fix cross OFF 
     goodmonkey(100, 'juiceline',1, 'numreward',1, 'pausetime',200, 'eventmarker',96); % 100 ms of juice x 2. Event marker for reward
 end
 
