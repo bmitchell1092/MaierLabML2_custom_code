@@ -10,5 +10,5 @@ diameter = m*eccentricity + b;
 diameter = diameter.^2; %square the diameter since the number reported are based on square root of diameter
 
 % cheating...
-diameter = .25;
+% diameter = .4;
 end
