@@ -435,52 +435,6 @@ wth5.HoldTime = grating_stimdur;
 scene5 = create_scene(wth5);
 
 
-% %% Scene 6. Task Object #4
-% % Set fixation to the left eye for tracking
-% fix6 = SingleTarget(eye_); % Initialize the eye tracking adapter
-% fix6.Target = [((-0.25*scrsize(1))+fixpt(1)) fixpt(2)]; % Set the fixation point
-% fix6.Threshold = fixThreshold; % Set the fixation threshold
-% 
-% pd6 = BoxGraphic(fix6);
-% pd6.EdgeColor = [1 1 1];
-% pd6.FaceColor = [1 1 1];
-% pd6.Size = [3 3];
-% pd6.Position = lower_right;
-% 
-% % Create both gratings
-% grat6 = SineGrating(pd6);
-% grat6.List =  {GratingList.left{4,:};GratingList.right{4,:}};
-% img6 = ImageGraphic(grat6);
-% img6.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
-% wth6 = WaitThenHold(img6);
-% wth6.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-% wth6.HoldTime = 250;
-% scene6 = create_scene(wth6);
-
-
-% %% Scene 7. Task Object #5
-% % Set fixation to the left eye for tracking
-% fix7 = SingleTarget(eye_); % Initialize the eye tracking adapter
-% fix7.Target = [((-0.25*scrsize(1))+fixpt(1)) fixpt(2)]; % Set the fixation point
-% fix7.Threshold = fixThreshold; % Set the fixation threshold
-% 
-% pd7 = BoxGraphic(fix7);
-% pd7.EdgeColor = [1 1 1];
-% pd7.FaceColor = [1 1 1];
-% pd7.Size = [3 3];
-% pd7.Position = lower_right;
-% 
-% % Create both gratings
-% grat7 = SineGrating(pd7);
-% grat7.List =  {GratingList.left{5,:};GratingList.right{5,:}};
-% img7 = ImageGraphic(grat7);
-% img7.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
-% wth7 = WaitThenHold(img7);
-% wth7.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-% wth7.HoldTime = 250;
-% scene7 = create_scene(wth7);
-
-
 %% Scene 8. Clear fixation cross
 
 bck8 = ImageGraphic(null_);
@@ -556,47 +510,6 @@ if 0==error_type
 % %         eventmarker(26) % 26 = task object 2 OFF 
     end
 end
-
-
-% if 0==error_type
-%     run_scene(scene3,28);    % Run the third scene - This is the blank offset between flashes
-%     if ~fix3.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
-%         error_type = 3;      % So it is a "break fixation (3)" error.
-%         run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
-%     else
-% % %         eventmarker(24) % 24 = task object 1 OFF 
-%     end
-% end
-% 
-% if 0==error_type
-%     run_scene(scene6,29);    % Run the sixth scene (eventmarker 29 - TaskObject - 4 ON) 
-%     if ~fix6.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
-%         error_type = 3;      % So it is a "break fixation (3)" error.
-%         run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
-%     else
-% % %         eventmarker(26) % 26 = task object 2 OFF 
-%     end
-% end
-
-% if 0==error_type
-%     run_scene(scene3,30);    % Run the third scene - This is the blank offset between flashes
-%     if ~fix3.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
-%         error_type = 3;      % So it is a "break fixation (3)" error.
-%         run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
-%     else
-% % %         eventmarker(24) % 24 = task object 1 OFF 
-%     end
-% end
-% 
-% if 0==error_type
-%     run_scene(scene7,31);    % Run the 7th scene (eventmarker 31 - TaskObject - 5 ON) 
-%     if ~fix7.Success         % The failure of WithThenHold indicates that the subject didn't maintain fixation on the sample image.
-%         error_type = 3;      % So it is a "break fixation (3)" error.
-%         run_scene(scene8,[97,36]); % blank screen | 97 = fixation broken, 36 = fix cross OFF
-%     else
-% % %         eventmarker(26) % 26 = task object 2 OFF 
-%     end
-% end
 
 
 % reward
