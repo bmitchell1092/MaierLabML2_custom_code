@@ -1,0 +1,1 @@
+trial	header	stimulus set	image_number	L_image_ID	R_image_ID	L_image_x	R_image_x	L_image_y	R_image_y	L_horzdva	R_horzdva	L_vertdva	R_vertdva	image_scalar	image_width	image_height	mean_luminance	condition	x_disparity	y_disparity	scramble	ori	eye	stim_dur	isi	fix_x	fix_y	rf_x	rf_y	timestamp

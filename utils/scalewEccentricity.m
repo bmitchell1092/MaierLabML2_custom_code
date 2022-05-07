@@ -9,6 +9,6 @@ b = dpoint - (m*epoint); %find constant in eq for linear line
 diameter = m*eccentricity + b; 
 diameter = diameter.^2; %square the diameter since the number reported are based on square root of diameter
 
-% % cheating...
-diameter = 0.7;
+% cheating...
+% diameter = .4;
 end

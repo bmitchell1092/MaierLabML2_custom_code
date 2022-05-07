@@ -17,7 +17,7 @@ end
 
 %% Initial code
 
-set_bgcolor([0.5 0.5 0.5]);
+set_bgcolor([1 1 1]);
 
 % Paradigm selection
 pdgm = 'squareLowBG'; %update 11/2/2021
@@ -120,7 +120,7 @@ switch stim_code %
         crc = CircleGraphic(null_);
         crc.List = { [], [], 0.3,center_left ;  [], [], 0.3, center_right;};
         prestimDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\backgrounds','\','white_background.png');
-        stimDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\squareFigs_varyBg','\',sprintf('gori%d_fori%d_figcont%d_bgcont%d_len%d_xlocation%d_ylocation%d.png',bg_ori, fig_ori, fig_cont,bg_cont, linelen,fig_xloc,fig_yloc));
+        stimDir = strcat(fileparts(which('T_saliency.m')),'\','line_stims\squareFigs_varyBg_cont2000','\',sprintf('gori%d_fori%d_figcont%d_bgcont%d_len%d_xlocation%d_ylocation%d.png',bg_ori, fig_ori, fig_cont,bg_cont, linelen,fig_xloc,fig_yloc));
    
 end
 

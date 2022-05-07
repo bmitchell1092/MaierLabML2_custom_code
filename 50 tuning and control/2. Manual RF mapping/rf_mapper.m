@@ -21,7 +21,7 @@ scrsize = Screen.SubjectScreenFullSize / Screen.PixelsPerDegree;
 
 % Set the fixation point
 fixpt = [0 0]; % [x y] in visual degrees
-fixThreshold = 1; % degrees of visual angle
+fixThreshold = .75; % degrees of visual angle
 
 hotkey('c', 'forced_eye_drift_correction([((-0.25*scrsize(1))+fixpt(1)) fixpt(2)],1);');  % eye1
 

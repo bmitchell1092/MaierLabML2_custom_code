@@ -19,7 +19,7 @@
 % always run 'bminteroc'
 
 %% Paradigm selection
-paradigm = 'bminteroc';
+paradigm = 'posdisparity';
 
 % Note: Open genGratingRecordML2 to change general parameters (params
 % struct). 
@@ -555,7 +555,7 @@ end
 % reward
 if 0==error_type
     run_scene(scene6,[32,36]); % event code for fix cross OFF 
-    goodmonkey(100, 'juiceline',1, 'numreward',1, 'pausetime',500, 'eventmarker',96); % 100 ms of juice x 2. Event marker for reward
+    goodmonkey(100, 'juiceline',1, 'numreward',2, 'pausetime',500, 'eventmarker',96); % 100 ms of juice x 2. Event marker for reward
 end
 
 
