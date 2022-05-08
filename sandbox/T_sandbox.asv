@@ -247,11 +247,11 @@ switch stimuli
         % Specify the properties
         contrasts = [0.05, 0.11, 0.22, 0.45, 0.90];
         tf = 0;                         % 4 = drifting grating, 0 = static grating
-        sf = 1.5;
+        sf = 2;
         direction = 75;
         diameter = 2.5;
-        position = [-15, -5; -10, -5; -5, -5;...
-          -15, 5; -10, 5; -5, 5];
+        position = [-15, -5; -10, -5; -5, -5; -3, -5;...
+          -15, 5; -10, 10; -5, 15];
         window = 'circular';
         duration = 6500;         
         
@@ -276,7 +276,7 @@ switch stimuli
         grat2a.Direction = direction;
         grat2a.SpatialFrequency = sf;
         grat2a.TemporalFrequency = tf;
-        grat2a.Color1 = gray + (contrasts(2) ./ 2);
+        grat2a.Color1 = gray - (contrasts(2) ./ 2);
         grat2a.Color2 = gray - (contrasts(2) ./ 2);
         grat2a.WindowType = window;
         
@@ -287,7 +287,7 @@ switch stimuli
         grat3a.Direction = direction;
         grat3a.SpatialFrequency = sf;
         grat3a.TemporalFrequency = tf;
-        grat3a.Color1 = gray + (contrasts(3) ./ 2);
+        grat3a.Color1 = gray - (contrasts(3) ./ 2);
         grat3a.Color2 = gray - (contrasts(3) ./ 2);
         grat3a.WindowType = window;
         
@@ -298,7 +298,7 @@ switch stimuli
         grat4a.Direction = direction;
         grat4a.SpatialFrequency = sf;
         grat4a.TemporalFrequency = tf;
-        grat4a.Color1 = gray + (contrasts(4) ./ 2);
+        grat4a.Color1 = gray - (contrasts(4) ./ 2);
         grat4a.Color2 = gray - (contrasts(4) ./ 2);
         grat4a.WindowType = window;
         
@@ -308,7 +308,7 @@ switch stimuli
         grat5a.Direction = direction;
         grat5a.SpatialFrequency = sf;
         grat5a.TemporalFrequency = tf;
-        grat5a.Color1 = gray + (contrasts(5) ./ 2);
+        grat5a.Color1 = gray - (contrasts(5) ./ 2);
         grat5a.Color2 = gray - (contrasts(5) ./ 2);
         grat5a.WindowType = window;
         
