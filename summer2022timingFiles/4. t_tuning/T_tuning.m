@@ -17,8 +17,10 @@
 % 'cone'            | 1      | 40
 % ---------------------------------------------
 
-% Paradigm selection 
-paradigm = 'rforiDRFT';
+%% Variables to change
+fixThreshold = 1.5; % degrees of visual angle
+timeOutTime = 7000;
+paradigm = 'rfori';
 
 % Note: Open genGratingRecordML2 to change parameters of gratings.
 
@@ -48,7 +50,6 @@ timestamp = datestr(now); % Get the current time on the computer
 
 % Set fixation point
 fixpt = [0 0]; % [x y] in viual degrees
-fixThreshold = 3; % degrees of visual angle
 
 % define intervals for WaitThenHold
 wait_for_fix = 5000;
@@ -435,16 +436,27 @@ wth5.HoldTime = grating_stimdur;
 scene5 = create_scene(wth5);
 
 
-%% Scene 8. Clear fixation cross
+%% Scene 8. Break Fixation - negative punishment 
+% Negative punishment suppresses unwanted behavior by removing a
+% reward-conditioned stimulus (aka - time-out)
 
 bck8 = ImageGraphic(null_);
 bck8.List = { {'graybackground.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
 % Set the timer
 cnt8 = TimeCounter(bck8);
-cnt8.Duration = 50;
+cnt8.Duration = timeOutTime;
 scene8 = create_scene(cnt8);
 
+%% Scene 9. Clear fixation cross - in case of goodmonkey
+
+bck9 = ImageGraphic(null_);
+bck9.List = { {'graybackground.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+
+% Set the timer
+cnt9 = TimeCounter(bck9);
+cnt9.Duration = 50;
+scene9 = create_scene(cnt9);
 
 %% TASK
 error_type = 0;
@@ -514,7 +526,7 @@ end
 
 % reward
 if 0==error_type
-    run_scene(scene8,[28,36]); % event code for fix cross OFF 
+    run_scene(scene9,[28,36]); % event code for fix cross OFF 
     goodmonkey(100, 'juiceline',1, 'numreward',2, 'pausetime',200, 'eventmarker',96); % 100 ms of juice x 2. Event marker for reward
 end
 

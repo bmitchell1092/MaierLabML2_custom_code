@@ -17,9 +17,9 @@ function genFixCross(fix_x, fix_y)
     imshow(image);
     truesize(gcf,[coords(1)*(63/75) coords(2)*(63/75)]) %64/75
      hold on
-     plot(x_pos1,y_pos1,'bx', 'MarkerSize', 12, 'LineWidth', 2)
+     plot(x_pos1,y_pos1,'b.', 'MarkerSize', 7, 'LineWidth', 2)
      hold on
-     plot(x_pos2,y_pos2,'bx', 'MarkerSize', 12, 'LineWidth', 2)
+     plot(x_pos2,y_pos2,'b.', 'MarkerSize', 7, 'LineWidth', 2)
     %saveas(gcf, 'graybackground.png')
     saveas(gcf, 'graybackgroundcross.png')
 

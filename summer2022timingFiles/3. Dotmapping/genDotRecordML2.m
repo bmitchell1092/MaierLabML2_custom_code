@@ -4,7 +4,7 @@ function genDotRecordML2(TrialRecord)
 global DOTRECORD SAVEPATH GABOR npres datafile params
 params.eye            =   [2,3]; % RE = 2, LE = 3.
 params.theta          =   0:35:315; 
-params.eccentricities =   4:1:6;    %.5:0.5:3;
+params.eccentricities =   2:1:6;    %.5:0.5:3;
 params.contrast       =  0.8; % must be scaler! edit g
 GABOR                 =  1; % must be scaler! 
 oldDOTRECORD = DOTRECORD;

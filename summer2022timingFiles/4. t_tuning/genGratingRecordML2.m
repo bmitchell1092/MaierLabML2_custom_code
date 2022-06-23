@@ -12,7 +12,7 @@ GRATINGRECORD = []; scrsize = getCoord;
 clear params   
 
 % Default parameters
-params.rf              = [5 -5];
+params.rf              = [-4 4];
 params.diameters       = 1.5;   % Diameter in degrees
 params.contrasts       = 0.9;  % Michelson contrast
 params.spatial_freq    = 2;    % cycles per degree

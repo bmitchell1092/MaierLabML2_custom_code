@@ -17,12 +17,13 @@
 %% Variables to change
 % Paradigm selection 
 
-fixThreshold = 1.5; % degrees of visual angle
+fixThreshold = 1.25; % degrees of visual angle
 timeOutTime = 5000;
 paradigm = 'rfori4lesions';
 
 wait_for_fix = 5000;
 initial_fix = 500; % hold fixation for 500ms to initiate trial
+looseBreakTime = 100; % should not exceed 100ms
 
 % Note: Open genGratingRecordML2 to change parameters of gratings.
 
@@ -52,8 +53,6 @@ timestamp = datestr(now); % Get the current time on the computer
 
 % Set fixation point
 fixpt = [0 0]; % [x y] in viual degrees
-
-
 
 % Find screen size
 scrsize = Screen.SubjectScreenFullSize / Screen.PixelsPerDegree;  % Screen size [x y] in degrees
@@ -332,7 +331,6 @@ eventmarker(116 + mod(TrialRecord.CurrentTrialNumber,10)); %last diget of trial 
 
 %% Scene 1. Fixation
 
-
 % Set fixation to the left eye for tracking
 fix1 = SingleTarget(eye_); % Initialize the eye tracking adapter
 fix1.Target = [(-0.25*scrsize(1))+fixpt(1) fixpt(2)]; % Set the fixation point
@@ -341,16 +339,10 @@ fix1.Threshold = fixThreshold; % Set the fixation threshold
 bck1 = ImageGraphic(fix1);
 bck1.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
-% wth1 = WaitThenHold(bck1); % Initialize the wait and hold adapter
-% wth1.WaitTime = wait_for_fix; % Set the wait time
-% wth1.HoldTime = initial_fix; % Set the hold time
-% scene1 = create_scene(wth1); % Initialize the scene adapter
-
 fth1 = FreeThenHold(bck1); % Initialize the wait and hold adapter
 fth1.MaxTime = wait_for_fix; % Set the wait time
 fth1.HoldTime = initial_fix; % Set the hold time
 scene1 = create_scene(fth1); % Initialize the scene adapter
-
 
 %% Scene 2. Task Object #1
 % Set fixation to the left eye for tracking
@@ -367,14 +359,15 @@ pd2.Position = lower_right;
 % Create both gratings
 grat2 = SineGrating(pd2);
 grat2.List = {GratingList.left{1,:};GratingList.right{1,:}; GratingList.drift_pd{1,:}};
-img2 = ImageGraphic(grat2);
-img2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
-wth2 = WaitThenHold(img2);
-wth2.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth2.HoldTime = grating_stimdur;
+bck2 = ImageGraphic(grat2);
+bck2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
-scene2 = create_scene(wth2);
+lh2 = LooseHold(bck2);
+lh2.HoldTime = grating_stimdur;
+lh2.BreakTime = looseBreakTime;
+
+scene2 = create_scene(lh2);
 
 %% Scene 3. Inter-stimulus interval
 
@@ -391,11 +384,11 @@ pd3.Position = lower_right;
 bck3 = ImageGraphic(pd3);
 bck3.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
-wth3 = WaitThenHold(bck3);
-wth3.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth3.HoldTime = grating_stimdur;
+lh3 = LooseHold(bck3);
+lh3.HoldTime = grating_isi;
+lh3.BreakTime = looseBreakTime;
 
-scene3 = create_scene(wth3);
+scene3 = create_scene(lh3);
 
 %% Scene 4. Task Object #2
 % Set fixation to the left eye for tracking
@@ -412,14 +405,14 @@ pd4.Position = lower_right;
 % Create both gratings
 grat4 = SineGrating(pd4);
 grat4.List =  {GratingList.left{2,:};GratingList.right{2,:}; GratingList.drift_pd{2,:}};
-img4 = ImageGraphic(grat4);
-img4.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+bck4 = ImageGraphic(grat4);
+bck4.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
-wth4 = WaitThenHold(img4);
-wth4.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth4.HoldTime = grating_stimdur;
+lh4 = LooseHold(bck4);
+lh4.HoldTime = grating_stimdur;
+lh4.BreakTime = looseBreakTime;
 
-scene4 = create_scene(wth4);
+scene4 = create_scene(lh4);
 
 
 %% Scene 5. Task Object #3
@@ -437,15 +430,15 @@ pd5.Position = lower_right;
 % Create both gratings
 grat5 = SineGrating(pd5);
 grat5.List =  {GratingList.left{3,:};GratingList.right{3,:}; GratingList.drift_pd{3,:}};
-img5 = ImageGraphic(grat5);
-img5.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
-wth5 = WaitThenHold(img5);
-wth5.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth5.HoldTime = grating_stimdur;
+bck5 = ImageGraphic(grat5);
+bck5.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
-scene5 = create_scene(wth5);
+lh5 = LooseHold(bck5);
+lh5.HoldTime = grating_stimdur;
+lh5.BreakTime = looseBreakTime;
 
+scene5 = create_scene(lh5);
 
 %% Scene 7. Delay
 
@@ -481,20 +474,6 @@ scene9 = create_scene(cnt9);
 
 %% TASK
 error_type = 0;
-% run_scene(scene1,[35,11]); % WaitThenHold | 35 = Fix spot on, 11 = Start wait fixation
-% if ~wth1.Success             % If the WithThenHold failed (either fixation is not acquired or broken during hold),
-%     if wth1.Waiting          %    check whether we were waiting for fixation.
-%         error_type = 4;      % If so, fixation was never made and therefore this is a "no fixation (4)" error.
-%         run_scene(scene8,[12]);  % blank screen | 12 = end wait fixation
-%     else
-%         error_type = 3;      % If we were not waiting, it means that fixation was acquired but not held,
-%         run_scene(scene8,[97,36]);   % blank screen | 97 = fixation broken, 36 = fix cross OFF
-%     end   %    so this is a "break fixation (3)" error.
-% else
-%     eventmarker(8); % 8 = fixation occurs
-% end
-
-%
 run_scene(scene1,[35,11]); % FreeThenHold | 35 = Fix spot on, 11 = Start wait fixation
 if ~fth1.Success             % If the FreeThenHold failed (either fixation is not acquired or broken during hold),
     if 0==fth1.BreakCount          %    check whether we were waiting for fixation.
@@ -580,7 +559,7 @@ end
 trialerror(error_type);      % Add the result to the trial history
 
 %% Give the monkey a break
-set_iti(2000); % Inter-trial interval in [ms]
+set_iti(1000); % Inter-trial interval in [ms]
 
 %% Create variables to completely describe what was shown to the monkey
 

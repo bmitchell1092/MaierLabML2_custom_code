@@ -29,13 +29,13 @@ fixpt = [0 0]; % [x y] in visual degrees
 hotkey('c', 'forced_eye_drift_correction([((-0.25*scrsize(1))+fixpt(1)) fixpt(2)],1);');  % eye1
 
 
-% Set the constant conditions
+%% Set the constant conditions
 % de = 3;                                 % Dominant eye: 1 = binocular, 2 = right eye, 3 = left eye
 % Set receptive field
-rf = [5 -5];  % [x y] in visual degrees
+rf = [4 -4];  % [x y] in visual degrees
 setRF(rf);
 diameter = [2];                         % Diameter of the grating
-fixThreshold = 1;
+fixThreshold = 1.25;
 PrefOri = [90];                         % Preferred orientation of grating
 sf = [1];                               % Cycles per degree
 tf = [0];                               % Cycles per second (0=static, 4=drifting)
@@ -46,9 +46,10 @@ phase_angle = [0];                      % Phase angle in degrees (0-360)
 % define time intervals (in ms):
 wait_for_fix = 5000;
 initial_fix = 250;
+looseBreakTime = 100;
+timeOutTime = 5000;
 
 set_bgcolor([0.5 0.5 0.5]);
-
 
 %% Trial 1 initilization
   
@@ -292,10 +293,11 @@ eventmarker(116 + mod(TrialRecord.CurrentTrialNumber,10)); %last diget of trial 
     bck2 = ImageGraphic(grat2);
     bck2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };    
     
-    wth2 = WaitThenHold(bck2);
-    wth2.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-    wth2.HoldTime = 750;
-    scene2 = create_scene(wth2);
+    lh2 = LooseHold(bck2);
+    lh2.HoldTime = 750;
+    lh2.BreakTime = looseBreakTime;
+    
+    scene2 = create_scene(lh2);
 
 %% Scene 3 - 750-800ms (photo diode offset
 
@@ -317,11 +319,11 @@ eventmarker(116 + mod(TrialRecord.CurrentTrialNumber,10)); %last diget of trial 
     bck3 = ImageGraphic(grat3);
     bck3.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };    
     
-    wth3 = WaitThenHold(bck3);
-    wth3.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-    wth3.HoldTime = 50;
+    lh3 = LooseHold(bck3);
+    lh3.HoldTime = 50;
+    lh3.BreakTime = looseBreakTime;
     
-    scene3 = create_scene(wth3);
+    scene3 = create_scene(lh3);
 
 %% Scene 4 - last 800 ms
 
@@ -343,11 +345,11 @@ eventmarker(116 + mod(TrialRecord.CurrentTrialNumber,10)); %last diget of trial 
     bck4 = ImageGraphic(grat4);
     bck4.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };    
     
-    wth4 = WaitThenHold(bck4);
-    wth4.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-    wth4.HoldTime = 800;
+    lh4 = LooseHold(bck4);
+    lh4.HoldTime = 800;
+    lh4.BreakTime = looseBreakTime;
     
-    scene4 = create_scene(wth4);
+    scene4 = create_scene(lh4);
  
 %% Scene 5. Break Fixation - negative punishment 
 % Negative punishment suppresses unwanted behavior by removing a
@@ -358,7 +360,7 @@ bck5.List = { {'graybackground.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSi
 
 % Set the timer
 cnt5 = TimeCounter(bck5);
-cnt5.Duration = 5000;
+cnt5.Duration = timeOutTime;
 scene5 = create_scene(cnt5);
 
 %% Scene 6. Clear fixation cross - in case of goodmonkey

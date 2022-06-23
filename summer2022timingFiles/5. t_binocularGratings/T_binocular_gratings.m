@@ -18,8 +18,15 @@
 % 10/26/2021: Note to Brock / Loic - if not instructed,
 % always run 'bminteroc'
 
-%% Paradigm selection
+%% Variables to change
 paradigm = 'bminteroc';
+timeOutTime = 5000;
+fixThreshold = 1.25; % degrees of visual angle
+
+% define intervals for WaitThenHold
+wait_for_fix = 5000;
+initial_fix = 500; % hold fixation for 200ms to initiate trial
+looseBreakTime = 100; % should not exceed 100ms
 
 % Note: Open genGratingRecordML2 to change general parameters (params
 % struct). 
@@ -52,11 +59,6 @@ timestamp = datestr(now); % Get the current time on the computer
 
 % Set fixation point
 fixpt = [0 0]; % [x y] in viual degrees
-fixThreshold = 1.75; % degrees of visual angle
-
-% define intervals for WaitThenHold
-wait_for_fix = 5000;
-initial_fix = 250; % hold fixation for 200ms to initiate trial
 
 % Find screen size
 scrsize = Screen.SubjectScreenFullSize / Screen.PixelsPerDegree;  % Screen size [x y] in degrees
@@ -346,16 +348,6 @@ end
 
 %% Preallocate grating struct
 % GratingList.left = ...
-%     {[other_stereo_xpos(1) other_ypos(1)], grating_diameter(1)/2, gratL_tilt(1), grating_sf(1), grating_tf(1), gratL_phase(1), gratL_color1(1), gratL_color2(1), 'circular', []; ...
-%     [other_stereo_xpos(2) other_ypos(2)], grating_diameter(2)/2, gratL_tilt(2), grating_sf(2), grating_tf(2), gratL_phase(2), gratL_color1(2), gratL_color2(2), 'circular', [];...
-%     [other_stereo_xpos(3) other_ypos(3)], grating_diameter(3)/2, gratL_tilt(3), grating_sf(3), grating_tf(3), gratL_phase(3), gratL_color1(3), gratL_color2(3), 'circular', []};
-%     
-
-
-% GratingList.right = ...
-%     {[stereo_xpos(1) grating_ypos(1)], grating_diameter(1)/2, gratR_tilt(1), grating_sf(1), grating_tf(1), gratR_phase(1), gratR_color1(1), gratR_color2(1), 'circular', []; ...
-%     [stereo_xpos(2) grating_ypos(2)], grating_diameter(2)/2, gratR_tilt(2), grating_sf(2), grating_tf(2), gratR_phase(2), gratR_color1(2), gratR_color2(2), 'circular', [];...
-%     [stereo_xpos(3) grating_ypos(3)], grating_diameter(3)/2, gratR_tilt(3), grating_sf(3), grating_tf(3), gratR_phase(3), gratR_color1(3), gratR_color2(3), 'circular', []};
 
 GratingList.left = ...
     {[stereo_xpos(1) grating_ypos(1)], grating_diameter(1)/2, tilt_L(1), grating_sf(1), grating_tf(1), phase_L(1), gratL_color1(1), gratL_color2(1), 'circular', []; ...
@@ -384,12 +376,6 @@ fix1.Threshold = fixThreshold; % Set the fixation threshold
 bck1 = ImageGraphic(fix1);
 bck1.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
-% edit, 5/26/2022 - trying out freeThenHold
-% wth1 = WaitThenHold(bck1); % Initialize the wait and hold adapter
-% wth1.WaitTime = wait_for_fix; % Set the wait time
-% wth1.HoldTime = initial_fix; % Set the hold time
-% scene1 = create_scene(wth1); % Initialize the scene adapter
-
 fth1 = FreeThenHold(bck1); % Initialize the wait and hold adapter
 fth1.MaxTime = wait_for_fix; % Set the wait time
 fth1.HoldTime = initial_fix; % Set the hold time
@@ -411,12 +397,15 @@ pd2.Position = lower_right;
 % Create both gratings
 grat2 = SineGrating(pd2);
 grat2.List = {GratingList.left{1,:};GratingList.right{1,:}};
-img2 = ImageGraphic(grat2);
-img2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
-wth2 = WaitThenHold(img2);
-wth2.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth2.HoldTime = grating_stimdur;
-scene2 = create_scene(wth2);
+
+bck2 = ImageGraphic(grat2);
+bck2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+
+lh2 = LooseHold(bck2);
+lh2.HoldTime = grating_stimdur;
+lh2.BreakTime = looseBreakTime;
+
+scene2 = create_scene(lh2);
 
 %% Scene 3. Inter-stimulus interval
 
@@ -433,10 +422,11 @@ pd3.Position = lower_right;
 bck3 = ImageGraphic(pd3);
 bck3.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
-wth3 = WaitThenHold(bck3);
-wth3.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth3.HoldTime = grating_isi;
-scene3 = create_scene(wth3);
+lh3 = LooseHold(bck3);
+lh3.HoldTime = grating_isi;
+lh3.BreakTime = looseBreakTime;
+
+scene3 = create_scene(lh3);
 
 %% Scene 4. Task Object #2
 % Set fixation to the left eye for tracking
@@ -453,12 +443,15 @@ pd4.Position = lower_right;
 % Create both gratings
 grat4 = SineGrating(pd4);
 grat4.List =  {GratingList.left{2,:};GratingList.right{2,:}};
-img4 = ImageGraphic(grat4);
-img4.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
-wth4 = WaitThenHold(img4);
-wth4.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth4.HoldTime = grating_stimdur;
-scene4 = create_scene(wth4);
+
+bck4 = ImageGraphic(grat4);
+bck4.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+
+lh4 = LooseHold(bck4);
+lh4.HoldTime = grating_stimdur;
+lh4.BreakTime = looseBreakTime;
+
+scene4 = create_scene(lh4);
 
 %% Scene 5. Task Object #3
 % Set fixation to the left eye for tracking
@@ -475,39 +468,40 @@ pd5.Position = lower_right;
 % Create both gratings
 grat5 = SineGrating(pd5);
 grat5.List =  {GratingList.left{3,:};GratingList.right{3,:}};
-img5 = ImageGraphic(grat5);
-img5.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
-wth5 = WaitThenHold(img5);
-wth5.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth5.HoldTime = grating_stimdur;
-scene5 = create_scene(wth5);
 
-%% Scene 6. Clear fixation cross
+bck5 = ImageGraphic(grat5);
+bck5.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+
+lh5 = LooseHold(bck5);
+lh5.HoldTime = grating_stimdur;
+lh5.BreakTime = looseBreakTime;
+
+scene5 = create_scene(lh5);
+
+%% Scene 6. Break Fixation - negative punishment 
+% Negative punishment suppresses unwanted behavior by removing a
+% reward-conditioned stimulus (aka - time-out)
 
 bck6 = ImageGraphic(null_);
 bck6.List = { {'graybackground.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
 % Set the timer
 cnt6 = TimeCounter(bck6);
-cnt6.Duration = 50;
+cnt6.Duration = timeOutTime;
 scene6 = create_scene(cnt6);
+
+%% Scene 7. Clear fixation cross - in case of goodmonkey
+
+bck7 = ImageGraphic(null_);
+bck7.List = { {'graybackground.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
+
+% Set the timer
+cnt7 = TimeCounter(bck7);
+cnt7.Duration = 50;
+scene7 = create_scene(cnt7);
 
 %% TASK
 error_type = 0;
-% run_scene(scene1,[35,11]); % WaitThenHold | 35 = Fix spot on, 11 = Start wait fixation
-% if ~wth1.Success             % If the WithThenHold failed (either fixation is not acquired or broken during hold),
-%     if wth1.Waiting          %    check whether we were waiting for fixation.
-%         error_type = 4;      % If so, fixation was never made and therefore this is a "no fixation (4)" error.
-%         run_scene(scene6,[12]);  % blank screen | 12 = end wait fixation
-%     else
-%         error_type = 3;      % If we were not waiting, it means that fixation was acquired but not held,
-%         run_scene(scene6,[97,36]);   % blank screen | 97 = fixation broken, 36 = fix cross OFF
-%     end   %    so this is a "break fixation (3)" error.
-% else
-%     eventmarker(8); % 8 = fixation occurs
-% end
-
-% from here, freeThenHold
 run_scene(scene1,[35,11]); % FreeThenHold | 35 = Fix spot on, 11 = Start wait fixation
 if ~fth1.Success             % If the FreeThenHold failed (either fixation is not acquired or broken during hold),
     if 0==fth1.BreakCount          %    check whether we were waiting for fixation.
@@ -574,7 +568,7 @@ end
 
 % reward
 if 0==error_type
-    run_scene(scene6,[32,36]); % event code for fix cross OFF 
+    run_scene(scene7,[32,36]); % event code for fix cross OFF 
     goodmonkey(100, 'juiceline',1, 'numreward',1, 'pausetime',300, 'eventmarker',96); % 100 ms of juice x 2. Event marker for reward
 end
 

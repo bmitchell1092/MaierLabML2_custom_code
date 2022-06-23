@@ -8,13 +8,14 @@
 % % PARADIGM
 %  NAME         | # of correct trials 
 % -----------------------------------
-% 'dotmapping'  | 192     
+% 'dotmapping'  | 200     
 
 %% Variables to change
-fixThreshold = 1.5; % degrees of visual angle
+fixThreshold = 1.2; % degrees of visual angle
 timeOutTime = 5000;
 wait_for_fix = 10000;
 initial_fix = 500; 
+looseBreakTime = 100; % should not exceed 100ms
 
 stimdur = 200;
 isi = 200;
@@ -58,8 +59,6 @@ hotkey('c', 'forced_eye_drift_correction([((-0.25*scrsize(1))+fixpt(1)) fixpt(2)
 
 % Trial number increases by 1 for every iteration of the code
 trialNum = tnum(TrialRecord);
-
-
 
 %% On the 1st trial
 
@@ -162,11 +161,11 @@ img2.List = { {DOTS{1}}, [corrected_x(1) corrected_y(1)] };
 bck2 = ImageGraphic(img2);
 bck2.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
-wth2 = WaitThenHold(bck2);
-wth2.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth2.HoldTime = stimdur;
+lh2 = LooseHold(bck2);
+lh2.HoldTime = stimdur;
+lh2.BreakTime = looseBreakTime;
 
-scene2 = create_scene(wth2);
+scene2 = create_scene(lh2);
 
 %% Scene 3. Inter-stimulus interval
 fix3 = SingleTarget(eye_); % Initialize the eye tracking adapter
@@ -182,10 +181,11 @@ pd3.Position = pd_position;
 bck3 = ImageGraphic(pd3);
 bck3.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
-wth3 = WaitThenHold(bck3);
-wth3.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth3.HoldTime = isi;
-scene3 = create_scene(wth3);
+lh3 = LooseHold(bck3);
+lh3.HoldTime = isi;
+lh3.BreakTime = looseBreakTime;
+
+scene3 = create_scene(lh3);
 
 %% Scene 4. Task Object #2
 % Set fixation to the left eye for tracking
@@ -209,12 +209,12 @@ bck4 = ImageGraphic(img4);
 bck4.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
 % Hold timer
-wth4 = WaitThenHold(bck4);
-wth4.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth4.HoldTime = stimdur;
+lh4 = LooseHold(bck4);
+lh4.HoldTime = stimdur;
+lh4.BreakTime = looseBreakTime;
 
 % Create Scene
-scene4 = create_scene(wth4);
+scene4 = create_scene(lh4);
 
 %% Scene 5. Task Object #3
 % Set fixation to the left eye for tracking
@@ -238,12 +238,12 @@ bck5 = ImageGraphic(img5);
 bck5.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
 % Hold timer
-wth5 = WaitThenHold(bck5);
-wth5.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth5.HoldTime = stimdur;
+lh5 = LooseHold(bck5);
+lh5.HoldTime = stimdur;
+lh5.BreakTime = looseBreakTime;
 
 % Create Scene
-scene5 = create_scene(wth5);
+scene5 = create_scene(lh5);
 
 %% Scene 6. Task Object #4
 % Set fixation to the left eye for tracking
@@ -267,12 +267,12 @@ bck6 = ImageGraphic(img6);
 bck6.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
 % Hold timer
-wth6 = WaitThenHold(bck6);
-wth6.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth6.HoldTime = stimdur;
+lh6 = LooseHold(bck6);
+lh6.HoldTime = stimdur;
+lh6.BreakTime = looseBreakTime;
 
 % Create Scene
-scene6 = create_scene(wth6);
+scene6 = create_scene(lh6);
 
 %% Scene 7. Task Object #5
 % Set fixation to the left eye for tracking
@@ -296,12 +296,12 @@ bck7 = ImageGraphic(img7);
 bck7.List = { {'graybackgroundcross.png'}, [0 0], [0 0 0], Screen.SubjectScreenFullSize };
 
 % Hold timer
-wth7 = WaitThenHold(bck7);
-wth7.WaitTime = 0;             % We already knows the fixation is acquired, so we don't wait.
-wth7.HoldTime = stimdur;
+lh7 = LooseHold(bck7);
+lh7.HoldTime = stimdur;
+lh7.BreakTime = looseBreakTime;
 
 % Create Scene
-scene7 = create_scene(wth7);
+scene7 = create_scene(lh7);
 
 %% Scene 8. Break Fixation - negative punishment 
 % Negative punishment suppresses unwanted behavior by removing a
@@ -327,19 +327,6 @@ scene9 = create_scene(cnt9);
 
 %% TASK
 error_type = 0;
-% run_scene(scene1,[35,11]); % WaitThenHold | 35 = Fix spot on, 11 = Start wait fixation
-% if ~wth1.Success             % If the WithThenHold failed (either fixation is not acquired or broken during hold),
-%     if wth1.Waiting          %    check whether we were waiting for fixation.
-%         error_type = 4;      % If so, fixation was never made and therefore this is a "no fixation (4)" error.
-%         run_scene(scene8,[12]);  % blank screen | 12 = end wait fixation
-%     else
-%         error_type = 3;      % If we were not waiting, it means that fixation was acquired but not held,
-%         run_scene(scene8,[97,36]);   % blank screen | 97 = fixation broken, 36 = fix cross OFF
-%     end   %    so this is a "break fixation (3)" error.
-% else
-%     eventmarker(8); % 8 = fixation occurs
-% end
-
 % FreeThenHold
 run_scene(scene1,[35,11]); % FreeThenHold | 35 = Fix spot on, 11 = Start wait fixation
 if ~fth1.Success             % If the FreeThenHold failed (either fixation is not acquired or broken during hold),

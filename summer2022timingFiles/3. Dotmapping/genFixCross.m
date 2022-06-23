@@ -15,11 +15,12 @@ function genFixCross(fix_x, fix_y)
     iptsetpref('ImshowBorder','tight');
 
     imshow(image);
-    truesize(gcf,[coords(1)*(64/75) coords(2)*(64/75)])
+%     truesize(gcf,[coords(1)*(64/75) coords(2)*(64/75)])
+    truesize(gcf,[coords(1) coords(2)])
     hold on
-    plot(x_pos1,y_pos1,'bx', 'MarkerSize', 12, 'LineWidth', 2)
+    plot(x_pos1,y_pos1,'b.', 'MarkerSize', 10, 'LineWidth', 2)
     hold on
-    plot(x_pos2,y_pos2,'bx', 'MarkerSize', 12, 'LineWidth', 2)
+    plot(x_pos2,y_pos2,'b.', 'MarkerSize', 10, 'LineWidth', 2)
 
     saveas(gcf, 'graybackgroundcross.png')
 
