@@ -18,9 +18,9 @@
 % ---------------------------------------------
 
 %% Variables to change
-fixThreshold = 1.5; % degrees of visual angle
+fixThreshold = 1; % degrees of visual angle
 timeOutTime = 7000;
-paradigm = 'rfori';
+paradigm = 'rforiDRFT';
 
 % Note: Open genGratingRecordML2 to change parameters of gratings.
 

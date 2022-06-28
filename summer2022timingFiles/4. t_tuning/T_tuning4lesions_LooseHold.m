@@ -17,13 +17,13 @@
 %% Variables to change
 % Paradigm selection 
 
-fixThreshold = 1.25; % degrees of visual angle
+fixThreshold = 1; % degrees of visual angle
 timeOutTime = 5000;
-paradigm = 'rfori4lesions';
+paradigm = 'rforiDRFT4lesions';
 
 wait_for_fix = 5000;
 initial_fix = 500; % hold fixation for 500ms to initiate trial
-looseBreakTime = 100; % should not exceed 100ms
+looseBreakTime = 50; % should not exceed 100ms
 
 % Note: Open genGratingRecordML2 to change parameters of gratings.
 

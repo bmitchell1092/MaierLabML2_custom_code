@@ -11,11 +11,11 @@
 % 'dotmapping'  | 200     
 
 %% Variables to change
-fixThreshold = 1.2; % degrees of visual angle
+fixThreshold = 1; % degrees of visual angle
 timeOutTime = 5000;
 wait_for_fix = 10000;
 initial_fix = 500; 
-looseBreakTime = 100; % should not exceed 100ms
+looseBreakTime = 50; % should not exceed 100ms
 
 stimdur = 200;
 isi = 200;

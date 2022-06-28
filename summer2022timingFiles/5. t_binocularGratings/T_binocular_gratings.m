@@ -21,12 +21,12 @@
 %% Variables to change
 paradigm = 'bminteroc';
 timeOutTime = 5000;
-fixThreshold = 1.25; % degrees of visual angle
+fixThreshold = 1; % degrees of visual angle
 
 % define intervals for WaitThenHold
 wait_for_fix = 5000;
 initial_fix = 500; % hold fixation for 200ms to initiate trial
-looseBreakTime = 100; % should not exceed 100ms
+looseBreakTime = 50; % should not exceed 100ms
 
 % Note: Open genGratingRecordML2 to change general parameters (params
 % struct). 

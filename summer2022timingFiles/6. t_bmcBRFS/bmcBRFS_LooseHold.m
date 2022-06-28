@@ -34,8 +34,8 @@ hotkey('c', 'forced_eye_drift_correction([((-0.25*scrsize(1))+fixpt(1)) fixpt(2)
 % Set receptive field
 rf = [4 -4];  % [x y] in visual degrees
 setRF(rf);
-diameter = [2];                         % Diameter of the grating
-fixThreshold = 1.25;
+diameter = [1.5];                         % Diameter of the grating
+fixThreshold = 1;
 PrefOri = [90];                         % Preferred orientation of grating
 sf = [1];                               % Cycles per degree
 tf = [0];                               % Cycles per second (0=static, 4=drifting)
@@ -46,7 +46,7 @@ phase_angle = [0];                      % Phase angle in degrees (0-360)
 % define time intervals (in ms):
 wait_for_fix = 5000;
 initial_fix = 250;
-looseBreakTime = 100;
+looseBreakTime = 50;
 timeOutTime = 5000;
 
 set_bgcolor([0.5 0.5 0.5]);
